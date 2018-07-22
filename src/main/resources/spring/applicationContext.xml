@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-4.0.xsd
+			http://www.springframework.org/schema/task
+			http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+	<!-- 注解扫描 -->
+	<context:component-scan base-package="com.java.mobile" />
+	<task:executor id="myexecutor" pool-size="5" />
+	<task:annotation-driven executor="myexecutor"/>
+
+	<!-- 使用spring自带的占位符替换功能 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- 允许JVM参数覆盖 -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<!-- 忽略没有找到的资源文件 -->
+		<property name="ignoreResourceNotFound" value="true" />
+		<!-- 配置资源文件 -->
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:config.properties</value>
+				<value>classpath:freemarker.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--文件上传-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- set the max upload size100MB -->
+		<property name="maxUploadSize">
+			<value>104857600</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+
+	<!--spring发送邮件-->
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
+		  p:defaultEncoding="utf-8"
+		  p:host="smtp.163.com"
+		  p:username="fkjava8888"
+		  p:password="fkjava888">
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 导入其他Spring管理的资源 -->
+	<import resource="classpath:spring/applicationContext-mybatis.xml"/>
+	<!--<import resource="classpath:spring/applicationContext-redis.xml"/>-->
+	<!--<import resource="classpath:spring/applicationContext-job.xml"/>-->
+	<import resource="classpath:spring/applicationContext-httpclient.xml"/>
+
+</beans>

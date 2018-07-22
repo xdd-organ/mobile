@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+	<!-- 控制台输出-->
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="DEBUG"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+		</layout>
+	</appender>
+
+	<!--输出到文件（info）-->
+	<!--将生成“info.log.2014-06-11”这样的日志文件-->
+	<appender name="fileAppenderInfo" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${user.home}/logs/website/info.log" />
+		<param name="DatePattern" value=".yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="INFO" />
+			<param name="LevelMax" value="INFO" />
+		</filter>
+	</appender>
+
+	<!--屏蔽所有org.springframework.*输出的Debug（及以下）信息-->
+	<logger name="org.springframework">
+		<level value="INFO"/>
+	</logger>
+
+	<root>
+		<level value="All"/>
+		<appender-ref ref="consoleAppender"/>
+	</root>
+</log4j:configuration>

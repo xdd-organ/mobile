@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+	<!-- 控制台输出-->
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+	    <!-- 指定日志消息的输出最低层次 优先级从低到高分别是DEBUG,INFO,WARN,ERROR -->
+		<!--<param name="Threshold" value="DEBUG"/>-->
+		<!-- 设置日志输出的样式 -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+		</layout>
+		<!--过滤器设置输出的级别-->
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<!-- 设置日志输出的最小级别 -->
+			<param name="levelMin" value="WARN" />
+			<!-- 设置日志输出的最大级别 -->
+			<param name="levelMax" value="ERROR" />
+			<!-- 设置日志输出的xxx，默认是false -->
+			<param name="AcceptOnMatch" value="true" />
+		</filter>
+	</appender>
+
+	<!--输出到文件（info）-->
+	<!--将生成“info.log.2014-06-11”这样的日志文件-->
+	<appender name="fileAppenderInfo" class="org.apache.log4j.DailyRollingFileAppender">
+		<!-- 设置日志信息输出文件全路径名 -->
+		<param name="File" value="C:/usr/local/logs/info.log" />
+		<param name="DatePattern" value=".yyyy-MM-dd" />
+		<!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+		</layout>
+		<!--<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="INFO" />
+			<param name="LevelMax" value="INFO" />
+		</filter>-->
+	</appender>
+
+	<!--指定logger的设置，additivity指示是否遵循缺省的继承机制 -->
+	<logger name="com.java.xdd.navy.controller.TestController" additivity="false">
+		<level value ="ERROR"/>
+		<appender-ref ref="fileAppenderInfo"/>
+	</logger>
+
+	<root>
+		<level value="All"/>
+		<appender-ref ref="consoleAppender"/>
+		<appender-ref ref="fileAppenderInfo"/>
+	</root>
+</log4j:configuration>
