@@ -47,7 +47,7 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath:spring/springmvc-servlet.xml</param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
+        <!--<load-on-startup>1</load-on-startup>-->
         <!-- servlet和filter中加入支持异步处理的代码 -->
         <!--<async-supported>true</async-supported>-->
     </servlet>

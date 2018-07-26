@@ -1,31 +1,31 @@
-CREATE TABLE `address` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `user_id` int(11) DEFAULT NULL COMMENT 'ÓÃ»§Ö÷¼ü',
-   `country` int(11) DEFAULT '86' COMMENT '¹ú¼ÒÖ÷¼ü',
-   `country_name` varchar(32) DEFAULT 'ÖĞ¹ú' COMMENT '¹ú¼ÒÃû³Æ',
-   `province` int(11) DEFAULT NULL COMMENT 'Ê¡Ö÷¼ü',
-   `province_name` varchar(32) DEFAULT NULL COMMENT 'Ê¡Ãû³Æ',
-   `city` int(11) DEFAULT NULL COMMENT '³ÇÊĞÖ÷¼ü',
-   `city_name` varchar(32) DEFAULT NULL COMMENT '³ÇÊĞÃû³Æ',
-   `district` int(11) DEFAULT NULL COMMENT 'ÇøÖ÷¼ü',
-   `district_name` varchar(32) DEFAULT NULL COMMENT 'ÇøÃû³Æ',
-   `detailed` varchar(64) DEFAULT NULL COMMENT 'ÏêÏ¸µØÖ·',
-   `consignee` varchar(32) DEFAULT NULL COMMENT 'ÊÕ»õÈË',
-   `telphone` varchar(16) DEFAULT NULL COMMENT 'µç»°',
-   `status` int(11) DEFAULT '0' COMMENT '0:ÓĞĞ§£¬1:É¾³ı',
+ï»¿CREATE TABLE `address` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `user_id` int(11) DEFAULT NULL COMMENT 'ç”¨æˆ·ä¸»é”®',
+   `country` int(11) DEFAULT '86' COMMENT 'å›½å®¶ä¸»é”®',
+   `country_name` varchar(32) DEFAULT 'ä¸­å›½' COMMENT 'å›½å®¶åç§°',
+   `province` int(11) DEFAULT NULL COMMENT 'çœä¸»é”®',
+   `province_name` varchar(32) DEFAULT NULL COMMENT 'çœåç§°',
+   `city` int(11) DEFAULT NULL COMMENT 'åŸå¸‚ä¸»é”®',
+   `city_name` varchar(32) DEFAULT NULL COMMENT 'åŸå¸‚åç§°',
+   `district` int(11) DEFAULT NULL COMMENT 'åŒºä¸»é”®',
+   `district_name` varchar(32) DEFAULT NULL COMMENT 'åŒºåç§°',
+   `detailed` varchar(64) DEFAULT NULL COMMENT 'è¯¦ç»†åœ°å€',
+   `consignee` varchar(32) DEFAULT NULL COMMENT 'æ”¶è´§äºº',
+   `telphone` varchar(16) DEFAULT NULL COMMENT 'ç”µè¯',
+   `status` int(11) DEFAULT '0' COMMENT '0:æœ‰æ•ˆï¼Œ1:åˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÊÕ»õµØÖ·';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='æ”¶è´§åœ°å€';
  
  CREATE TABLE `cash_deposit` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `user_id` int(11) DEFAULT NULL COMMENT '½ÉÄÉÈË',
-   `pay_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '½ÉÄÉÊ±¼ä',
-   `amount` int(11) DEFAULT NULL COMMENT '½ğ¶î',
-   `status` int(11) DEFAULT NULL COMMENT '0:ÓĞĞ§,1:É¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `user_id` int(11) DEFAULT NULL COMMENT 'ç¼´çº³äºº',
+   `pay_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'ç¼´çº³æ—¶é—´',
+   `amount` int(11) DEFAULT NULL COMMENT 'é‡‘é¢',
+   `status` int(11) DEFAULT NULL COMMENT '0:æœ‰æ•ˆ,1:åˆ é™¤',
    `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,110 +34,124 @@ CREATE TABLE `address` (
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='cash_deposit';
  
  CREATE TABLE `category` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `parent_id` int(11) DEFAULT '0' COMMENT '¸¸Ö÷¼ü',
-   `name` varchar(32) DEFAULT NULL COMMENT 'Ãû³Æ',
-   `cover` varchar(128) DEFAULT NULL COMMENT '·âÃæ',
-   `operation` varchar(64) DEFAULT NULL COMMENT '1:Ôö¼ÓÍ¬¼¶,2:Ôö¼Ó×Ó¼¯,3:É¾³ı±¾Éí,4:ÉÏÒÆ,5:ÏÂÒÆ¡£(¶ººÅ·Ö¸î)',
-   `status` int(11) DEFAULT '0' COMMENT '0£ºÓĞĞ§£¬1£ºÉ¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `parent_id` int(11) DEFAULT '0' COMMENT 'çˆ¶ä¸»é”®',
+   `name` varchar(32) DEFAULT NULL COMMENT 'åç§°',
+   `cover` varchar(128) DEFAULT NULL COMMENT 'å°é¢',
+   `operation` varchar(64) DEFAULT NULL COMMENT '1:å¢åŠ åŒçº§,2:å¢åŠ å­é›†,3:åˆ é™¤æœ¬èº«,4:ä¸Šç§»,5:ä¸‹ç§»ã€‚(é€—å·åˆ†å‰²)',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœ‰æ•ˆï¼Œ1ï¼šåˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÀàÄ¿¹ÜÀí';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ç±»ç›®ç®¡ç†';
  
  CREATE TABLE `commodity` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `name` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·Ãû³Æ',
-   `price` int(11) DEFAULT NULL COMMENT 'ÉÌÆ·¼Û¸ñ(µ¥Î»£º·Ö)',
-   `commodity_property` varchar(1024) DEFAULT NULL COMMENT 'ÉÌÆ·ÊôĞÔ',
-   `quality_report` varchar(1024) DEFAULT NULL COMMENT 'ÖÊ¼ì±¨¸æ',
-   `is_shelf` int(11) DEFAULT '0' COMMENT '0£ºÎ´ÉÏ¼Ü£¬1£ºÉÏ¼Ü',
-   `sale_status` int(11) DEFAULT '0' COMMENT '0£ºÎ´³öÊÛ£¬1£º³öÊÛ',
-   `status` int(11) DEFAULT '0' COMMENT '0£ºÎ´É¾³ı£¬1£ºÉ¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `name` varchar(32) DEFAULT NULL COMMENT 'å•†å“åç§°',
+   `price` int(11) DEFAULT NULL COMMENT 'å•†å“ä»·æ ¼(å•ä½ï¼šåˆ†)',
+   `commodity_property` varchar(1024) DEFAULT NULL COMMENT 'å•†å“å±æ€§',
+   `quality_report` varchar(1024) DEFAULT NULL COMMENT 'è´¨æ£€æŠ¥å‘Š',
+   `is_shelf` int(11) DEFAULT '0' COMMENT '0ï¼šæœªä¸Šæ¶ï¼Œ1ï¼šä¸Šæ¶',
+   `sale_status` int(11) DEFAULT '0' COMMENT '0ï¼šæœªå‡ºå”®ï¼Œ1ï¼šå‡ºå”®',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœªåˆ é™¤ï¼Œ1ï¼šåˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÉÌÆ·¹ÜÀí';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='å•†å“ç®¡ç†';
  
  CREATE TABLE `commodity_auction` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `name` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·Ãû³Æ',
-   `price` int(11) DEFAULT NULL COMMENT 'ÉÌÆ·Ò»¿Ú¼Û¸ñ(µ¥Î»£º·Ö)',
-   `cover` varchar(128) DEFAULT NULL COMMENT '·âÃæ',
-   `carousel_img` varchar(1024) DEFAULT NULL COMMENT 'ÂÖ²¥Í¼',
-   `market_price` int(11) DEFAULT NULL COMMENT 'ÉÌÆ·ÊĞ³¡¼Û¸ñ(µ¥Î»£º·Ö)',
-   `commodity_type` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÀàĞÍ',
-   `commodity_property` varchar(1024) DEFAULT NULL COMMENT 'ÉÌÆ·ÊôĞÔ',
-   `quality_report` varchar(1024) DEFAULT NULL COMMENT 'ÖÊ¼ì±¨¸æ',
-   `is_shelf` int(11) DEFAULT '0' COMMENT '0£ºÎ´ÉÏ¼Ü£¬1£ºÉÏ¼Ü',
-   `sale_status` int(11) DEFAULT '0' COMMENT '0£ºÎ´³öÊÛ£¬1£º³öÊÛ',
-   `status` int(11) DEFAULT '0' COMMENT '0£ºÎ´É¾³ı£¬1£ºÉ¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `name` varchar(32) DEFAULT NULL COMMENT 'å•†å“åç§°',
+   `price` int(11) DEFAULT NULL COMMENT 'å•†å“ä¸€å£ä»·æ ¼(å•ä½ï¼šåˆ†)',
+   `cover` varchar(128) DEFAULT NULL COMMENT 'å°é¢',
+   `carousel_img` varchar(1024) DEFAULT NULL COMMENT 'è½®æ’­å›¾',
+   `market_price` int(11) DEFAULT NULL COMMENT 'å•†å“å¸‚åœºä»·æ ¼(å•ä½ï¼šåˆ†)',
+   `commodity_type` varchar(32) DEFAULT NULL COMMENT 'å•†å“ç±»å‹',
+   `commodity_property` varchar(1024) DEFAULT NULL COMMENT 'å•†å“å±æ€§',
+   `quality_report` varchar(1024) DEFAULT NULL COMMENT 'è´¨æ£€æŠ¥å‘Š',
+   `is_shelf` int(11) DEFAULT '0' COMMENT '0ï¼šæœªä¸Šæ¶ï¼Œ1ï¼šä¸Šæ¶',
+   `sale_status` int(11) DEFAULT '0' COMMENT '0ï¼šæœªå‡ºå”®ï¼Œ1ï¼šå‡ºå”®',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœªåˆ é™¤ï¼Œ1ï¼šåˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÉÌÆ·¹ÜÀí-ÅÄÂô';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='å•†å“ç®¡ç†-æ‹å–';
  
  CREATE TABLE `commodity_property` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `property_name` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÊôĞÔÃû³Æ',
-   `commodity_type_name` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÀàĞÍÃû³Æ',
-   `commodity_type_value` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÀàĞÍÖµ',
-   `property` varchar(64) DEFAULT NULL COMMENT 'ÊôĞÔ£º1£º²Ù×÷ÏµÍ³£¬2£ºÍøÂç£¬3£ºÑÕÉ«£¬4£º³ÉÉ«',
-   `operation` varchar(64) DEFAULT NULL COMMENT '²Ù×÷£º1£ºÔö¼Ó£¬2£ºÉ¾³ı£¬3£ºĞŞ¸Ä',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `property_name` varchar(32) DEFAULT NULL COMMENT 'å•†å“å±æ€§åç§°',
+   `commodity_type_name` varchar(32) DEFAULT NULL COMMENT 'å•†å“ç±»å‹åç§°',
+   `commodity_type_value` varchar(32) DEFAULT NULL COMMENT 'å•†å“ç±»å‹å€¼',
+   `property` varchar(64) DEFAULT NULL COMMENT 'å±æ€§ï¼š1ï¼šæ“ä½œç³»ç»Ÿï¼Œ2ï¼šç½‘ç»œï¼Œ3ï¼šé¢œè‰²ï¼Œ4ï¼šæˆè‰²',
+   `operation` varchar(64) DEFAULT NULL COMMENT 'æ“ä½œï¼š1ï¼šå¢åŠ ï¼Œ2ï¼šåˆ é™¤ï¼Œ3ï¼šä¿®æ”¹',
    `status` int(11) DEFAULT '0',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÉÌÆ·ÊôĞÔ¹ÜÀí';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='å•†å“å±æ€§ç®¡ç†';
  
  CREATE TABLE `dictionary` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `name` varchar(32) DEFAULT NULL COMMENT '×ÖµäÃû³Æ',
-   `key` varchar(32) DEFAULT NULL COMMENT '×Öµäkey',
-   `value` varchar(1024) DEFAULT NULL COMMENT '×Öµävalue',
-   `status` int(11) DEFAULT '0' COMMENT '0£ºÓĞĞ§£¬1É¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `name` varchar(32) DEFAULT NULL COMMENT 'å­—å…¸åç§°',
+   `key` varchar(32) DEFAULT NULL COMMENT 'å­—å…¸key',
+   `value` varchar(1024) DEFAULT NULL COMMENT 'å­—å…¸value',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœ‰æ•ˆï¼Œ1åˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='Êı¾İ×Öµä';
+ ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='æ•°æ®å­—å…¸';
  
  CREATE TABLE `quality_template` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `template_name` varchar(32) DEFAULT NULL COMMENT 'Ä£°åÃû³Æ',
-   `commodity_type_name` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÀàĞÍÃû³Æ',
-   `commodity_type_value` varchar(32) DEFAULT NULL COMMENT 'ÉÌÆ·ÀàĞÍÖµ',
-   `property` varchar(64) DEFAULT NULL COMMENT 'ÖÊ¼ìÏîÄ¿£º1£ºµçÔ´¼ü£¬2£ºÒôÁ¿¼ü£¬3£ºµç³Ø£¬4£ºiCloud½â³ı£¬5£ºÕÕÏà»ú',
-   `operation` varchar(64) DEFAULT NULL COMMENT '²Ù×÷£º1£ºÔö¼Ó£¬2É¾³ı',
-   `status` int(11) DEFAULT '0' COMMENT '0£ºÓĞĞ§£¬1£ºÉ¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `template_name` varchar(32) DEFAULT NULL COMMENT 'æ¨¡æ¿åç§°',
+   `commodity_type_name` varchar(32) DEFAULT NULL COMMENT 'å•†å“ç±»å‹åç§°',
+   `commodity_type_value` varchar(32) DEFAULT NULL COMMENT 'å•†å“ç±»å‹å€¼',
+   `property` varchar(64) DEFAULT NULL COMMENT 'è´¨æ£€é¡¹ç›®ï¼š1ï¼šç”µæºé”®ï¼Œ2ï¼šéŸ³é‡é”®ï¼Œ3ï¼šç”µæ± ï¼Œ4ï¼šiCloudè§£é™¤ï¼Œ5ï¼šç…§ç›¸æœº',
+   `operation` varchar(64) DEFAULT NULL COMMENT 'æ“ä½œï¼š1ï¼šå¢åŠ ï¼Œ2åˆ é™¤',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœ‰æ•ˆï¼Œ1ï¼šåˆ é™¤',
    `insert_author` int(11) DEFAULT NULL,
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÖÊ¼ì±¨¸æÄ£°å¹ÜÀí';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='è´¨æ£€æŠ¥å‘Šæ¨¡æ¿ç®¡ç†';
  
  CREATE TABLE `user` (
-   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Ö÷¼ü',
-   `username` varchar(32) DEFAULT NULL COMMENT 'ÓÃ»§Ãû',
-   `password` varchar(64) DEFAULT NULL COMMENT 'ÃÜÂë',
-   `telphone` varchar(16) DEFAULT NULL COMMENT 'µç»°',
-   `avatar` varchar(64) DEFAULT NULL COMMENT 'Í·Ïñ',
-   `register_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '×¢²áÊ±¼ä',
-   `is_disable` int(11) DEFAULT '0' COMMENT '1£º½ûÓÃ£¬0£ºÆôÓÃ',
-   `status` int(11) DEFAULT '0' COMMENT '0:ÓĞĞ§£¬1:É¾³ı',
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `username` varchar(32) DEFAULT NULL COMMENT 'ç”¨æˆ·å',
+   `password` varchar(64) DEFAULT NULL COMMENT 'å¯†ç ',
+   `telphone` varchar(16) DEFAULT NULL COMMENT 'ç”µè¯',
+   `avatar` varchar(64) DEFAULT NULL COMMENT 'å¤´åƒ',
+   `register_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'æ³¨å†Œæ—¶é—´',
+   `is_disable` int(11) DEFAULT '0' COMMENT '1ï¼šç¦ç”¨ï¼Œ0ï¼šå¯ç”¨',
+   `status` int(11) DEFAULT '0' COMMENT '0:æœ‰æ•ˆï¼Œ1:åˆ é™¤',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ÓÃ»§';
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='ç”¨æˆ·';
+
+CREATE TABLE `file` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®',
+   `name` varchar(128) DEFAULT NULL COMMENT 'æœ¬åœ°æ–‡ä»¶å',
+   `file_name` varchar(128) DEFAULT NULL COMMENT 'æ–‡ä»¶å',
+   `url` varchar(1024) DEFAULT NULL COMMENT 'æ–‡ä»¶åœ°å€',
+   `size` int(11) DEFAULT NULL COMMENT 'æ–‡ä»¶å¤§å° KB',
+   `status` int(11) DEFAULT '0' COMMENT '0ï¼šæœ‰æ•ˆï¼Œ1ï¼šåˆ é™¤',
+   `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `insert_author` int(11) DEFAULT '0',
+   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT '0',
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='æ–‡ä»¶'

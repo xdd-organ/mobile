@@ -13,7 +13,9 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
-	<context:component-scan base-package="com.java.mobile.phone.*.controller" />
+	<context:property-placeholder location="classpath:config.properties" ignore-resource-not-found="true" local-override="true"/>
+
+	<context:component-scan base-package="com.java.mobile.*.controller,com.java.mobile.phone.*.controller" />
 
 	<mvc:annotation-driven>
 		<!-- 处理responseBody 里面日期类型 -->
@@ -65,4 +67,6 @@
 
 	<!-- 过滤静态数据 -->
 	<mvc:default-servlet-handler/>
+
+
 </beans>
