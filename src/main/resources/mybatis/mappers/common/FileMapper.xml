@@ -8,14 +8,16 @@
         </selectKey>-->
         INSERT INTO file
         (
+        `key`,
         `name`,
         file_name,
         url,
-        size
+        `size`
         )
         VALUES
         <foreach collection="list" item="file" separator=",">
             (
+            #{file.key},
             #{file.name},
             #{file.file_name},
             #{file.url},
@@ -24,5 +26,13 @@
         </foreach>
 
     </insert>
+
+    <select id="getByKey" parameterType="java.lang.String" resultType="java.util.Map">
+        select * from file where `key` = #{key}
+    </select>
+
+    <select id="getById" parameterType="java.lang.String" resultType="java.util.Map">
+        select * from file where id = #{id}
+    </select>
 
 </mapper>

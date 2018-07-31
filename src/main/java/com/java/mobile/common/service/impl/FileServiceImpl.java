@@ -2,7 +2,7 @@ package com.java.mobile.common.service.impl;
 
 import com.java.mobile.common.mapper.FileMapper;
 import com.java.mobile.common.service.FileService;
-import com.java.mobile.common.utils.DateUtil;
+import com.java.mobile.common.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +33,7 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     private FileMapper fileMapper;
+    String classPath = new File(this.getClass().getResource("/../../").getPath()).getAbsolutePath() + File.separator;
 
     @Override
     public List<Map<String, Object>> upload(MultipartFile[] files) {
@@ -42,21 +41,23 @@ public class FileServiceImpl implements FileService {
         try {
             params = new ArrayList<>();
             for (MultipartFile file : files) {
-                String filename = file.getOriginalFilename();
+                String fileName = file.getOriginalFilename();
                 long size = file.getSize()/1000; //KB
-                String suffix = filename.substring(filename.lastIndexOf("."));
-                String filePath = imgPath + File.separator + DateUtil.getDateyyyyMMdd();
+                String suffix = fileName.substring(fileName.lastIndexOf("."));
+                String filePath = classPath + imgPath + File.separator + DateUtil.getDateyyyyMMdd();
                 File saveFile = new File(filePath);
                 if (!saveFile.exists()) saveFile.mkdirs();
-                filePath = filePath + File.separator + DateUtil.getDateyyyyMMddHHmmssSSSS() + suffix;
+                String date = DateUtil.getDateyyyyMMddHHmmssSSSS() + suffix;
+                filePath = filePath + File.separator + date;
                 FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(filePath));
 
                 Map<String, Object> param = new HashMap<>();
-                String imgBasePath = DateUtil.getDateyyyyMMdd()+ "/" + DateUtil.getDateyyyyMMddHHmmssSSSS() + suffix;
+                String imgBasePath = DateUtil.getDateyyyyMMdd()+ "/" + date;
                 param.put("name", imgBasePath);
-                param.put("file_name", filename);
+                param.put("file_name", fileName);
                 param.put("size", size);
-                param.put("url", imgBaseUrl + imgBasePath);
+                param.put("url", imgBaseUrl + imgPath + File.separator + imgBasePath);
+                param.put("key", SerialNumber.getRandomNum());
                 params.add(param);
             }
             int ret = fileMapper.upload(params);
@@ -65,6 +66,15 @@ public class FileServiceImpl implements FileService {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
+
         return params;
+    }
+
+    @Override
+    public Map<String, Object> download(String key) {
+        Map<String, Object> file = fileMapper.getByKey(key);
+        String filePath = classPath + imgPath + File.separator + String.valueOf(file.get("name"));
+        file.put("filePath", filePath);
+        return file;
     }
 }

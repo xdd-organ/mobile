@@ -2,6 +2,7 @@ package com.java.mobile.common.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -16,4 +17,11 @@ public interface FileService {
      * @return
      */
     List<Map<String,Object>> upload(MultipartFile[] file);
+
+    /**
+     * 文件下载
+     * @param key
+     * @return
+     */
+    Map<String, Object> download(String key);
 }

@@ -7,18 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +47,24 @@ public class FileController {
      *
      * @return
      */
-    @RequestMapping(value = "/downloadFile")
-    public String downloadFile(HttpServletRequest request, HttpServletResponse response) {
-        return "fileUpload2";
+    @RequestMapping(value = "/download/{key}")
+    public void download(@PathVariable("key") String key, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> file = fileService.download(key);
+        try (FileInputStream inputStream = new FileInputStream(String.valueOf(file.get("filePath")))) {
+            String userAgent = request.getHeader("User-Agent").toLowerCase();
+            String fileName = String.valueOf(file.get("file_name"));
+            if (userAgent.contains("msie")) {//IE浏览器
+                fileName = URLEncoder.encode(fileName, "ISO8859-1");
+            } else {
+                fileName = URLEncoder.encode(fileName, "UTF-8");
+            }
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+            response.setContentType("application/octet-stream");
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
