@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
  * @date 2018/7/31
  */
 public class IPUtil {
+    private static IPUtil ipUtil = new IPUtil();
     private String ip;
 
     private IPUtil() {
@@ -20,6 +21,6 @@ public class IPUtil {
     }
 
     public static String getIp() {
-        return new IPUtil().ip;
+        return ipUtil.ip;
     }
 }

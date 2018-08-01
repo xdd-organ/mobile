@@ -1,19 +1,21 @@
 package com.java.mobile.common.utils;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
 import org.apache.catalina.Server;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
+
 /**
  * @author xdd
  * @date 2018/7/31
  */
 public class PortUtil {
+    private static PortUtil portUtil = new PortUtil();
     private String port;
     private PortUtil() {
         try {
@@ -43,6 +45,6 @@ public class PortUtil {
     }
 
     public static String getPort() {
-        return new PortUtil().port;
+        return portUtil.port;
     }
 }

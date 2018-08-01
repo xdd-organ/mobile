@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
  * @date 2018/7/31
  */
 public class HostNameUtil {
+    private static HostNameUtil hostNameUtil = new HostNameUtil();
     private String hostname;
 
     private HostNameUtil() {
@@ -20,6 +21,6 @@ public class HostNameUtil {
     }
 
     public static String getHostname() {
-        return new HostNameUtil().hostname;
+        return hostNameUtil.hostname;
     }
 }
