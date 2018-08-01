@@ -244,6 +244,7 @@
                     <source>1.7</source>
                     <target>1.7</target>
                     <encoding>UTF-8</encoding>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
             <!-- 不执行测试用例，也不编译测试用例类(可以选择编译测试用例，但是不执行测试用例) -->
@@ -252,7 +253,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.9</version>
                 <configuration>
-                    <skip>true</skip>
+                    <!--<skipTests>true</skipTests>--><!-- 不执行测试用例，但编译测试用例类生成相应的class文件至target/test-classes下。 -->
+                    <skip>true</skip><!-- 不执行测试用例，也不编译测试用例类。要配合maven-compiler-plugin使用，配置也要增加skip=true -->
                 </configuration>
             </plugin>
         </plugins>
