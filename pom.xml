@@ -29,6 +29,7 @@
             <id>repos</id>
             <name>Repository</name>
             <url>http://192.168.59.185:8081/nexus/content/groups/public/</url>
+            <!--<url>http://maven.apache.org</url>-->
         </pluginRepository>
     </pluginRepositories>
 
@@ -232,6 +233,12 @@
             <version>9.0.10</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Logback日志 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
     </dependencies>
 
     <!-- 插件 -->
@@ -256,6 +263,20 @@
                     <!--<skipTests>true</skipTests>--><!-- 不执行测试用例，但编译测试用例类生成相应的class文件至target/test-classes下。 -->
                     <skip>true</skip><!-- 不执行测试用例，也不编译测试用例类。要配合maven-compiler-plugin使用，配置也要增加skip=true -->
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.8</version>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
