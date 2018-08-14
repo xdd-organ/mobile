@@ -7,13 +7,38 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class TcpClient {
-    @Test
+    @Test//普通的TCP连接
     public void test() {
         try (Socket socket = new Socket(InetAddress.getLocalHost(), 9090);// 建立TCP服务,连接本机的TCP服务器
              InputStream inputStream = socket.getInputStream();// 获得输入流
              OutputStream outputStream = socket.getOutputStream()) {
             // 写入数据
-            outputStream.write("hello word.".getBytes());
+            outputStream.write(("hello word.").getBytes());
+            byte[] buf = new byte[1024];
+            int len = inputStream.read(buf);
+            System.out.println(new String(buf, 0, len));
+            //关闭资源
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test//使用TCP发送http请求
+    public void sendHttpRequest() {
+        try (Socket socket = new Socket(InetAddress.getLocalHost(), 9999);// 建立TCP服务,连接本机的TCP服务器
+             InputStream inputStream = socket.getInputStream();// 获得输入流
+             OutputStream outputStream = socket.getOutputStream()) {
+            // 写入数据
+            outputStream.write(("GET http://192.168.59.1:9999/login HTTP/1.1\n" +
+                    "Host: 192.168.59.1:9999\n" +
+                    "Connection: keep-alive\n" +
+                    "Cache-Control: max-age=0\n" +
+                    "Upgrade-Insecure-Requests: 1\n" +
+                    "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36\n" +
+                    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8\n" +
+                    "Accept-Encoding: gzip, deflate\n" +
+                    "Accept-Language: zh-CN,zh;q=0.8\n" +
+                    "\n").getBytes());
             byte[] buf = new byte[1024];
             int len = inputStream.read(buf);
             System.out.println(new String(buf, 0, len));
