@@ -14,6 +14,7 @@ import java.net.Socket;
  */
 @Service
 public class LockServiceImpl implements LockService {
+    private static final String uid = "123456789";
 
     @Override
     public String lock() {
@@ -21,12 +22,12 @@ public class LockServiceImpl implements LockService {
     }
 
     @Override
-    public String unLock(String uid) {
+    public String unLock(String openUid) {
         try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
              InputStream inputStream = socket.getInputStream();// 获得输入流
              OutputStream outputStream = socket.getOutputStream()) {
             // 写入数据
-            outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\"}").getBytes());
+            outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid +"\"}").getBytes());
             byte[] buf = new byte[1024];
             int len = inputStream.read(buf);
             String ret = new String(buf, 0, len);

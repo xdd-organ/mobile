@@ -1,8 +1,10 @@
 <configuration>
 
     <property name="logPattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{orderId}] %msg%n"/>
-    <property name="infoPath" value="F:/log/%d{yyyy-MM-dd}/info.%d.log"/>
-    <property name="errorPath" value="F:/log/error/info.%d.log"/>
+    <property name="infoPath" value="/usr/local/logs/mobile/%d{yyyy-MM-dd}/info.%d.log"/>
+    <property name="errorPath" value="/usr/local/logs/mobile/error/info.%d.log"/>
+    <!--<property name="infoPath" value="F:/log/%d{yyyy-MM-dd}/info.%d.log"/>-->
+    <!--<property name="errorPath" value="F:/log/error/info.%d.log"/>-->
 
     <!-- 日志输出位置 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
