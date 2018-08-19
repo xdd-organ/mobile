@@ -7,16 +7,24 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class TcpClient {
-    @Test//普通的TCP连接
-    public void test() {
-        try (Socket socket = new Socket(InetAddress.getLocalHost(), 9090);// 建立TCP服务,连接本机的TCP服务器
-             InputStream inputStream = socket.getInputStream();// 获得输入流
+//    @Test//普通的TCP连接
+//    public void test() {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("47.107.54.207", 8090);// 建立TCP服务,连接本机的TCP服务器
+             InputStream inputStream2 = socket.getInputStream();// 获得输入流
+             BufferedReader inputStream = new BufferedReader(new InputStreamReader(System.in));// 获得输入流
              OutputStream outputStream = socket.getOutputStream()) {
-            // 写入数据
-            outputStream.write(("hello word.").getBytes());
-            byte[] buf = new byte[1024];
-            int len = inputStream.read(buf);
-            System.out.println(new String(buf, 0, len));
+            String line = null;
+            while ((line = inputStream.readLine()) != null) {
+                // 写入数据
+                outputStream.write(line.getBytes());
+                byte[] buf = new byte[1024];
+                int len = inputStream2.read(buf);
+                System.out.println(new String(buf, 0, len));
+                if ("886".equals(line)) {
+                    break;
+                }
+            }
             //关闭资源
         } catch (Exception e) {
             e.printStackTrace();

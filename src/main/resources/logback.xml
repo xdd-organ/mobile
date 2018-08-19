@@ -1,18 +1,35 @@
 <configuration>
 
+    <property name="logPattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{orderId}] %msg%n"/>
+    <property name="infoPath" value="F:/log/%d{yyyy-MM-dd}/info.%d.log"/>
+    <property name="errorPath" value="F:/log/error/info.%d.log"/>
+
     <!-- 日志输出位置 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- 打印格式 %X{orderId}:取MDC.put()在拦截器存的值 -->
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X{orderId}] %msg%n</pattern>
+            <pattern>${logPattern}</pattern>
         </encoder>
     </appender>
 
     <!-- 只输出info日志 -->
     <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 过滤日志 -->
+        <encoder>
+            <pattern>${logPattern}</pattern>
+        </encoder>
+        <!-- 滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 设置info日志路径 -->
+            <fileNamePattern>${infoPath}</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 只输出info日志 -->
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤日志 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
+            <level>ERROR</level>
             <onMatch>ACCEPT</onMatch><!-- ACCEPT:如果命中就打印这条日志,DENY:如果命中就禁止这条日志 -->
             <onMismatch>DENY</onMismatch><!-- DENY:如果没有命中就不使用这条规则,ACCEPT:如果没有命中就使用这条规则 -->
         </filter>
@@ -22,12 +39,13 @@
         <!-- 滚动策略 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 设置info日志路径 -->
-            <fileNamePattern>${GLOBAL_LOG_BASE:-./logs}/%d{yyyy-MM-dd}\\info.%d.log</fileNamePattern>
+            <fileNamePattern>${errorPath}</fileNamePattern>
         </rollingPolicy>
     </appender>
 
     <root level="info"><!-- 默认的日志级别 -->
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="fileInfoLog"/>
+        <appender-ref ref="fileErrorLog"/>
     </root>
 </configuration>
