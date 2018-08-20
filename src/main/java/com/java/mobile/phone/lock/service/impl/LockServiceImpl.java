@@ -1,6 +1,8 @@
 package com.java.mobile.phone.lock.service.impl;
 
 import com.java.mobile.phone.lock.service.LockService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import java.net.Socket;
 @Service
 public class LockServiceImpl implements LockService {
     private static final String uid = "123456789";
+    private Logger logger = LoggerFactory.getLogger(LockServiceImpl.class);
 
     @Override
     public String lock() {
@@ -27,7 +30,7 @@ public class LockServiceImpl implements LockService {
              InputStream inputStream = socket.getInputStream();// 获得输入流
              OutputStream outputStream = socket.getOutputStream()) {
             // 写入数据
-            outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid +"\"}").getBytes());
+            outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
             byte[] buf = new byte[1024];
             int len = inputStream.read(buf);
             String ret = new String(buf, 0, len);
