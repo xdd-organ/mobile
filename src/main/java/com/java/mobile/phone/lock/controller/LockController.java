@@ -21,14 +21,20 @@ public class LockController {
     private LockService lockService;
 
     @RequestMapping("lock")
-    public String lock() {
-        String lock = lockService.lock();
+    public String lock(@RequestParam("UID") String uid) {
+        String lock = lockService.lock(uid);
         return lock;
     }
 
     @RequestMapping("unLock")
     public String unLock(@RequestParam("uid") String uid) {
         String ret = lockService.unLock(uid);
+        return ret;
+    }
+
+    @RequestMapping("status")
+    public String status(@RequestParam("UID") String uid, @RequestParam("STATUS") String status) {
+        String ret = lockService.status(uid);
         return ret;
     }
 

@@ -42,4 +42,8 @@
             <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
         </where>
     </select>
+
+    <update id="lock" parameterType="java.util.Map">
+        UPDATE lock_order set end_time = now(), fee = #{fee}, `type` = 1 where lock_no = #{lock_no} and end_time is null
+    </update>
 </mapper>

@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,16 +27,18 @@ public class LoginController {
 
 //    @PostMapping("login")
     @RequestMapping("login")
-    public Map<String, Object> login() {
+    public void login(@RequestParam("username") String username, @RequestParam("password") String password,
+                                     HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.debug("------ DEBUG -------------");
         logger.info("------- INFO -------------");
         logger.warn("-------- WARN -------------");
         logger.error("------- ERROR -------------");
-        HashMap<String, Object> objectObjectHashMap = new HashMap<>();
-        objectObjectHashMap.put("a", 1);
-        objectObjectHashMap.put("b", 2);
-        objectObjectHashMap.put("c", 3);
-        return objectObjectHashMap;
+        request.getRequestDispatcher("/WEB-INF/page/lock/home.jsp").forward(request,response);
+    }
+
+    @RequestMapping("index")
+    public void index(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.getRequestDispatcher("/index.jsp").forward(request,response);
     }
 
     @RequestMapping("send")

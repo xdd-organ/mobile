@@ -6,7 +6,9 @@ package com.java.mobile.phone.lock.service;
  */
 public interface LockService {
 
-    String lock();
+    String lock(String uid);
 
     String unLock(String uid);
+
+    String status(String uid);
 }
