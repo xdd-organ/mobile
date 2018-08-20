@@ -157,3 +157,30 @@ CREATE TABLE `file` (
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='文件';
 
+CREATE TABLE `lock_info` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `lock_no` varchar(64) DEFAULT NULL COMMENT '锁编号',
+   `state` int(11) DEFAULT '0' COMMENT '0:正常,1:维修中,2:禁用,3:使用中',
+   `status` int(11) DEFAULT '0' COMMENT '0：有效，1：删除',
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `insert_author` int(11) DEFAULT NULL,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁信息'
+
+CREATE TABLE `lock_order` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `lock_no` varchar(64) DEFAULT NULL COMMENT '锁编号',
+   `start_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '使用开始时间',
+   `end_time` timestamp NULL DEFAULT NULL COMMENT '使用结束时间',
+   `user_id` int(11) DEFAULT NULL COMMENT '使用用户id',
+   `fee` int(11) DEFAULT '0' COMMENT '费用：单位：分',
+   `type` int(11) DEFAULT '0' COMMENT '0:未支付，1：已支付，2：免单',
+   `status` int(11) DEFAULT '0' COMMENT '0：有效，1：删除',
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `insert_author` int(11) DEFAULT NULL,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁使用记录'
