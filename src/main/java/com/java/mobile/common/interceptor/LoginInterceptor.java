@@ -1,6 +1,6 @@
 package com.java.mobile.common.interceptor;
 
-import org.slf4j.MDC;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,14 +15,20 @@ import javax.servlet.http.HttpSession;
 public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String ticket = request.getHeader("ticket");
+
+
         HttpSession session = request.getSession();
-        Object userInfo = session.getAttribute("userInfo");
-        if (userInfo != null) {
+        session.setAttribute("userId", ticket);
+
+        /*if (StringUtils.isNotBlank(ticket)) {
+            HttpSession session = request.getSession();
+            session.setAttribute("userId", ticket);
             return true;
         } else {
             request.getRequestDispatcher("/index.jsp").forward(request,response);
-        }
-        return false;
+        }*/
+        return true;
     }
 
     @Override

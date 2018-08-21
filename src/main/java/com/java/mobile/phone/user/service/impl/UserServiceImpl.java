@@ -25,4 +25,9 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getByUsername(String username) {
         return userMapper.getByUsername(username);
     }
+
+    @Override
+    public Map<String, Object> getByUserId(Map<String, Object> params) {
+        return userMapper.getByUserId(params);
+    }
 }

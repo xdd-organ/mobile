@@ -9,4 +9,6 @@ import java.util.Map;
 public interface UserService {
 
     Map<String, Object> getByUsername(String username);
+
+    Map<String, Object> getByUserId(Map<String,Object> params);
 }

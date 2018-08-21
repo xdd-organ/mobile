@@ -16,4 +16,6 @@ public interface LockOrderMapper {
     List<Map<String, Object>> listByLockOrder(Map<String, Object> params);
 
     int lock(Map<String, Object> params);
+
+    List<Map<String, Object>> getUnLockOrder(String uid);
 }

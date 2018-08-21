@@ -46,4 +46,8 @@
     <update id="lock" parameterType="java.util.Map">
         UPDATE lock_order set end_time = now(), fee = #{fee}, `type` = 1 where lock_no = #{lock_no} and end_time is null
     </update>
+
+    <select id="getUnLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.* from lock_order a where a.lock_no = #{lock_no} and end_time is null
+    </select>
 </mapper>

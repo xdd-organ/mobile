@@ -207,3 +207,17 @@ CREATE TABLE `wx_pay_info` (
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信支付信息';
 
+CREATE TABLE `trans_flow_info` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `type` int(11) DEFAULT '0' COMMENT '0:消费，1：退费，2：押金，3：退押金',
+   `fee` int(11) DEFAULT '0' COMMENT '金额：单位：分',
+   `desc` varchar(256) DEFAULT NULL COMMENT '描述',
+   `status` int(11) DEFAULT '0' COMMENT '0:有效，1：删除',
+   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+   `insert_author` int(11) DEFAULT NULL,
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='交易流水';
+

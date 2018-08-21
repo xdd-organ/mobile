@@ -13,4 +13,6 @@ public interface UserMapper {
     int insert(Map<String, Object> params);
 
     Map<String, Object> getByUsername(@Param("username") String username);
+
+    Map<String,Object> getByUserId(Map<String,Object> params);
 }

@@ -39,6 +39,7 @@ public class LockServiceImpl implements LockService {
             params.put("lock_no", uid);
             params.put("fee", 100);
             lockOrderService.lock(params);
+            lockInfoService.updateLockState(uid, "0");
             return TcpConstant.OK;
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
@@ -51,7 +52,7 @@ public class LockServiceImpl implements LockService {
         String state = lockInfoService.getLockState(openUid);
         logger.info("解锁设备[{}],状态[{}]", openUid, state);
         if (state == null) {
-            return "该设备编号为录入";
+            return "该设备编号未录入";
         } else if ("0".equals(state)) {
             try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
                  InputStream inputStream = socket.getInputStream();// 获得输入流
@@ -69,6 +70,7 @@ public class LockServiceImpl implements LockService {
                 params.put("insert_author", userId);
                 params.put("update_author", userId);
                 lockOrderService.insert(params);
+                lockInfoService.updateLockState(openUid, "3");
                 return ret;
                 //关闭资源
             } catch (Exception e) {
