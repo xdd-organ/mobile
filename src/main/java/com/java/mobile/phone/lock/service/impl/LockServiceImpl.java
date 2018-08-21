@@ -33,11 +33,11 @@ public class LockServiceImpl implements LockService {
 
     @Override
     public String lock(String uid) {
+        logger.info("上锁设备[{}]", uid);
         try {// 建立TCP服务,连接本机的TCP服务器
             Map<String, Object> params = new HashMap<>();
             params.put("lock_no", uid);
-            params.put("update_author", 1);
-            params.put("fee", 1);
+            params.put("fee", 100);
             lockOrderService.lock(params);
             return TcpConstant.OK;
         } catch (Exception e) {
@@ -47,38 +47,65 @@ public class LockServiceImpl implements LockService {
     }
 
     @Override
-    public String unLock(String openUid) {
-        try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
-             InputStream inputStream = socket.getInputStream();// 获得输入流
-             OutputStream outputStream = socket.getOutputStream()) {
-            // 写入数据
-            outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
-            byte[] buf = new byte[1024];
-            int len = inputStream.read(buf);
-            String ret = new String(buf, 0, len);
+    public String unLock(String openUid, Object userId) {
+        String state = lockInfoService.getLockState(openUid);
+        logger.info("解锁设备[{}],状态[{}]", openUid, state);
+        if (state == null) {
+            return "该设备编号为录入";
+        } else if ("0".equals(state)) {
+            try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
+                 InputStream inputStream = socket.getInputStream();// 获得输入流
+                 OutputStream outputStream = socket.getOutputStream()) {
+                // 写入数据
+                outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
+                byte[] buf = new byte[1024];
+                int len = inputStream.read(buf);
+                String ret = new String(buf, 0, len);
 
-            //入库
-            Map<String, Object> params = new HashMap<>();
-            params.put("lock_no", openUid);
-            params.put("user_id", 1);
-            params.put("insert_author", 1);
-            params.put("update_author", 1);
-            lockOrderService.insert(params);
-            return ret;
-            //关闭资源
-        } catch (Exception e) {
-            logger.error("异常：" + e.getMessage(), e);
+                //入库
+                Map<String, Object> params = new HashMap<>();
+                params.put("lock_no", openUid);
+                params.put("user_id", userId);
+                params.put("insert_author", userId);
+                params.put("update_author", userId);
+                lockOrderService.insert(params);
+                return ret;
+                //关闭资源
+            } catch (Exception e) {
+                logger.error("异常：" + e.getMessage(), e);
+            }
+            return TcpConstant.ERROR;
+        } else if ("2".equals(state)){
+            return "暂停使用";
+        } else if ("3".equals(state)) {
+            return "正在使用中";
+        } else {
+            return TcpConstant.ERROR;
         }
-        return TcpConstant.ERROR;
     }
 
     @Override
-    public String status(String uid) {
+    public String status(String uid, String status, String type) {
+        logger.info("设备更新状态[{}],状态[{}],类型[{}]", uid, status, type);
         try {// 建立TCP服务,连接本机的TCP服务器
+            if ("STATUS".equals(type)) {
+                String state = "0";
+                if ("OPEN".equals(status)) {
+                    state = "3";
+                } else if ("STOP".equals(status)) {
+                    state = "2";
+                }
+                int i = lockInfoService.updateLockState(uid, state);
+                if (i == 1) {
+                    return TcpConstant.OK;
+                } else {
+                    return TcpConstant.ERROR;
+                }
+            }
             return TcpConstant.OK;
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
         }
         return TcpConstant.ERROR;
-}
+    }
 }

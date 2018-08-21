@@ -21,7 +21,7 @@
                         } else if (result.indexOf('NOT_FIND') != -1) {
                             $("#msg").html("锁未连接上服务器")
                         } else {
-                            $("#msg").html("ERROR")
+                            $("#msg").html(result)
                         }
                     }
                 });
@@ -46,7 +46,7 @@
         <table>
             <tr>
                 <td>锁编号：</td>
-                <td><input type="text" name="lock_no" id="lock_no">&nbsp;&nbsp;&nbsp;<label id="msg">msg</label></td>
+                <td><input type="text" name="lock_no" id="lock_no">&nbsp;&nbsp;&nbsp;<label id="msg"></label></td>
             </tr>
             <tr>
                 <td></td>

@@ -8,7 +8,7 @@ public interface LockService {
 
     String lock(String uid);
 
-    String unLock(String uid);
+    String unLock(String uid, Object userId);
 
-    String status(String uid);
+    String status(String uid, String status, String type);
 }

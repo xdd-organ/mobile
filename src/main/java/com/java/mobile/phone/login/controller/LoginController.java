@@ -45,6 +45,7 @@ public class LoginController {
             if (pwd.equals(password)) {
                 HttpSession session = request.getSession();
                 session.setAttribute("userInfo", user);
+                session.setAttribute("userId", user.get("id"));
                 request.getRequestDispatcher("/WEB-INF/page/lock/home.jsp").forward(request,response);
             } else {
                 request.setAttribute("errMsg", "密码错误");

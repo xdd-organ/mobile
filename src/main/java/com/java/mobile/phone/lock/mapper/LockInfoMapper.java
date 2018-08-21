@@ -1,5 +1,7 @@
 package com.java.mobile.phone.lock.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,4 +17,7 @@ public interface LockInfoMapper {
 
     List<Map<String, Object>> listByLockInfo(Map<String, Object> params);
 
+    String getLockState(@Param("lock_no") String lockNo);
+
+    int updateLockState(@Param("lock_no") String lockNo, @Param("state") String state);
 }

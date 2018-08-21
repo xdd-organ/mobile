@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author xdd
  * @date 2018/8/1
@@ -27,14 +29,17 @@ public class LockController {
     }
 
     @RequestMapping("unLock")
-    public String unLock(@RequestParam("uid") String uid) {
-        String ret = lockService.unLock(uid);
+    public String unLock(@RequestParam("uid") String uid, HttpServletRequest request) {
+        Object userId = request.getSession().getAttribute("userId");
+        String ret = lockService.unLock(uid, userId);
         return ret;
     }
 
     @RequestMapping("status")
-    public String status(@RequestParam("UID") String uid, @RequestParam("STATUS") String status) {
-        String ret = lockService.status(uid);
+    public String status(@RequestParam("UID") String uid
+            , @RequestParam(value = "TYPE", required = false) String status
+            , @RequestParam(value = "RET", required = false) String type) {
+        String ret = lockService.status(uid, status, type);
         return ret;
     }
 
