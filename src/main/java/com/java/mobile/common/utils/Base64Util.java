@@ -3,9 +3,6 @@ package com.java.mobile.common.utils;
 /**
  * {@code Base64Util}主要功能是进行Base64解码和编码
  *
- * @author liyuanchang
- * @since xpay-common 0.0.1
- * @date 2016.9.21
  */
 public final class Base64Util {
 
