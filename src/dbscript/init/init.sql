@@ -183,4 +183,24 @@ CREATE TABLE `lock_order` (
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁使用记录'
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁使用记录';
+
+CREATE TABLE `wx_pay_info` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `appid` varchar(64) DEFAULT NULL COMMENT '小程序ID',
+   `mch_id` varchar(64) DEFAULT NULL COMMENT '商户号',
+   `nonce_str` varchar(64) DEFAULT NULL COMMENT '随机字符串',
+   `sign` varchar(64) DEFAULT NULL COMMENT '签名',
+   `body` varchar(256) DEFAULT NULL COMMENT '商品描述',
+   `out_trade_no` varchar(64) DEFAULT NULL COMMENT '商户订单号',
+   `total_fee` int(11) DEFAULT NULL COMMENT '订单总金额，单位为分',
+   `spbill_create_ip` varchar(32) DEFAULT NULL COMMENT 'APP和网页支付提交用户端ip，Native支付填调用微信支付API的机器IP。',
+   `time_expire` varchar(16) DEFAULT NULL COMMENT '订单失效时间，格式为yyyyMMddHHmmss',
+   `notify_url` varchar(512) DEFAULT NULL COMMENT '通知地址',
+   `trade_type` varchar(32) DEFAULT NULL COMMENT '交易类型,小程序取值如下：JSAPI',
+   `openid` varchar(256) DEFAULT NULL COMMENT '用户标识,trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识',
+   `result` varchar(16) DEFAULT NULL COMMENT '支付结果：SUCCESS/FAIL',
+   `refund` varchar(16) DEFAULT NULL COMMENT '退款结果：SUCCESS/FAIL',
+   `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信支付信息';

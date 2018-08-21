@@ -2,18 +2,21 @@ package com.java.mobile.phone.pay.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java.mobile.common.utils.FtlTemplateEngine;
+import com.java.mobile.common.utils.KeyValueUtil;
 import com.java.mobile.common.utils.XmlUtils;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.phone.pay.bean.WxPayInfoBean;
 import com.java.mobile.phone.pay.service.WeixinPayService;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -118,6 +121,22 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 //        map.put("scene_info", wxPayInfoBean.getSceneInfo());
         String sign = WxRemoteService.signMd5ByMap(wxPayInfoBean.getMchId(), map);
         return sign;
+    }
+
+
+    //结果通知验签
+    private boolean verify(String xml){
+        boolean flag = false;
+        try {
+            SortedMap<String, String> map = XmlUtils.xmlStrToMap(xml);
+            String sign = map.get("sign");
+            map.remove("sign");
+            String keyValue = KeyValueUtil.mapToString(map);
+            flag = WxRemoteService.verifyMd5(map.get("mch_id"), keyValue, sign);
+        } catch (DocumentException e) {
+            return false;
+        }
+        return flag;
     }
 
 }
