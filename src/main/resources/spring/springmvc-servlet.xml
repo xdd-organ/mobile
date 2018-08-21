@@ -22,6 +22,15 @@
 			<mvc:mapping path="/**"/>
 			<bean class="com.java.mobile.common.interceptor.MDCInterceptor"/>
 		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/lock"/>
+			<mvc:exclude-mapping path="/login"/>
+			<mvc:exclude-mapping path="/index"/>
+			<mvc:exclude-mapping path="/status"/>
+			<mvc:exclude-mapping path="/createVerifyCode"/>
+			<bean class="com.java.mobile.common.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	<mvc:annotation-driven>

@@ -1,7 +1,9 @@
 package com.java.mobile.phone.login.controller;
 
+import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -25,15 +28,29 @@ public class LoginController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
+    @Autowired
+    private UserService userService;
+
 //    @PostMapping("login")
     @RequestMapping("login")
     public void login(@RequestParam("username") String username, @RequestParam("password") String password,
                                      HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.debug("------ DEBUG -------------");
-        logger.info("------- INFO -------------");
-        logger.warn("-------- WARN -------------");
-        logger.error("------- ERROR -------------");
-        request.getRequestDispatcher("/WEB-INF/page/lock/home.jsp").forward(request,response);
+        logger.info("账号：{}，密码：{}", username, password);
+        Map<String, Object> user = userService.getByUsername(username);
+        if (user == null) {
+            request.setAttribute("errMsg", "用户不存在");
+            request.getRequestDispatcher("/index.jsp").forward(request,response);
+        } else {
+            String pwd = String.valueOf(user.get("password"));
+            if (pwd.equals(password)) {
+                HttpSession session = request.getSession();
+                session.setAttribute("userInfo", user);
+                request.getRequestDispatcher("/WEB-INF/page/lock/home.jsp").forward(request,response);
+            } else {
+                request.setAttribute("errMsg", "密码错误");
+                request.getRequestDispatcher("/index.jsp").forward(request,response);
+            }
+        }
     }
 
     @RequestMapping("index")
