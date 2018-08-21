@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><xml><appid>${appid}</appid><mch_id>${mch_id}</mch_id><nonce_str>${nonce_str}</nonce_str><#if ((transaction_id)?? && (transaction_id)!='')><transaction_id>${transaction_id}</transaction_id></#if><#if ((out_trade_no)?? && (out_trade_no)!='')><out_trade_no>${out_trade_no}</out_trade_no></#if><sign>${sign}</sign></xml>

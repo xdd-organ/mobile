@@ -1,5 +1,6 @@
 package com.java.mobile.common.utils.httpclient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpMessage;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -23,6 +24,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -98,6 +100,43 @@ public class HttpClientUtil {
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(parameters, "UTF-8");
             // 将请求实体设置到httpPost对象中
             httpPost.setEntity(formEntity);
+        }
+
+        CloseableHttpResponse response = null;
+        try {
+            // 执行请求
+            response = httpClient.execute(httpPost);
+            if (response.getEntity() != null) {
+                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(
+                        response.getEntity(), "UTF-8"));
+            }
+            return new HttpResult(response.getStatusLine().getStatusCode(), null);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+            return null;
+        }
+    }
+
+    /**
+     * post请求(表单提交)
+     * @param url 请求url
+     * @param params 请求参数，可以为null
+     * @return 返回请求结果
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public HttpResult doPost(String url, String params, Map<String, String> headers) throws URISyntaxException, IOException{
+        // 创建http POST请求
+        HttpPost httpPost = new HttpPost(url);
+        this.setRequestheaders(headers, httpPost);
+        httpPost.setConfig(this.requestConfig);
+        if (StringUtils.isNotBlank(params)) {
+            // 构造一个body实体
+            StringEntity entity = new StringEntity(params, Charset.forName("UTF-8"));
+            // 将请求实体设置到httpPost对象中
+            httpPost.setEntity(entity);
         }
 
         CloseableHttpResponse response = null;
