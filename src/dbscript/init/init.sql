@@ -200,7 +200,10 @@ CREATE TABLE `wx_pay_info` (
    `trade_type` varchar(32) DEFAULT NULL COMMENT '交易类型,小程序取值如下：JSAPI',
    `openid` varchar(256) DEFAULT NULL COMMENT '用户标识,trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识',
    `result` varchar(16) DEFAULT NULL COMMENT '支付结果：SUCCESS/FAIL',
-   `refund` varchar(16) DEFAULT NULL COMMENT '退款结果：SUCCESS/FAIL',
+   `time_end` varchar(16) DEFAULT NULL COMMENT '支付完成时间，格式为yyyyMMddHHmmss',
+   `transaction_id` varchar(64) DEFAULT NULL COMMENT '微信支付订单号',
+   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信支付信息';
+

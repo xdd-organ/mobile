@@ -20,7 +20,7 @@
         #{update_author}
         );
     </insert>
-    <select id="update" resultType="int" parameterType="java.util.Map">
+    <update id="update" parameterType="java.util.Map">
         UPDATE lock_order
         <set>
             <if test="fee != null and fee != ''">`fee` = #{fee},</if>
@@ -31,7 +31,7 @@
             <if test="update_time != null and update_time != ''">update_time = #{update_time},</if>
         </set>
         WHERE id = #{id}
-    </select>
+    </update>
 
     <select id="listByLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
         select a.* from lock_order a

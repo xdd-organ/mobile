@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.mobile.phone.pay.mapper.WxPayInfoMapper">
+    <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+        <!--<selectKey keyProperty="id" resultType="java.lang.Long">
+            select last_insert_id()
+        </selectKey>-->
+        INSERT INTO wx_pay_info
+        (
+        appid,
+        mch_id,
+        nonce_str,
+        SIGN,
+        body,
+        out_trade_no,
+        total_fee,
+        spbill_create_ip,
+        time_expire,
+        notify_url,
+        trade_type,
+        openid,
+        user_id,
+        result
+        )
+        VALUES
+        (
+        #{appid},
+        #{mch_id},
+        #{nonce_str},
+        #{sign},
+        #{body},
+        #{out_trade_no},
+        #{total_fee},
+        #{spbill_create_ip},
+        #{time_expire},
+        #{notify_url},
+        #{trade_type},
+        #{user_id},
+        #{openid}
+        );
+    </insert>
+    <update id="updateByOrderNo" parameterType="java.util.Map">
+        UPDATE wx_pay_info
+        <set>
+            <if test="time_end != null and time_end != ''">`time_end` = #{time_end},</if>
+            <if test="transaction_id != null and transaction_id != ''">`transaction_id` = #{transaction_id},</if>
+            <if test="result != null and result != ''">result = #{result},</if>
+        </set>
+        WHERE out_trade_no = #{out_trade_no}
+    </update>
+
+    <select id="getByOrderNo" parameterType="java.lang.String" resultType="java.util.Map">
+        select a.* from wx_pay_info a a.`out_trade_no` = #{out_trade_no}
+    </select>
+
+    <select id="listByWxPayInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.* from wx_pay_info a
+        <where>
+            <if test="out_trade_no != null and out_trade_no != ''">and a.`out_trade_no` = #{out_trade_no}</if>
+            <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
+        </where>
+    </select>
+
+</mapper>
