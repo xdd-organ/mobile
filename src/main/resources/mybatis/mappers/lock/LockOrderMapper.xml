@@ -8,6 +8,7 @@
         INSERT INTO lock_order
         (
         lock_no,
+        order_no,
         user_id,
         insert_author,
         update_author
@@ -15,6 +16,7 @@
         VALUES
         (
         #{lock_no},
+        #{order_no},
         #{user_id},
         #{insert_author},
         #{update_author}
@@ -34,13 +36,14 @@
     </update>
 
     <select id="listByLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.* from lock_order a
+        select a.*, b.address from lock_order a left join lock_info b on a.lock_no = b.lock_no
         <where>
             <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
             <if test="type != null and type != ''">and a.`type` = #{type}</if>
             <if test="status != null and status != ''">and a.status = #{status}</if>
             <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
         </where>
+        order by a.insert_time desc
     </select>
 
     <update id="lock" parameterType="java.util.Map">

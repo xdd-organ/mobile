@@ -42,6 +42,7 @@ public class LockServiceImpl implements LockService {
             String fee = "-100";
             params.put("lock_no", uid);
             params.put("fee", fee);
+            params.put("type", "1");
             transFlowInfoService.saveTrans(uid, fee, "0", "消费", "0");
             lockOrderService.lock(params);
             lockInfoService.updateLockState(uid, "0");

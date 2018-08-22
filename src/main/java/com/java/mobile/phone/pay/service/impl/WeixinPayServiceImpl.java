@@ -2,9 +2,7 @@ package com.java.mobile.phone.pay.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java.mobile.common.security.WxRemoteService;
-import com.java.mobile.common.utils.FtlTemplateEngine;
-import com.java.mobile.common.utils.KeyValueUtil;
-import com.java.mobile.common.utils.XmlUtils;
+import com.java.mobile.common.utils.*;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.phone.pay.bean.WxPayInfoBean;
@@ -19,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
@@ -56,9 +55,9 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private String appid;
     @Value("${mchId:}")
     private String mchId;
-    @Value("${spbillCreateIp:}")
-    private String spbillCreateIp;
+    private String spbillCreateIp = IPUtil.getIp();
 
+    @Transactional
     @Override
     public Map<String, String> prepay(Map<String, String> params) {
         Map<String, String> resp = new HashMap<>();
@@ -105,18 +104,31 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     }
 
     private WxPayInfoBean combineWxPayInfoBean(Map<String, String> params) {
+        String randomNum = SerialNumber.getRandomNum(32);
         WxPayInfoBean wxPayInfoBean = new WxPayInfoBean();
         wxPayInfoBean.setAppId(appid);//微信分配的小程序ID
         wxPayInfoBean.setMchId(mchId);//微信支付分配的商户号
-        wxPayInfoBean.setNonceStr("");//随机字符串
-        wxPayInfoBean.setBody(params.get("total_fee"));//商品简单描述
-        wxPayInfoBean.setAttach(params.get("total_fee"));//支付通知中原样返回
-        wxPayInfoBean.setOrderNo(""); //out_trade_no 商户系统内部订单号
+        wxPayInfoBean.setNonceStr(randomNum);//随机字符串
+        wxPayInfoBean.setBody(params.get("body"));//商品简单描述
+        wxPayInfoBean.setAttach(params.get("attach"));//支付通知中原样返回
+        wxPayInfoBean.setOrderNo(randomNum); //out_trade_no 商户系统内部订单号
         wxPayInfoBean.setTotalFee(params.get("total_fee"));//订单总金额
         wxPayInfoBean.setSpbillCreateIp(spbillCreateIp);//微信支付API的机器IP
         wxPayInfoBean.setNotifyUrl(payNotifyUrl);//支付结果通知
         wxPayInfoBean.setTradeType("JSAPI");
         wxPayInfoBean.setOpenId(params.get("openid"));//trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识
+
+
+        Map<String, Object> payParams = new HashMap<>();
+        payParams.putAll(params);
+        payParams.put("appid", appid);
+        payParams.put("mch_id", mchId);
+        payParams.put("nonce_str", randomNum);
+        payParams.put("out_trade_no", randomNum);
+        payParams.put("spbill_create_ip", spbillCreateIp);
+        payParams.put("notify_url", payNotifyUrl);
+        payParams.put("trade_type", "JSAPI");
+        wxPayInfoMapper.insert(payParams);
         return wxPayInfoBean;
     }
 

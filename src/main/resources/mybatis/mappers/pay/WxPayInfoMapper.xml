@@ -18,9 +18,8 @@
         time_expire,
         notify_url,
         trade_type,
-        openid,
         user_id,
-        result
+        openid
         )
         VALUES
         (

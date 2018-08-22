@@ -48,7 +48,7 @@ public class TransFlowInfoServiceImpl implements TransFlowInfoService {
         params.put("user_id", userId);
         params.put("insert_author", userId);
         params.put("update_author", userId);
-        userService.updateMoney(userId.toString(), Integer.valueOf(fee));
+        userService.updateMoney(userId, Integer.valueOf(fee));
         transFlowInfoMapper.insert(params);
         return Long.valueOf(params.get("id").toString());
     }

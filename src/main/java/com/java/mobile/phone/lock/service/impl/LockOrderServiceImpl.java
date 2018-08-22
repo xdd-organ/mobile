@@ -2,6 +2,7 @@ package com.java.mobile.phone.lock.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.mapper.LockOrderMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
@@ -31,6 +32,7 @@ public class LockOrderServiceImpl implements LockOrderService {
 
     @Override
     public int insert(Map<String, Object> params) {
+        params.put("order_no", SerialNumber.getRandomNum(32));
         return lockOrderMapper.insert(params);
     }
 
@@ -55,12 +57,6 @@ public class LockOrderServiceImpl implements LockOrderService {
             try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
                  InputStream inputStream = socket.getInputStream();// 获得输入流
                  OutputStream outputStream = socket.getOutputStream()) {
-                // 写入数据
-                outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
-                byte[] buf = new byte[1024];
-                int len = inputStream.read(buf);
-                String ret = new String(buf, 0, len);
-
                 //入库
                 Map<String, Object> params2 = new HashMap<>();
                 params2.put("lock_no", openUid);
@@ -69,7 +65,14 @@ public class LockOrderServiceImpl implements LockOrderService {
                 params2.put("update_author", userId);
                 this.insert(params);
                 lockInfoService.updateLockState(openUid, "3");
-//                return ret;
+
+                // 写入数据
+                outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
+                byte[] buf = new byte[1024];
+                int len = inputStream.read(buf);
+                String ret = new String(buf, 0, len);
+
+                return TcpConstant.OK;
                 //关闭资源
             } catch (Exception e) {
                 logger.error("异常：" + e.getMessage(), e);

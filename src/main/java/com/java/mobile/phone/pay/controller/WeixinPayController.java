@@ -152,17 +152,18 @@ public class WeixinPayController {
      * 4.解密encryptedData字段数据需要用上第二步获取的session_key，获取用户openId与unionId
      *
      */
-    @RequestMapping("getWeixinUserInfo/{code}")
-    public Result getWeixinUserInfo(@PathVariable("code") String code) {
+    @RequestMapping("getWeixinUserInfo")
+    public Result getWeixinUserInfo(@RequestBody Map<String, Object> params2) {
+        String code = params2.get("code").toString();
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
         try {
             HttpResult httpResult = httpClientUtil.doGet(url, null, null);
             String body = httpResult.getBody();
-            logger.info("调用接口jscode2session，返回：", body);
+            logger.info("调用接口jscode2session，返回：{}", body);
             if (body != null && body.contains(PayConstant.OPENID)) {
                 Map<String, Object> params = JSONObject.parseObject(body, Map.class);
                 Map<String, Object> ret = weixinPayService.getWeixinUserInfo(params);
-                return new Result(500, ret);
+                return new Result(100, ret);
             } else {
                 return new Result(500);
             }
