@@ -9,4 +9,6 @@ public interface WeixinPayService {
     Map<String, String> prepay(Map<String, String> params);
 
     Map<String,Object> getWeixinUserInfo(Map<String, Object> params);
+
+    int payNotify(Map<String, String> params);
 }

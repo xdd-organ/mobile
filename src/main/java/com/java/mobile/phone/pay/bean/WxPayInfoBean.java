@@ -5,8 +5,7 @@ import java.io.Serializable;
 /**
  * 微信支付参数信息
  * 
- * @author Eshin
- * 
+ *
  */
 public class WxPayInfoBean implements Serializable {
 

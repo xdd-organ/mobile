@@ -218,4 +218,26 @@ public class XmlUtils {
 		}
 
 	}
+
+	public static String getNodeValueFromXml(String nodeName, String xmlStr) {
+		String nodeStart = "<" + nodeName + ">";
+		String nodeEnd = "</" + nodeName + ">";
+		return getNodeValueFromXml(nodeStart, nodeEnd, xmlStr);
+	}
+
+	public static String getNodeValueFromXml(String nodeStart, String nodeEnd, String src) {
+		String rtnStr = "";
+		int nodeStartLength = nodeStart.length();
+		int start = src.indexOf(nodeStart);
+		int end = src.indexOf(nodeEnd);
+		if (start > -1 && end > -1) {
+			rtnStr = src.substring(start + nodeStartLength, end);
+		}
+
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(rtnStr) && rtnStr.contains("<![CDATA[")) {
+			rtnStr = rtnStr.substring(9, rtnStr.lastIndexOf("]]>"));
+		}
+
+		return rtnStr;
+	}
 }

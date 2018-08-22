@@ -10,7 +10,7 @@
         appid,
         mch_id,
         nonce_str,
-        SIGN,
+        `sign`,
         body,
         out_trade_no,
         total_fee,
@@ -44,7 +44,7 @@
         <set>
             <if test="time_end != null and time_end != ''">`time_end` = #{time_end},</if>
             <if test="transaction_id != null and transaction_id != ''">`transaction_id` = #{transaction_id},</if>
-            <if test="result != null and result != ''">result = #{result},</if>
+            <if test="return_code != null and return_code != ''">result = #{return_code},</if>
         </set>
         WHERE out_trade_no = #{out_trade_no}
     </update>

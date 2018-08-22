@@ -1,11 +1,15 @@
 package com.java.mobile.phone.pay.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.java.mobile.common.security.WxRemoteService;
+import com.java.mobile.common.utils.KeyValueUtil;
+import com.java.mobile.common.utils.XmlUtils;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.service.WeixinPayService;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * @author xdd
@@ -38,36 +43,69 @@ public class WeixinPayController {
     private WeixinPayService weixinPayService;
     @Autowired
     private HttpClientUtil httpClientUtil;
+    @Autowired
+    private WxRemoteService wxRemoteService;
 
-    @Value("${appid}")
+    private final static String SUCCESS = "SUCCESS";
+
+    @Value("${appid:}")
     private String appid;
-    @Value("${appSecret}")
+    @Value("${appSecret:}")
     private String appSecret;
 
 
 
 
     @RequestMapping("prepay")
-    public String prepay(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
+    public Result prepay(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> prepay = weixinPayService.prepay(params);
-
-
-
-
-
-
-
-
-        return null;
+        return new Result(100, prepay);
     }
+
+    /**
+     * 结果通知
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("payNotify")
     public String payNotify(HttpServletRequest request, HttpServletResponse response) {
-        String requestParams = this.getRequestParams(request);
+        String return_code = "FAIL";
+        String return_msg = "error";
+        String xmlStr = this.getRequestParams(request);
+        logger.info("收到微信异步通知：[{}]", xmlStr);
+        String returnCode = XmlUtils.getNodeValueFromXml("return_code", xmlStr);
+        if (SUCCESS.equals(returnCode.toUpperCase())) {
+            if (this.verify(xmlStr)) {
+                try {
+                    Map<String, String> params = XmlUtils.xmlStrToMap(xmlStr);
+                    weixinPayService.payNotify(params);
+                    return_code = SUCCESS;
+                    return_msg = "OK";
+                } catch (Exception e) {
+                    logger.error("异常：" + e.getMessage(), e);
+                }
+            }
+        }
+        String rtnMsg = "<xml><return_code><![CDATA[" + return_code + "]]></return_code><return_msg><![CDATA["
+                + return_msg + "]]></return_msg></xml>";
+        logger.info("返回微信通知结果：[{}]", rtnMsg);
+        return rtnMsg;
+    }
 
+    private boolean verify(String xml){
+        boolean flag = false;
+        try {
+            SortedMap<String, String> map = XmlUtils.xmlStrToMap(xml);
+            String sign = map.get("sign");
+            map.remove("sign");
+            String keyValue = KeyValueUtil.mapToString(map);
+            flag = wxRemoteService.verifyMd5(map.get("mch_id"), keyValue, sign);
+        } catch (DocumentException e) {
+            return false;
+        }
 
-
-
-        return null;
+        return flag;
     }
 
     /**
