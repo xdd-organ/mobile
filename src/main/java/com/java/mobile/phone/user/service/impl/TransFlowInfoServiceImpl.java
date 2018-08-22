@@ -41,8 +41,8 @@ public class TransFlowInfoServiceImpl implements TransFlowInfoService {
     @Override
     public Long insert(String uid, String fee, String type, String desc, String status, String userId) {
         Map<String, Object> params = new HashMap<>();
-        params.put("type", userId);
-        params.put("fee", type);
+        params.put("type", type);
+        params.put("fee", fee);
         params.put("desc", desc);
         params.put("status", status);
         params.put("user_id", userId);
