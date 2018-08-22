@@ -7,7 +7,9 @@ import com.java.mobile.common.utils.XmlUtils;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.phone.pay.bean.WxPayInfoBean;
+import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.service.WeixinPayService;
+import com.java.mobile.phone.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
@@ -33,6 +35,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 
     @Autowired
     private com.java.mobile.common.security.WxRemoteService WxRemoteService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private HttpClientUtil httpClientUtil;
@@ -64,6 +68,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 //        String code = request.getParameter("code");
 //        String state = request.getParameter("state");
 
+        //appid=wxb3bfac02eb55371e
         //3.根据code获取openid   secret=SECRET（公众号的appsecret）  appid=APPID（公众号唯一标识）
 //        https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
 //        String data = "appid=" + appId + "&secret=" + wxSecret + "&code="
@@ -139,4 +144,14 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         return flag;
     }
 
+    @Override
+    public Map<String, Object> getWeixinUserInfo(Map<String, Object> params) {
+        Map<String, Object> user = userService.getByPrimaryKey(params);
+        if (user == null) {
+            params.put("nickname", params.get(PayConstant.OPENID).toString().substring(10));
+            params.put("is_disable", "0");
+            return userService.insert(params);
+        }
+        return user;
+    }
 }

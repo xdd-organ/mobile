@@ -8,17 +8,23 @@
         INSERT INTO `user`
         (
         username,
+        nickname,
         `password`,
         telphone,
         avatar,
+        openid,
+        unionid,
         is_disable
         )
         VALUES
         (
         #{username},
+        #{nickname},
         #{password},
         #{telphone},
         #{avatar},
+        #{openid},
+        #{unionid},
         #{is_disable}
         );
     </insert>
@@ -27,7 +33,59 @@
         select a.* from `user` a where a.username = #{username}
     </select>
 
-    <select id="getByUserId" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="getByUserId" parameterType="java.lang.String" resultType="java.util.Map">
         select a.* from `user` a where a.id = #{user_id}
     </select>
+
+    <select id="getByPrimaryKey" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.* from `user` a
+        <where>
+            <if test="user_id != null and user_id != ''">and a.id = #{user_id}</if>
+            <if test="username != null and username != ''">and a.username = #{username}</if>
+            <if test="openid != null and openid != ''">and a.openid = #{openid}</if>
+            <if test="unionid != null and unionid != ''">and a.unionid = #{unionid}</if>
+        </where>
+    </select>
+
+    <update id="updateByOpenid" parameterType="java.util.Map">
+        update `user`
+        <set>
+            <if test="username != null and username != ''">a.username = #{username},</if>
+            <if test="unionid != null and unionid != ''">a.unionid = #{unionid},</if>
+            <if test="username != null and username != ''">a.username = #{username},</if>
+            <if test="password != null and password != ''">a.password = #{password},</if>
+            <if test="telphone != null and telphone != ''">a.telphone = #{telphone},</if>
+            <if test="avatar != null and avatar != ''">a.avatar = #{avatar},</if>
+            <if test="is_disable != null and is_disable != ''">a.is_disable = #{is_disable},</if>
+            <if test="money != null and money != ''">a.money = #{money},</if>
+            <if test="deposit != null and deposit != ''">a.deposit = #{deposit},</if>
+            <if test="session_key != null and session_key != ''">a.session_key = #{session_key},</if>
+            <if test="status != null and status != ''">a.status = #{status},</if>
+        </set>
+        where openid = #{openid}
+    </update>
+
+    <update id="updateByUserId" parameterType="java.util.Map">
+        update `user`
+        <set>
+            <if test="username != null and username != ''">a.username = #{username},</if>
+            <if test="unionid != null and unionid != ''">a.unionid = #{unionid},</if>
+            <if test="openid != null and openid != ''">a.openid = #{openid},</if>
+            <if test="username != null and username != ''">a.username = #{username},</if>
+            <if test="password != null and password != ''">a.password = #{password},</if>
+            <if test="telphone != null and telphone != ''">a.telphone = #{telphone},</if>
+            <if test="avatar != null and avatar != ''">a.avatar = #{avatar},</if>
+            <if test="is_disable != null and is_disable != ''">a.is_disable = #{is_disable},</if>
+            <if test="money != null and money != ''">a.money = #{money},</if>
+            <if test="deposit != null and deposit != ''">a.deposit = #{deposit},</if>
+            <if test="session_key != null and session_key != ''">a.session_key = #{session_key},</if>
+            <if test="status != null and status != ''">a.status = #{status},</if>
+        </set>
+        where id = #{user_id}
+    </update>
+
+    <update id="updateMoney">
+        update `user` set money = money + (#{money}) where id = #{user_id}
+    </update>
+
 </mapper>

@@ -4,6 +4,7 @@ import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.lock.service.LockService;
+import com.java.mobile.phone.user.service.TransFlowInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class LockServiceImpl implements LockService {
     private LockInfoService lockInfoService;
     @Autowired
     private LockOrderService lockOrderService;
+    @Autowired
+    private TransFlowInfoService transFlowInfoService;
 
 
     @Override
@@ -36,8 +39,10 @@ public class LockServiceImpl implements LockService {
         logger.info("上锁设备[{}]", uid);
         try {// 建立TCP服务,连接本机的TCP服务器
             Map<String, Object> params = new HashMap<>();
+            String fee = "0";
             params.put("lock_no", uid);
-            params.put("fee", 100);
+            params.put("fee", fee);
+            transFlowInfoService.saveTrans(uid, fee, "0", "消费", "0");
             lockOrderService.lock(params);
             lockInfoService.updateLockState(uid, "0");
             return TcpConstant.OK;

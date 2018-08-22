@@ -16,6 +16,10 @@ public class Result {
         this.data = data;
     }
 
+    public Result(int code) {
+        this.code = code;
+    }
+
     public int getCode() {
         return code;
     }

@@ -14,5 +14,14 @@ public interface UserMapper {
 
     Map<String, Object> getByUsername(@Param("username") String username);
 
-    Map<String,Object> getByUserId(Map<String,Object> params);
+    Map<String,Object> getByUserId(@Param("user_id") String userId);
+
+    Map<String,Object> getByPrimaryKey(Map<String,Object> params);
+
+    int updateByOpenid(Map<String,Object> params);
+
+    int updateByUserId(Map<String,Object> params);
+
+    int updateMoney(@Param("user_id") String userId, @Param("money") Integer money);
+
 }

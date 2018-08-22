@@ -7,4 +7,6 @@ import java.util.Map; /**
 public interface WeixinPayService {
 
     Map<String, String> prepay(Map<String, String> params);
+
+    Map<String,Object> getWeixinUserInfo(Map<String, Object> params);
 }

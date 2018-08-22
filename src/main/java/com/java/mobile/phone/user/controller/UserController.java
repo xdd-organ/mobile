@@ -56,14 +56,17 @@ public class UserController {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         params.put("user_id", userId);
-        Map<String, Object> user = userService.getByUserId(params);
+        Map<String, Object> user = userService.getByUserId(userId.toString());
         return new Result(100, user);
     }
 
     @RequestMapping("bindPhone")//绑定手机
     public Result bindPhone(@RequestBody Map<String, Object> params, HttpServletRequest request) {
-        Map<String, Object> user = userService.getByUserId(params);
-        return new Result(100, user);
+        HttpSession session = request.getSession();
+        Object userId = session.getAttribute("userId");
+        params.put("user_id", userId);
+        userService.updateByUserId(params);
+        return new Result(100, null);
     }
 
 

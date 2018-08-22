@@ -256,6 +256,11 @@
             <artifactId>pagehelper</artifactId>
             <version>4.1.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.55</version>
+        </dependency>
     </dependencies>
 
     <!-- 插件 -->
