@@ -28,8 +28,6 @@ public class LockOrderController {
 
     @Autowired
     private LockOrderService lockOrderService;
-    @Autowired
-    private LockService lockService;
 
     @RequestMapping("pageByLockOrder")
     public Result pageByLockOrder(@RequestBody Map<String, Object> params, HttpServletRequest request) {
