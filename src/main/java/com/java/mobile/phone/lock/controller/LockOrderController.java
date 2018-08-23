@@ -1,5 +1,6 @@
 package com.java.mobile.phone.lock.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.lock.service.LockOrderService;
@@ -23,7 +24,7 @@ import java.util.Map;
 @RequestMapping("lockOrder")
 public class LockOrderController {
 
-    private Logger logger = LoggerFactory.getLogger(LockOrderController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LockOrderController.class);
 
     @Autowired
     private LockOrderService lockOrderService;
@@ -34,8 +35,10 @@ public class LockOrderController {
     public Result pageByLockOrder(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
+        logger.info("分页查询订单参数：{},userId:{}", JSONObject.toJSONString(params), userId);
         params.put("user_id", userId);
         PageInfo pageInfo = lockOrderService.pageByLockOrder(params);
+        logger.info("分页查询订单返回：{}", JSONObject.toJSONString(pageInfo));
         return new Result(100, pageInfo);
     }
 
@@ -44,7 +47,9 @@ public class LockOrderController {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         params.put("user_id", userId);
+        logger.info("解锁参数：{},userId:{}", JSONObject.toJSONString(params), userId);
         String pageInfo = lockOrderService.unLock(params);
+        logger.info("解锁返回：{}", pageInfo);
         return new Result(100, pageInfo);
     }
 

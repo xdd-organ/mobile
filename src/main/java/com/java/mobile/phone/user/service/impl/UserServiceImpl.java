@@ -1,5 +1,6 @@
 package com.java.mobile.phone.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.java.mobile.phone.user.mapper.UserMapper;
 import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
@@ -50,16 +51,25 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public int updateMoney(String userId, Integer fee) {
-        return userMapper.updateMoney(userId, fee);
+        logger.info("更新用户余额：userId:{}, fee:{}", userId, fee);
+        int i = userMapper.updateMoney(userId, fee);
+        logger.info("更新用户余额结果：", i);
+        return i;
     }
 
     @Override
     public int updateByOpenid(Map<String, Object> params) {
-        return userMapper.updateByOpenid(params);
+        logger.info("根据openid更新用户参数：{}", JSONObject.toJSONString(params));
+        int i = userMapper.updateByOpenid(params);
+        logger.info("根据openid更新用户结果：", i);
+        return i;
     }
 
     @Override
     public int updateByUserId(Map<String, Object> params) {
-        return userMapper.updateByUserId(params);
+        logger.info("根据userId更新用户参数:{}", JSONObject.toJSONString(params));
+        int i = userMapper.updateByUserId(params);
+        logger.info("根据userId更新用户参数结果：", i);
+        return i;
     }
 }

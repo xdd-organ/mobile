@@ -17,21 +17,25 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class LockController {
 
-    private Logger logger = LoggerFactory.getLogger(LockController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LockController.class);
 
     @Autowired
     private LockService lockService;
 
     @RequestMapping("lock")
     public String lock(@RequestParam("UID") String uid) {
+        logger.info("上锁接收参数UID：{}", uid);
         String lock = lockService.lock(uid);
+        logger.info("上锁返回结果UID：{}，res:{}", uid, lock);
         return lock;
     }
 
     @RequestMapping("unLock")
     public String unLock(@RequestParam("uid") String uid, HttpServletRequest request) {
         Object userId = request.getSession().getAttribute("userId");
+        logger.info("解锁接收参数UID：{}，userId:{}", uid, userId);
         String ret = lockService.unLock(uid, userId);
+        logger.info("解锁返回结果UID：{}，res:{}", uid, ret);
         return ret;
     }
 
@@ -39,7 +43,9 @@ public class LockController {
     public String status(@RequestParam("UID") String uid
             , @RequestParam(value = "TYPE", required = false) String status
             , @RequestParam(value = "RET", required = false) String type) {
+        logger.info("上传状态接收参数UID：{},TYPE:{},TET:{}", uid, status, type);
         String ret = lockService.status(uid, status, type);
+        logger.info("上传状态返回结果UID：{}，res:{}", uid, ret);
         return ret;
     }
 

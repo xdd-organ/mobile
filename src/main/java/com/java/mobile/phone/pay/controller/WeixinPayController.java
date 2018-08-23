@@ -58,7 +58,9 @@ public class WeixinPayController {
 
     @RequestMapping("prepay")
     public Result prepay(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
+        logger.info("微信预支付参数：{}", JSONObject.toJSONString(params));
         Map<String, String> prepay = weixinPayService.prepay(params);
+        logger.info("微信预支付返回：{}", JSONObject.toJSONString(prepay));
         return new Result(100, prepay);
     }
 
@@ -102,6 +104,7 @@ public class WeixinPayController {
             String keyValue = KeyValueUtil.mapToString(map);
             flag = wxRemoteService.verifyMd5(map.get("mch_id"), keyValue, sign);
         } catch (DocumentException e) {
+            logger.error("异常：" + e.getMessage(), e);
             return false;
         }
 
@@ -154,18 +157,19 @@ public class WeixinPayController {
      */
     @RequestMapping("getWeixinUserInfo")
     public Result getWeixinUserInfo(@RequestBody Map<String, Object> params2) {
+        logger.info("获取微信用户信息参数：{}", JSONObject.toJSONString(params2));
         String code = params2.get("code").toString();
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
         try {
+            logger.info("发送到微信获取openid参数：{}", url);
             HttpResult httpResult = httpClientUtil.doGet(url, null, null);
             String body = httpResult.getBody();
-            logger.info("调用接口jscode2session，返回：{}", body);
+            logger.info("调用接口jscode2session，返回code：{}：{}", httpResult.getCode(),body);
             if (body != null && body.contains(PayConstant.OPENID)) {
                 Map<String, Object> params = JSONObject.parseObject(body, Map.class);
                 Map<String, Object> ret = weixinPayService.getWeixinUserInfo(params);
+                logger.info("获取微信用户信息返回：{}", JSONObject.toJSONString(ret));
                 return new Result(100, ret);
-            } else {
-                return new Result(500);
             }
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);

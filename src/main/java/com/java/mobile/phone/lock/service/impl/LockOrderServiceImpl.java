@@ -1,5 +1,6 @@
 package com.java.mobile.phone.lock.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.utils.SerialNumber;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class LockOrderServiceImpl implements LockOrderService {
     private static final String uid = "123456789";
 
-    private Logger logger = LoggerFactory.getLogger(LockOrderServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LockOrderServiceImpl.class);
 
     @Autowired
     private LockOrderMapper lockOrderMapper;
@@ -33,6 +34,7 @@ public class LockOrderServiceImpl implements LockOrderService {
     @Override
     public int insert(Map<String, Object> params) {
         params.put("order_no", SerialNumber.getRandomNum(32));
+        logger.info("新增订单参数:{}", JSONObject.toJSONString(params));
         return lockOrderMapper.insert(params);
     }
 
@@ -49,6 +51,7 @@ public class LockOrderServiceImpl implements LockOrderService {
 
     @Override
     public String unLock(Map<String, Object> params) {
+        logger.info("解锁参数:{}", JSONObject.toJSONString(params));
         String openUid = String.valueOf(params.get("lock_no"));
         String userId = String.valueOf(params.get("user_id"));
         String state = lockInfoService.getLockState(openUid);
@@ -71,13 +74,12 @@ public class LockOrderServiceImpl implements LockOrderService {
                 byte[] buf = new byte[1024];
                 int len = inputStream.read(buf);
                 String ret = new String(buf, 0, len);
-
-                return TcpConstant.OK;
+                logger.info("远程服务器返回：{}", ret);
                 //关闭资源
             } catch (Exception e) {
                 logger.error("异常：" + e.getMessage(), e);
+                return TcpConstant.ERROR;
             }
-            return TcpConstant.ERROR;
         }
         return state;
     }

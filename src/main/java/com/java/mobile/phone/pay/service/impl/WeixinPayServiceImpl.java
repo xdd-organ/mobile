@@ -32,7 +32,7 @@ import java.util.TreeMap;
 @Service
 public class WeixinPayServiceImpl implements WeixinPayService{
 
-    private Logger logger = LoggerFactory.getLogger(WeixinPayServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(WeixinPayServiceImpl.class);
 
     @Autowired
     private FtlTemplateEngine ftlTemplateEngine;
@@ -66,9 +66,9 @@ public class WeixinPayServiceImpl implements WeixinPayService{
             String reqXml = ftlTemplateEngine.genMessage("wx_pay_request.ftl", wxPayInfoBean);
             String sign = getSign(wxPayInfoBean);
             reqXml = XmlUtils.replaceNodeContent("<sign>", "</sign>", sign, reqXml);
-            logger.info(reqXml);
+            logger.info("微信预支付参数：{}", reqXml);
             HttpResult httpResult = httpClientUtil.doPost(prepayUrl, reqXml, null);
-            logger.info(JSONObject.toJSONString(httpResult));
+            logger.info("微信预支付返回：{}", JSONObject.toJSONString(httpResult));
             String rspXml = httpResult.getBody();
             String returnCode = XmlUtils.getNodeValueFromXml("<return_code>", "</return_code>", rspXml);
             if (SUCCESS.equalsIgnoreCase(returnCode)) {
@@ -100,6 +100,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 
         //4.使用access_token获取用户信息
 //        https://api.weixin.qq.com/sns/userinfo?access_token=access_token&openid=o47Fa0mp9SRTf3eiKmqWm69BjG_8&lang=zh_CN
+        logger.info("发送微信预支付返回：{}", resp);
         return resp;
     }
 
@@ -128,7 +129,9 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         payParams.put("spbill_create_ip", spbillCreateIp);
         payParams.put("notify_url", payNotifyUrl);
         payParams.put("trade_type", "JSAPI");
+        logger.info("微信支付参数入库：{}", JSONObject.toJSONString(payParams));
         wxPayInfoMapper.insert(payParams);
+        logger.info("组装wxPayInfoBean：{}", JSONObject.toJSONString(wxPayInfoBean));
         return wxPayInfoBean;
     }
 
@@ -196,12 +199,15 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     public int payNotify(Map<String, String> params) {
         String orderNo = params.get("out_trade_no");
         Map<String, Object> order = wxPayInfoMapper.getByOrderNo(orderNo);
+        logger.info("查询订单结果：{}", JSONObject.toJSONString(order));
         if (!CollectionUtils.isEmpty(order)) {
             String result = String.valueOf(order.get("result"));
             if (!"SUCCESS".equalsIgnoreCase(result)) {
                 Map<String, Object> params2 = new HashMap<>();
                 params2.putAll(params);
-                wxPayInfoMapper.updateByOrderNo(params2);
+                logger.info("更新订单参数：{}", JSONObject.toJSONString(params));
+                int i = wxPayInfoMapper.updateByOrderNo(params2);
+                logger.info("更新订单结果：{}", i);
             }
         } else {
             throw new RuntimeException("订单不存在");
