@@ -14,13 +14,15 @@
         <repository>
             <id>repos</id>
             <name>Repository</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <!--<url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
+            <url>http://192.168.59.185:8081/nexus/content/groups/public/</url>
         </repository>
         <!-- 解析CT包的Maven的仓库地址 -->
         <repository>
             <id>repos2</id>
             <name>Repository</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <!--<url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
+            <url>http://192.168.59.185:8081/nexus/content/groups/public/</url>
         </repository>
     </repositories>
     <!-- 设定插件仓库 -->
@@ -260,6 +262,17 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.55</version>
+        </dependency>
+        <!-- 阿里云短信发送 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>3.7.0</version> <!--注：如提示报错，先升级基础包版，无法解决可联系技术支持-->
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 
