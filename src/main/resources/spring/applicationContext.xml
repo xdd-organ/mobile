@@ -33,6 +33,7 @@
 				<value>classpath:freemarker.properties</value>
 			</list>
 		</property>
+		<property name="fileEncoding" value="utf-8"/>
 	</bean>
 
 	<!--文件上传-->
@@ -62,7 +63,7 @@
 
 	<!-- 导入其他Spring管理的资源 -->
 	<import resource="classpath:spring/applicationContext-mybatis.xml"/>
-	<!--<import resource="classpath:spring/applicationContext-redis.xml"/>-->
+	<import resource="classpath:spring/applicationContext-redis.xml"/>
 	<!--<import resource="classpath:spring/applicationContext-job.xml"/>-->
 	<import resource="classpath:spring/applicationContext-httpclient.xml"/>
 

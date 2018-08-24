@@ -13,7 +13,7 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
-	<context:property-placeholder location="classpath:config.properties" ignore-resource-not-found="true" local-override="true"/>
+	<context:property-placeholder location="classpath:config.properties" ignore-resource-not-found="true" local-override="true" file-encoding="utf-8"/>
 
 	<context:component-scan base-package="com.java.mobile.*.controller,com.java.mobile.phone.*.controller" />
 
