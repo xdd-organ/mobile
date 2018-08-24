@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class VerifyCodeController {
 
-    @RequestMapping("createVerifyCode")
+    @RequestMapping("anon/createVerifyCode")
     public void createVerifyCode(@RequestParam(value = "width", defaultValue = "200") int width,
                                  @RequestParam(value = "weight", defaultValue = "80") int weight,
                                  @RequestParam(value = "verifySize", defaultValue = "4") int verifySize,

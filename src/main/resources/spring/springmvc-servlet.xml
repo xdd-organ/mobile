@@ -29,7 +29,7 @@
 			<mvc:exclude-mapping path="/index"/>
 			<mvc:exclude-mapping path="/status"/>
 			<mvc:exclude-mapping path="/pay/**"/>
-			<mvc:exclude-mapping path="/createVerifyCode"/>
+			<mvc:exclude-mapping path="/anon/**"/>
 			<bean class="com.java.mobile.common.interceptor.LoginInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>

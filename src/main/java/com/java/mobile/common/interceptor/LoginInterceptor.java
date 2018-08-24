@@ -1,5 +1,7 @@
 package com.java.mobile.common.interceptor;
 
+import com.alibaba.fastjson.JSONObject;
+import com.java.mobile.common.vo.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,19 +18,14 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String ticket = request.getHeader("ticket");
-
-
-        HttpSession session = request.getSession();
-        session.setAttribute("userId", ticket);
-
-        /*if (StringUtils.isNotBlank(ticket)) {
+        if (StringUtils.isNotBlank(ticket)) {
             HttpSession session = request.getSession();
             session.setAttribute("userId", ticket);
             return true;
         } else {
-            request.getRequestDispatcher("/index.jsp").forward(request,response);
-        }*/
-        return true;
+            response.getOutputStream().write(JSONObject.toJSONString(new Result<>(403)).getBytes());
+            return false;
+        }
     }
 
     @Override
