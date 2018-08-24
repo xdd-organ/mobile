@@ -14,9 +14,6 @@ import java.util.Map;
 
 /**
  * 微信签名验签实现 给予MD5方式
- * 
- * @author huangweizhe
- *
  */
 @Component("wxRemoteServiceImpl")
 public class WxRemoteServiceImpl implements WxRemoteService {
@@ -24,7 +21,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	Logger logger = LoggerFactory.getLogger(WxRemoteServiceImpl.class);
 
 	public String signMd5(final String mchId, final String plainText) throws IllegalArgumentException {
-		logger.info(String.format("WxRemoteServiceImpl|调用微信MD5签名,mchId [%s],原文：[%s]", mchId, plainText));
+		logger.info(String.format("调用微信MD5签名,mchId [%s],原文：[%s]", mchId, plainText));
 		Map<String, String> dataMap = KeyValueUtil.keyValueStringToMap(plainText);
 		String signedStr = signMd5ByMap(mchId, dataMap);
 		return signedStr;
@@ -33,7 +30,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	@Override
 	public boolean verifyMd5(String mchId, String plainText, String signature) throws IllegalArgumentException {
 		logger.info(
-				String.format("WxRemoteServiceImpl|调用微信MD5验签,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText, signature));
+				String.format("调用微信MD5验签,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText, signature));
 		return signMd5(mchId, plainText).equals(signature);
 	}
 
@@ -55,12 +52,12 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 		plainText.remove("sign_type");
 		String sortedStr = KeyValueUtil.mapToString(plainText);
 //		String conbimedStr = sortedStr + "&key=" + account.getMd5Key();
-		String conbimedStr = sortedStr + "&key=" + "3f253ddb6829bd95571969445fa96479";
+		String conbimedStr = sortedStr + "&key=" + "123456";
 		String signedStr = "";
 		try {
 			byte[] inputByteArr = conbimedStr.getBytes("UTF-8");
 			signedStr = DigestUtils.md5Hex(inputByteArr).toUpperCase();
-			logger.info(String.format("WxRemoteServiceImpl|微信MD5签名完成,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText,
+			logger.info(String.format("微信MD5签名完成,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText,
 					signedStr));
 		} catch (Exception e) {
 			logger.error(String.format("WxRemoteServiceImpl|参数：mchId [%s],plainText [%s]MD5签名失败", mchId, plainText), e);
@@ -72,7 +69,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	public boolean verifyMd5ByMap(String mchId, Map<String, String> plainText, String signature)
 			throws IllegalArgumentException {
 		logger.info(
-				String.format("WxRemoteServiceImpl|调用微信MD5验签,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText, signature));
+				String.format("调用微信MD5验签,mchId [%s],原文：[%s],签名:[%s]", mchId, plainText, signature));
 		return signMd5ByMap(mchId, plainText).equals(signature);
 	}
 

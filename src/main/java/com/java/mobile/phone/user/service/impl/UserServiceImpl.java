@@ -72,4 +72,12 @@ public class UserServiceImpl implements UserService {
         logger.info("根据userId更新用户参数结果：", i);
         return i;
     }
+
+    @Override
+    public int updateDeposit(String userId, Integer fee) {
+        logger.info("更新用户押金：userId:{}, fee:{}", userId, fee);
+        int i = userMapper.updateDeposit(userId, fee);
+        logger.info("更新用户押金结果：", i);
+        return i;
+    }
 }

@@ -9,6 +9,7 @@ import com.java.mobile.phone.pay.bean.WxPayInfoBean;
 import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.mapper.WxPayInfoMapper;
 import com.java.mobile.phone.pay.service.WeixinPayService;
+import com.java.mobile.phone.user.mapper.TransFlowInfoMapper;
 import com.java.mobile.phone.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
@@ -43,6 +44,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private UserService userService;
     @Autowired
     private WxPayInfoMapper wxPayInfoMapper;
+    @Autowired
+    private TransFlowInfoMapper transFlowInfoMapper;
 
     @Autowired
     private HttpClientUtil httpClientUtil;
@@ -64,7 +67,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         try {
             WxPayInfoBean wxPayInfoBean = this.combineWxPayInfoBean(params);
             String reqXml = ftlTemplateEngine.genMessage("wx_pay_request.ftl", wxPayInfoBean);
-            String sign = getSign(wxPayInfoBean);
+            String sign = this.getSign(wxPayInfoBean);
             reqXml = XmlUtils.replaceNodeContent("<sign>", "</sign>", sign, reqXml);
             logger.info("微信预支付参数：{}", reqXml);
             HttpResult httpResult = httpClientUtil.doPost(prepayUrl, reqXml, null);
@@ -183,6 +186,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     }
 
     @Override
+    @Transactional
     public Map<String, Object> getWeixinUserInfo(Map<String, Object> params) {
         Map<String, Object> user = userService.getByPrimaryKey(params);
         if (user == null) {
@@ -196,6 +200,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     }
 
     @Override
+    @Transactional
     public int payNotify(Map<String, String> params) {
         String orderNo = params.get("out_trade_no");
         Map<String, Object> order = wxPayInfoMapper.getByOrderNo(orderNo);
@@ -205,13 +210,49 @@ public class WeixinPayServiceImpl implements WeixinPayService{
             if (!"SUCCESS".equalsIgnoreCase(result)) {
                 Map<String, Object> params2 = new HashMap<>();
                 params2.putAll(params);
+
+                //更新订单状态
                 logger.info("更新订单参数：{}", JSONObject.toJSONString(params));
                 int i = wxPayInfoMapper.updateByOrderNo(params2);
                 logger.info("更新订单结果：{}", i);
+
+                //更新流水与用户余额
+                this.saveInfo(params, order);
             }
         } else {
-            throw new RuntimeException("订单不存在");
+            logger.error("订单不存在");
         }
         return 1;
+    }
+
+    private void saveInfo(Map<String, String> params, Map<String, Object> order) {
+        try {
+            String attach = params.get("attach");
+            SortedMap<String, String> attachMap = KeyValueUtil.keyValueStringToMap(attach);
+            String type = attachMap.get("type");
+            String userId = order.get("user_id").toString();
+            String totalFee = params.get("total_fee");
+
+            //插入流水
+            Map<String, Object> flowPrams = new HashMap<>();
+            flowPrams.put("type", type);
+            flowPrams.put("fee", totalFee);
+            flowPrams.put("user_id", userId);
+            flowPrams.put("status", "0");
+            flowPrams.put("insert_author", userId);
+            flowPrams.put("update_time", userId);
+            logger.info("插入充值流水参数：{}", JSONObject.toJSONString(flowPrams));
+            transFlowInfoMapper.insert(flowPrams);
+
+            //更新用户余额/押金
+            logger.info("更新余额/押金参数：userId:{}，totalFee:{},type:{}", userId, totalFee,type);
+            if ("4".equals(type)) {
+                userService.updateMoney(userId, Integer.valueOf(totalFee));
+            } else if ("2".equals(type)) {
+                userService.updateDeposit(userId, Integer.valueOf(totalFee));
+            }
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+        }
     }
 }

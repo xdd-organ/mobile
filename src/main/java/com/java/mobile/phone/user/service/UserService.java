@@ -22,4 +22,5 @@ public interface UserService {
 
     int updateByUserId(Map<String,Object> params);
 
+    int updateDeposit(String userId, Integer integer);
 }
