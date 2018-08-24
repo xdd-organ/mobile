@@ -16,6 +16,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ import java.util.Map;
 
 @Service("httpClientUtil")
 public class HttpClientUtil {
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+
     @Autowired(required = false)
     private CloseableHttpClient httpClient;
     @Autowired(required = false)
@@ -148,12 +152,14 @@ public class HttpClientUtil {
                         response.getEntity(), "UTF-8"));
             }
             return new HttpResult(response.getStatusLine().getStatusCode(), null);
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
         } finally {
             if (response != null) {
                 response.close();
             }
-            return null;
         }
+        return null;
     }
 
     /**

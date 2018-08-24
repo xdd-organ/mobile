@@ -24,7 +24,7 @@ import java.util.Map;
  * 生成二维码
  */
 @Controller
-@RequestMapping("qrcode")
+@RequestMapping("anon/qrcode")
 public class QrcodeController {
 
     private Logger logger = LoggerFactory.getLogger(QrcodeController.class);

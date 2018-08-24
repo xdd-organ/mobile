@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -53,15 +51,12 @@ public class WeixinPayController {
     @Value("${appSecret:}")
     private String appSecret;
 
-
-
-
     @RequestMapping("prepay")
     public Result prepay(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
         logger.info("微信预支付参数：{}", JSONObject.toJSONString(params));
         Map<String, String> prepay = weixinPayService.prepay(params);
         logger.info("微信预支付返回：{}", JSONObject.toJSONString(prepay));
-        return new Result(100, prepay);
+        return new Result<>(100, prepay);
     }
 
     /**

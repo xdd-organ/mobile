@@ -2,6 +2,7 @@ package com.java.mobile.phone.user.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.java.mobile.common.service.RedisService;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
 import com.java.mobile.phone.user.service.UserService;
@@ -30,6 +31,8 @@ public class UserController {
     private TransFlowInfoService transFlowInfoService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisService redisService;
 
     @RequestMapping("pageByTransFlowInfo")
     public Result pageByTransFlowInfo(@RequestBody Map<String, Object> params, HttpServletRequest request) {
@@ -76,10 +79,14 @@ public class UserController {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         logger.info("绑定手机参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        String userVerifyCode = params.remove("verifyCode").toString();
+        String verifyCode = redisService.get(params.remove("randomKey").toString());
+        logger.info("用户验证码：{}，redis验证码:{}", userVerifyCode, verifyCode);
+        if (!userVerifyCode.equals(verifyCode)) return new Result(500, "验证码错误", null);
         params.put("user_id", userId);
         int i = userService.updateByUserId(params);
         logger.info("绑定手机返回：{}", i);
-        return new Result(100, null);
+        return new Result(100);
     }
 
 

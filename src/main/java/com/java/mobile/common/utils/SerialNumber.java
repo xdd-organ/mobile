@@ -57,7 +57,7 @@ public class SerialNumber {
         return sb.toString();
     }
 
-    private static String generateRandomSerial(int len) {
+    public static String generateRandomSerial(int len) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < len; i++) {
             sb.append(mm[RANDOM.nextInt(mm.length)]);

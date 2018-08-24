@@ -167,8 +167,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 //        map.put("auth_code", wxPayInfoBean.getAuthCode());
 //        map.put("limit_pay", wxPayInfoBean.getLimitPay());
 //        map.put("detail", wxPayInfoBean.getDetail());
-        if (!StringUtils.isEmpty(wxPayInfoBean.getTradeType())) {
-            map.put("product_id", wxPayInfoBean.getPrepayId());
+        if (!StringUtils.isEmpty(wxPayInfoBean.getProductId())) {
+            map.put("product_id", wxPayInfoBean.getProductId());
         }
         if (!StringUtils.isEmpty(wxPayInfoBean.getOpenId())) {
             map.put("openid", wxPayInfoBean.getOpenId());

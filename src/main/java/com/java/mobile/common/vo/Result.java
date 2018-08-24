@@ -1,17 +1,17 @@
 package com.java.mobile.common.vo;
 
-public class Result {
+public class Result<T> {
     private int code;
     private String msg;
-    private Object data;
+    private T data;
 
-    public Result(int code, String msg, Object data) {
+    public Result(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
     }
 
-    public Result(int code, Object data) {
+    public Result(int code, T data) {
         this.code = code;
         this.data = data;
     }
@@ -36,11 +36,11 @@ public class Result {
         this.msg = msg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

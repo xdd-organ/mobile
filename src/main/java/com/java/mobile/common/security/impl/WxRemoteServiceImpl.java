@@ -55,7 +55,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 		plainText.remove("sign_type");
 		String sortedStr = KeyValueUtil.mapToString(plainText);
 //		String conbimedStr = sortedStr + "&key=" + account.getMd5Key();
-		String conbimedStr = sortedStr + "&key=" + "123456";
+		String conbimedStr = sortedStr + "&key=" + "3f253ddb6829bd95571969445fa96479";
 		String signedStr = "";
 		try {
 			byte[] inputByteArr = conbimedStr.getBytes("UTF-8");
