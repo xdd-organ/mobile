@@ -21,6 +21,7 @@
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>
@@ -34,6 +35,7 @@
     <filter>
         <filter-name>HiddenHttpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>HiddenHttpMethodFilter</filter-name>
@@ -49,7 +51,7 @@
         </init-param>
         <!--<load-on-startup>1</load-on-startup>-->
         <!-- servlet和filter中加入支持异步处理的代码 -->
-        <!--<async-supported>true</async-supported>-->
+        <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
         <servlet-name>springmvc</servlet-name>

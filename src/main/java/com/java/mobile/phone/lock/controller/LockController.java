@@ -1,5 +1,6 @@
 package com.java.mobile.phone.lock.controller;
 
+import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.phone.lock.service.LockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ public class LockController {
 
     @Autowired
     private LockService lockService;
+    @Autowired
+    private DeferredResultCache cache;
 
     @RequestMapping("lock")
     public String lock(@RequestParam("UID") String uid) {
@@ -41,12 +44,13 @@ public class LockController {
 
     @RequestMapping("status")
     public String status(@RequestParam("UID") String uid
-            , @RequestParam(value = "TYPE", required = false) String status
-            , @RequestParam(value = "RET", required = false) String type) {
-        logger.info("上传状态接收参数UID：{},TYPE:{},TET:{}", uid, status, type);
-        String ret = lockService.status(uid, status, type);
-        logger.info("上传状态返回结果UID：{}，res:{}", uid, ret);
-        return ret;
+            , @RequestParam(value = "TYPE", required = false) String type
+            , @RequestParam(value = "STATUS", required = false) String status
+            , @RequestParam(value = "RET", required = false) String ret) {
+        logger.info("上传状态接收参数UID：{},TYPE:{},TET:{},status:{}", uid, type, ret,status);
+        String res = lockService.status(uid, type, ret, status);
+        logger.info("上传状态返回结果UID：{}，res:{}", uid, res);
+        return res;
     }
 
 }

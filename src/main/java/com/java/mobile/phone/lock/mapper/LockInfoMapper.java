@@ -20,4 +20,6 @@ public interface LockInfoMapper {
     String getLockState(@Param("lock_no") String lockNo);
 
     int updateLockState(@Param("lock_no") String lockNo, @Param("state") String state);
+
+    int updateLockStatus(@Param("lock_no")String lockNo, @Param("status")String status);
 }

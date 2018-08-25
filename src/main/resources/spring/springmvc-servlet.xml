@@ -37,6 +37,7 @@
 	</mvc:interceptors>
 
 	<mvc:annotation-driven>
+		<mvc:async-support default-timeout="10000"/>
 		<!-- 处理responseBody 里面日期类型 -->
 		<mvc:message-converters>
 			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

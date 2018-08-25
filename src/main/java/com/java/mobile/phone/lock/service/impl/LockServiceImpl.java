@@ -1,5 +1,7 @@
 package com.java.mobile.phone.lock.service.impl;
 
+import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +35,8 @@ public class LockServiceImpl implements LockService {
     private LockOrderService lockOrderService;
     @Autowired
     private TransFlowInfoService transFlowInfoService;
+    @Autowired
+    private DeferredResultCache cache;
 
 
     @Override
@@ -93,10 +98,10 @@ public class LockServiceImpl implements LockService {
     }
 
     @Override
-    public String status(String uid, String status, String type) {
-        logger.info("设备更新状态[{}],状态[{}],类型[{}]", uid, status, type);
+    public String status(String uid, String type, String ret, String status) {
+        logger.info("设备更新状态UID：{},TYPE:{},TET:{},status:{}", uid, type, ret, status);
         try {// 建立TCP服务,连接本机的TCP服务器
-            if ("STATUS".equals(type)) {
+            if ("STATUS".equals(type)) {//设备更新状态
                 String state = "0";
                 if ("OPEN".equals(status)) {
                     state = "3";
@@ -108,6 +113,19 @@ public class LockServiceImpl implements LockService {
                     return TcpConstant.OK;
                 } else {
                     return TcpConstant.ERROR;
+                }
+            } else if ("OPEN".equals(type)) {//设备返回开锁结果
+                if ("OK".equals(ret)) {
+                    logger.info("解锁，设备返回解锁成功，lockNo:{}", uid);
+                    cache.get(uid).setResult(new Result(100));
+                } else {
+                    DeferredResult deferredResult = cache.get(uid);
+                    if (deferredResult != null) {
+                        logger.warn("解锁，设备返回解锁失败，lockNo:{}", uid);
+                        deferredResult.setResult(new Result(500));
+                        lockInfoService.updateLockState(uid, "0");
+                        lockOrderService.deleteLockOrder(uid);
+                    }
                 }
             }
             return TcpConstant.OK;

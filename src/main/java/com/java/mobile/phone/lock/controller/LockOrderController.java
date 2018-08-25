@@ -2,15 +2,19 @@ package com.java.mobile.phone.lock.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.lock.service.LockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -28,6 +32,12 @@ public class LockOrderController {
 
     @Autowired
     private LockOrderService lockOrderService;
+    @Autowired
+    private DeferredResultCache cache;
+    @Autowired
+    private LockInfoService lockInfoService;
+    @Value("${timeout:10000}")
+    private Long timeout;
 
     @RequestMapping("pageByLockOrder")
     public Result pageByLockOrder(@RequestBody Map<String, Object> params, HttpServletRequest request) {
@@ -41,16 +51,29 @@ public class LockOrderController {
     }
 
     @RequestMapping("unLock")
-    public Result unLock(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+    public DeferredResult unLock(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Object userId = session.getAttribute("userId");
+        final Object userId = session.getAttribute("userId");
         params.put("user_id", userId);
         logger.info("解锁参数：{},userId:{}", JSONObject.toJSONString(params), userId);
-        String pageInfo = lockOrderService.unLock(params);
-        logger.info("解锁返回：{}", pageInfo);
-        return new Result(100, pageInfo);
+        final DeferredResult deferredResult = new DeferredResult(timeout);
+        final String lockNo = String.valueOf(params.get("lock_no"));
+        cache.put(lockNo, deferredResult);
+        deferredResult.onTimeout(new Runnable() {
+            @Override
+            public void run() {
+                DeferredResult deferredResult1 = cache.get(lockNo);
+                if (deferredResult1 != null) {
+                    logger.warn("解锁超时，lockNo:{}", lockNo);
+                    deferredResult1.setResult(new Result(408));
+                    lockInfoService.updateLockState(lockNo, "0");
+                    lockOrderService.deleteLockOrder(lockNo);
+                }
+            }
+        });
+        String state = lockOrderService.unLock(params);
+        logger.info("解锁返回：{}", state);
+        return deferredResult;
     }
-
-
 
 }

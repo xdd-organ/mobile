@@ -14,4 +14,6 @@ public interface LockOrderService {
     PageInfo pageByLockOrder(Map<String,Object> params);
 
     String unLock(Map<String, Object> params);
+
+    int deleteLockOrder(String lockNo);
 }

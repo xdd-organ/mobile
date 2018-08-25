@@ -3,7 +3,9 @@ package com.java.mobile.phone.lock.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.utils.SerialNumber;
+import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.mapper.LockOrderMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +33,8 @@ public class LockOrderServiceImpl implements LockOrderService {
     private LockOrderMapper lockOrderMapper;
     @Autowired
     private LockInfoService lockInfoService;
+    @Autowired
+    private DeferredResultCache cache;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -80,7 +85,18 @@ public class LockOrderServiceImpl implements LockOrderService {
                 logger.error("异常：" + e.getMessage(), e);
                 return TcpConstant.ERROR;
             }
+        } else {
+            DeferredResult deferredResult = cache.get(openUid);
+            if (deferredResult != null) {
+                logger.warn("解锁超时，lockNo:{}", openUid);
+                deferredResult.setResult(new Result(100, state));
+            }
         }
         return state;
+    }
+
+    @Override
+    public int deleteLockOrder(String lockNo) {
+        return lockOrderMapper.deleteLockOrder(lockNo);
     }
 }

@@ -10,5 +10,5 @@ public interface LockService {
 
     String unLock(String uid, Object userId);
 
-    String status(String uid, String status, String type);
+    String status(String uid, String type, String ret, String status);
 }

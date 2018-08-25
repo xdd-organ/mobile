@@ -18,4 +18,6 @@ public interface LockOrderMapper {
     int lock(Map<String, Object> params);
 
     List<Map<String, Object>> getUnLockOrder(String uid);
+
+    int deleteLockOrder(String lockNo);
 }

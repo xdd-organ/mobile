@@ -23,7 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             session.setAttribute("userId", ticket);
             return true;
         } else {
-            response.getOutputStream().write(JSONObject.toJSONString(new Result<>(403)).getBytes());
+            response.getOutputStream().write(JSONObject.toJSONString(new Result<>(401)).getBytes());
             return false;
         }
     }
