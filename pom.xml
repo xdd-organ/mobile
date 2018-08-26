@@ -14,15 +14,15 @@
         <repository>
             <id>repos</id>
             <name>Repository</name>
-            <!--<url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
-            <url>http://192.168.59.185:8081/nexus/content/groups/public/</url>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <!--<url>http://192.168.59.185:8081/nexus/content/groups/public/</url>-->
         </repository>
         <!-- 解析CT包的Maven的仓库地址 -->
         <repository>
             <id>repos2</id>
             <name>Repository</name>
-            <!--<url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
-            <url>http://192.168.59.185:8081/nexus/content/groups/public/</url>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <!--<url>http://192.168.59.185:8081/nexus/content/groups/public/</url>-->
         </repository>
     </repositories>
     <!-- 设定插件仓库 -->
