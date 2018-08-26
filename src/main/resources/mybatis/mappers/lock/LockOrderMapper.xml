@@ -52,7 +52,7 @@
     </update>
 
     <update id="deleteLockOrder" parameterType="java.lang.String">
-        UPDATE lock_order set end_time = now(), fee = #{fee}, `type` = 1, status = 1 where lock_no = #{lock_no} and end_time is null
+        UPDATE lock_order set end_time = now(), fee = 0, `type` = 1, status = 1 where lock_no = #{lock_no} and end_time is null
     </update>
 
     <select id="getUnLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
