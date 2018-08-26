@@ -62,8 +62,7 @@ public class FileController {
             response.setContentType("application/octet-stream");
             FileCopyUtils.copy(inputStream, response.getOutputStream());
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

@@ -24,7 +24,7 @@ import java.util.Map;
 @Service
 public class FileServiceImpl implements FileService {
 
-    private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     @Value("${imgPath:}")
     private String imgPath;
@@ -60,21 +60,23 @@ public class FileServiceImpl implements FileService {
                 param.put("key", SerialNumber.getRandomNum());
                 params.add(param);
             }
+            logger.info("上传文件入库参数：{}", params);
             int ret = fileMapper.upload(params);
             logger.info(ret +"");
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
-
+        logger.info("上传文件返回：{}", params);
         return params;
     }
 
     @Override
     public Map<String, Object> download(String key) {
+        logger.info("下载文件参数：{}", key);
         Map<String, Object> file = fileMapper.getByKey(key);
         String filePath = classPath + imgPath + File.separator + String.valueOf(file.get("name"));
         file.put("filePath", filePath);
+        logger.info("下载文件返回：{}", file);
         return file;
     }
 }
