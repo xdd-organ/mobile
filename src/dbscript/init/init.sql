@@ -230,3 +230,20 @@ CREATE TABLE `trans_flow_info` (
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='交易流水';
 
+CREATE TABLE `fault_feedback` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `user_id` int(11) DEFAULT NULL,
+   `type` int(11) DEFAULT '0' COMMENT '处理状态，0：未处理，1：已处理',
+   `result` varchar(512) DEFAULT NULL COMMENT '处理结果描述',
+   `fault_type` int(11) DEFAULT NULL COMMENT '0：其他，1：床坏了，2：锁坏了，3：还床失败',
+   `device_no` varchar(64) DEFAULT NULL COMMENT '设备编号',
+   `imgs` varchar(512) DEFAULT NULL COMMENT '图片',
+   `desc` varchar(512) DEFAULT NULL COMMENT '备注',
+   `status` int(11) DEFAULT '0' COMMENT '0：有效，1：删除',
+   `insert_author` int(11) DEFAULT NULL,
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='故障反馈';
+

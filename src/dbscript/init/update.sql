@@ -1,4 +1,5 @@
 ﻿-- 添加新字段：
-alter table user add `nickname` varchar(32) DEFAULT NULL COMMENT '昵称';
-alter table user add `gender` int(11) DEFAULT NULL COMMENT '值为1时是男性，值为2时是女性，值为0时是未知';
-alter table user add `session_key` varchar(32) DEFAULT NULL COMMENT '微信session_key';
+alter table `lock_info` add `qr_code_no` varchar(64) DEFAULT NULL COMMENT '二维码编号';
+alter table `lock_info` add `device_no` varchar(64) DEFAULT NULL COMMENT '床编号';
+alter table `lock_info` add `latitude` varchar(16) DEFAULT NULL COMMENT '纬度';
+alter table `lock_info` add `longitude` varchar(16) DEFAULT NULL COMMENT '经度';

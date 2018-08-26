@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script type="text/javascript" src="../stat/js/jquery/jqeury.js"></script>
+    <script type="text/javascript" src="../mobile/stat/js/jquery/jqeury.js"></script>
 
     <script type="text/javascript">
         $(function () {

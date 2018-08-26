@@ -9,6 +9,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<setting name="cacheEnabled" value="true" />
 		<setting name="useGeneratedKeys" value="true"/>
 		<setting name="mapUnderscoreToCamelCase" value="true" /><!-- 驼峰映射 -->
+		<setting name="callSettersOnNulls" value="true"/><!-- 空返回null -->
 	</settings>
 
 	<plugins>
