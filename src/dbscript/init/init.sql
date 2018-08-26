@@ -126,7 +126,7 @@
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='质检报告模板管理';
  
- CREATE TABLE `user` (
+CREATE TABLE `user` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
    `username` varchar(32) DEFAULT NULL COMMENT '用户名',
    `password` varchar(64) DEFAULT NULL COMMENT '密码',
@@ -134,13 +134,20 @@
    `avatar` varchar(64) DEFAULT NULL COMMENT '头像',
    `register_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
    `is_disable` int(11) DEFAULT '0' COMMENT '1：禁用，0：启用',
+   `money` int(11) DEFAULT '0' COMMENT '余额',
+   `deposit` int(11) DEFAULT '0' COMMENT '押金',
    `status` int(11) DEFAULT '0' COMMENT '0:有效，1:删除',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
+   `nickname` varchar(32) DEFAULT NULL COMMENT '昵称',
+   `session_key` varchar(32) DEFAULT NULL COMMENT '微信session_key',
+   `openid` varchar(64) DEFAULT NULL,
+   `unionId` varchar(64) DEFAULT NULL,
+   `gender` int(11) DEFAULT NULL COMMENT '值为1时是男性，值为2时是女性，值为0时是未知',
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='用户';
+ ) ENGINE=InnoDB AUTO_INCREMENT=100000001 DEFAULT CHARSET=utf8mb4 AVG_ROW_LENGTH=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='用户';
 
 CREATE TABLE `file` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -161,16 +168,18 @@ CREATE TABLE `lock_info` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
    `lock_no` varchar(64) DEFAULT NULL COMMENT '锁编号',
    `state` int(11) DEFAULT '0' COMMENT '0:正常,1:维修中,2:禁用,3:使用中',
+   `address` varchar(32) DEFAULT NULL COMMENT '设备所在地址',
    `status` int(11) DEFAULT '0' COMMENT '0：有效，1：删除',
    `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `insert_author` int(11) DEFAULT NULL,
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁信息';
+ ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁信息';
 
 CREATE TABLE `lock_order` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `order_no` varchar(32) DEFAULT NULL COMMENT '订单编号',
    `lock_no` varchar(64) DEFAULT NULL COMMENT '锁编号',
    `start_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '使用开始时间',
    `end_time` timestamp NULL DEFAULT NULL COMMENT '使用结束时间',
@@ -183,7 +192,7 @@ CREATE TABLE `lock_order` (
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `update_author` int(11) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁使用记录';
+ ) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='锁使用记录';
 
 CREATE TABLE `wx_pay_info` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -205,11 +214,11 @@ CREATE TABLE `wx_pay_info` (
    `user_id` int(11) DEFAULT NULL COMMENT '用户id',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信支付信息';
+ ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信支付信息';
 
 CREATE TABLE `trans_flow_info` (
    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-   `type` int(11) DEFAULT '0' COMMENT '0:消费，1：退费，2：押金，3：退押金',
+   `type` int(11) DEFAULT '0' COMMENT '0:消费，1：退费，2：押金，3：退押金，4：充值',
    `fee` int(11) DEFAULT '0' COMMENT '金额：单位：分',
    `desc` varchar(256) DEFAULT NULL COMMENT '描述',
    `status` int(11) DEFAULT '0' COMMENT '0:有效，1：删除',
@@ -219,5 +228,5 @@ CREATE TABLE `trans_flow_info` (
    `update_author` int(11) DEFAULT NULL,
    `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='交易流水';
+ ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='交易流水';
 
