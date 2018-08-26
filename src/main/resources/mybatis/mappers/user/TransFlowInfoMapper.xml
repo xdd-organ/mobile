@@ -22,8 +22,8 @@
         #{desc},
         #{status},
         #{user_id},
-        #{insert_author},
-        #{update_author}
+        #{user_id},
+        #{user_id}
         );
     </insert>
 

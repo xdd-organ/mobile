@@ -9,6 +9,11 @@
         INSERT INTO lock_info
         (
         lock_no,
+        address,
+        latitude,
+        longitude,
+        qr_code_no,
+        device_no,
         insert_author,
         update_author
         )
@@ -16,8 +21,13 @@
         <foreach collection="list" item="item" separator=",">
             (
             #{item.lock_no},
-            #{item.insert_author},
-            #{item.update_author}
+            #{item.address},
+            #{item.latitude},
+            #{item.longitude},
+            #{item.qr_code_no},
+            #{item.device_no},
+            #{item.user_id},
+            #{item.user_id}
             )
         </foreach>
     </insert>
@@ -25,13 +35,16 @@
     <update id="update" parameterType="java.util.Map">
         UPDATE lock_info
         <set>
-            <if test="fee != null and fee != ''">`fee` = #{fee},</if>
-            <if test="type != null and type != ''">`type` = #{type},</if>
-            <if test="status != null and status != ''">status = #{status},</if>
+            update_time = now(),
+            <if test="lock_no != null and lock_no != ''">`lock_no` = #{lock_no},</if>
+            <if test="address != null and address != ''">`address` = #{address},</if>
+            <if test="latitude != null and latitude != ''">latitude = #{latitude},</if>
+            <if test="longitude != null and longitude != ''">longitude = #{longitude},</if>
+            <if test="qr_code_no != null and qr_code_no != ''">qr_code_no = #{qr_code_no},</if>
+            <if test="device_no != null and device_no != ''">device_no = #{device_no},</if>
             <if test="state != null and state != ''">state = #{state},</if>
-            <if test="end_time != null and end_time != ''">end_time = #{end_time},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
             <if test="update_author != null and update_author != ''">update_author = #{update_author},</if>
-            <if test="update_time != null and update_time != ''">update_time = #{update_time},</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -50,6 +63,6 @@
     </select>
 
     <update id="updateLockState">
-        UPDATE lock_info set state = #{state} where lock_no = #{lock_no}
+        UPDATE lock_info set state = #{state}, update_time = now() where lock_no = #{lock_no}
     </update>
 </mapper>

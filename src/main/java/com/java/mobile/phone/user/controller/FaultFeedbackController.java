@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
@@ -22,7 +23,8 @@ public class FaultFeedbackController {
     private FaultFeedbackService faultFeedbackService;
 
     @RequestMapping("save")
-    public Result save(@RequestBody Map<String, Object> params) {
+    public Result save(@RequestBody Map<String, Object> params, HttpSession session) {
+        params.put("user_id", session.getAttribute("userId"));
         LOGGER.info("保存用户故障反馈，参数：{}", params);
         Long insert = faultFeedbackService.insert(params);
         LOGGER.info("保存用户故障反馈，结果：{}", insert);
@@ -30,7 +32,8 @@ public class FaultFeedbackController {
     }
 
     @RequestMapping("update")
-    public Result update(@RequestBody Map<String, Object> params) {
+    public Result update(@RequestBody Map<String, Object> params, HttpSession session) {
+        params.put("update_author", session.getAttribute("userId"));
         LOGGER.info("更新用户故障反馈，参数：{}", params);
         int insert = faultFeedbackService.update(params);
         LOGGER.info("更新用户故障反馈，结果：{}", insert);

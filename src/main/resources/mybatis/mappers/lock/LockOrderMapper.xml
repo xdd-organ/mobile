@@ -18,19 +18,19 @@
         #{lock_no},
         #{order_no},
         #{user_id},
-        #{insert_author},
-        #{update_author}
+        #{user_id},
+        #{user_id}
         );
     </insert>
     <update id="update" parameterType="java.util.Map">
         UPDATE lock_order
         <set>
+            update_time = now(),
             <if test="fee != null and fee != ''">`fee` = #{fee},</if>
             <if test="type != null and type != ''">`type` = #{type},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="end_time != null and end_time != ''">end_time = #{end_time},</if>
             <if test="update_author != null and update_author != ''">update_author = #{update_author},</if>
-            <if test="update_time != null and update_time != ''">update_time = #{update_time},</if>
         </set>
         WHERE id = #{id}
     </update>
