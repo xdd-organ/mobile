@@ -23,8 +23,6 @@ import java.util.regex.Pattern;
  * 设计思路对key-value字符串逐个字符进行处理，利用状态机判断当前状态为key还是value。
  * </p>
  * 
- * @author wuhang
- * @since xpay-common 0.0.1
  */
 public class KeyValueUtil {
 
@@ -50,20 +48,7 @@ public class KeyValueUtil {
     /**
      * 将key1=value1&key2=value2形式的字符串转转换为一个排序的map<br>
      * 此方法忽略字符串前后可能存在的"{}"字符<br>
-     * 样例字符串：{accessType=0&bizType=000201&currencyCode=156&encoding=UTF-8&
-     * issuerIdentifyMode=0&merId=777290058110048&orderId=20160317150838&
-     * origRespCode=00&origRespMsg=成功[0000000]&payCardType=01&queryId=
-     * 201603171508382661928&reqReserved={a=aaa&b=bbb&c=ccc}&respCode=00&respMsg
-     * =成功[0000000]&settleAmt=10000&settleCurrencyCode=156&settleDate=0317&
-     * signMethod=01&traceNo=266192&traceTime=0317150838&txnAmt=10000&txnSubType
-     * =01&txnTime=20160317150838&txnType=01&version=5.0.0&certId=68759585097&
-     * signature=EpwPj3OIQgCmr9FfdJIs/dYG+
-     * CVnYOm9JwoC4dyaEjtgdSCzRNyWGOCbToHs5sAbVfjqSUi/o3ctqAaOJEyMEIdbZt+
-     * hVQcWDmUovQs6ruQM5VN0tNdRsR+QANo1f1LYNs6q89UhGo+OIpFMMB+jdb2Sg54XFH++
-     * ywqXoL0WCWWwtzeu2Haqq8LM5P1j4p0FqrAYuEI58zy40g/T4S+
-     * eTBrZZx8MGGNcAQDMsk2IEsuEa1IVzzAIW5ZvsG2Ypf74DJpPEGMgzInKUyC1+BblJ/
-     * oYGIRQyeYan0jd/7nZuvTB5nmoTdSgSsPZlnuSsPvHP+BK48MyrvsWRJXH983VFw==}
-     * 
+     * 样例字符串：{accessType=0&bizType=000201
      * @param keyValueString
      * @return
      */
