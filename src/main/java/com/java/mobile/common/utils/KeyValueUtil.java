@@ -7,23 +7,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-/**
- * {@code KeyValutUtil}主要用于处理类似"key=value&key=value"的字符串
- * 
- * <p>
- * {@code KeyValueUtil}主要提供将key-value字符串转换成{@link Map}的功能{@link #keyValueStringToMap(String)
- * keyValueStringToMap} 和将{@link Map}转换成key-value的功能{@link #mapToString(Map)
- * mapToString}
- * </p>
- * 
- * <p>
- * <Strong>设计思路：</Strong>Map转换成key-value字符串时，一次取出每个实体(Entity)，将key与value用“=”连接，每个实体间用“&”连接，
- * 组成如：key1=value1&key2=value2的字符串。 ​
- * key-value转字符串的时候需要区分含有value子串的形式：key1=value1&key2={key21=value21&key22=value22}，
- * 设计思路对key-value字符串逐个字符进行处理，利用状态机判断当前状态为key还是value。
- * </p>
- * 
- */
 public class KeyValueUtil {
 
     private static final Pattern PATTERN = Pattern.compile("^(\\S+?=(.|\\n)*&)+\\S+=(.|\\n)*$");
@@ -32,26 +15,10 @@ public class KeyValueUtil {
         return  PATTERN.matcher(str).matches();
     }
 
-    /**
-     * 识别字符串状态机转换：<br/>
-     * STATUS_KEY --[=]--> STATUS_SIMPLEVALUE <br/>
-     * STATUS_SIMPLEVALUE --[&]--> STATUS_KEY <br/>
-     * STATUS_SIMPLEVALUE --[{]--> STATUS_COMPLEXVALUE <br/>
-     * STATUS_COMPLEXVALUE --[}]--> STATUS_SIMPLEVALUE <br/>
-     * STATUS_COMPLEXVALUE --[=]--> STATUS_COMPLEXVALUE <br/>
-     * STATUS_COMPLEXVALUE --[&]--> STATUS_COMPLEXVALUE
-     */
     private static int STATUS_KEY = 1;
     private static int STATUS_SIMPLEVALUE = 2;
     private static int STATUS_COMPLEXVALUE = 4;
 
-    /**
-     * 将key1=value1&key2=value2形式的字符串转转换为一个排序的map<br>
-     * 此方法忽略字符串前后可能存在的"{}"字符<br>
-     * 样例字符串：{accessType=0&bizType=000201
-     * @param keyValueString
-     * @return
-     */
     public static SortedMap<String, String> keyValueStringToMap(String keyValueString) {
         if (!StringUtils.hasText(keyValueString)) {
             return null;
