@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author xdd
@@ -51,7 +48,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private HttpClientUtil httpClientUtil;
 
     private final static String prepayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-    private final static String payNotifyUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    private final static String queryUrl = "https://api.mch.weixin.qq.com/pay/orderquery";
+    private final static String payNotifyUrl = "https://www.mbznkh.com/pay/wx/payNotify";
     private final static String SUCCESS = "SUCCESS";
 
     @Value("${appid:}")
@@ -254,5 +252,49 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
         }
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Object> query(Map<String, String> params) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            Map<String, String> wxPayInfoBean = this.combineWxQueryParams(params);
+            String reqXml = ftlTemplateEngine.genMessage("wx_query_message_request.ftl", wxPayInfoBean);
+            logger.info("微信订单查询参数：{}", reqXml);
+            HttpResult httpResult = httpClientUtil.doPost(queryUrl, reqXml, null);
+            logger.info("微信订单查询返回：{}", JSONObject.toJSONString(httpResult));
+            String rspXml = httpResult.getBody();
+            String returnCode = XmlUtils.getNodeValueFromXml("<return_code>", "</return_code>", rspXml);
+            if (SUCCESS.equalsIgnoreCase(returnCode)) {
+                if (this.verify(rspXml)) {
+                    Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
+                    resp.put("trade_state", weixinRsp.get("trade_state"));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+        }
+        logger.info("发送微信订单查询返回：{}", resp);
+        return resp;
+    }
+
+    private Map<String,String> combineWxQueryParams(Map<String, String> params) {
+        Map<String, String> reqData = new TreeMap<String, String>();
+        reqData.put("appid", appid);
+        reqData.put("mch_id", mchId);
+        reqData.put("transaction_id", params.get("transaction_id"));
+        reqData.put("out_trade_no", params.get("out_trade_no"));
+        reqData.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
+        Iterator<String> it = reqData.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            if (StringUtils.isBlank(reqData.get(key))) {
+                it.remove();
+            }
+        }
+        String sign = this.wxRemoteService.signMd5ByMap(mchId, reqData);
+        reqData.put("sign", sign);
+        return reqData;
     }
 }
