@@ -1,22 +1,20 @@
 package com.java.mobile.common.controller;
 
 import com.java.mobile.common.service.FileService;
-import com.java.mobile.common.utils.DateUtil;
+import com.java.mobile.common.vo.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +35,9 @@ public class FileController {
      * @return
      */
     @RequestMapping(value = "/upload")
-    public List<Map<String, Object>> upload(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
-        return fileService.upload(files);
+    public Result upload(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
+        List<Map<String, Object>> rsp = fileService.upload(files);
+        return new Result(100, rsp);
     }
 
 
