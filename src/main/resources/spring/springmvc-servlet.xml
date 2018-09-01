@@ -13,17 +13,29 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
 
-	<context:property-placeholder location="classpath:config.properties" ignore-resource-not-found="true" local-override="true" file-encoding="utf-8"/>
+	<context:component-scan base-package="com.java" />
 
-	<context:component-scan base-package="com.java.mobile.*.controller,com.java.mobile.phone.*.controller" />
+	<!-- 使用spring自带的占位符替换功能 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- 允许JVM参数覆盖 -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<!-- 忽略没有找到的资源文件 -->
+		<property name="ignoreResourceNotFound" value="true" />
+		<!-- 配置资源文件 -->
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:config.properties</value>
+				<value>classpath:freemarker.properties</value>
+			</list>
+		</property>
+		<property name="fileEncoding" value="utf-8"/>
+	</bean>
 
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/>
-			<bean class="com.java.mobile.common.interceptor.MDCInterceptor"/>
-		</mvc:interceptor>
-		<mvc:interceptor>
-			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/stat/**"/>
 			<mvc:exclude-mapping path="/lock"/>
 			<mvc:exclude-mapping path="/unLock"/>
 			<mvc:exclude-mapping path="/login"/>
@@ -31,8 +43,7 @@
 			<mvc:exclude-mapping path="/status"/>
 			<mvc:exclude-mapping path="/pay/**"/>
 			<mvc:exclude-mapping path="/anon/**"/>
-			<mvc:exclude-mapping path="/stat/**"/>
-			<bean class="com.java.mobile.common.interceptor.LoginInterceptor"/>
+			<bean class="com.java.mbkh.common.interceptor.LoginInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
 
@@ -55,7 +66,7 @@
 	</mvc:annotation-driven>
 
 	<!-- 开启aop，对类代理 -->
-	<aop:config proxy-target-class="true"/>
+	<!--<aop:config proxy-target-class="true"/>-->
 
 	<!-- 解决返回json数据报错 -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
@@ -73,6 +84,13 @@
 		</property>
 	</bean>
 
+	<!-- 导入其他Spring管理的资源 -->
+	<import resource="classpath:spring/applicationContext.xml"/>
+	<import resource="classpath:spring/applicationContext-mybatis.xml"/>
+	<import resource="classpath:spring/jms/applicationContext-jms-base.xml"/>
+	<import resource="classpath:spring/jms/applicationContext-jms-listener.xml"/>
+	<import resource="classpath:spring/jms/applicationContext-jms-sender.xml"/>
+	<import resource="classpath:spring-httpclient.xml"/>
 
 	<!-- 上传 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -85,11 +103,13 @@
 		<mvc:mapping path="/**" />
 	</mvc:cors>
 
-	<!-- 过滤静态数据 -->
-	<mvc:default-servlet-handler/>
+
 
 	<!-- 过滤静态数据 -->
 	<mvc:resources mapping="/stat/**" location="/stat/"/>
+	<!-- 过滤静态数据 -->
+	<!--<mvc:default-servlet-handler/>-->
+
 
 
 </beans>

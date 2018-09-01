@@ -60,7 +60,7 @@
 
 	<!-- 扫描指定包下面的Mapper，并且自动注入到bean中 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.java.mobile.*.mapper,com.java.mobile.*.*.mapper" />
+		<property name="basePackage" value="com.java.mbkh.*.mapper,com.java.mbkh.*.*.mapper" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 
