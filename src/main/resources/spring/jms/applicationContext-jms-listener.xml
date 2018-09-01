@@ -10,12 +10,12 @@
 	   default-lazy-init="false">
 	
 	<!-- vv-->
-	<bean id="listener"
+	<bean id="messageListener"
 		class="com.java.common.jms.GroupQueueMessageListenerContainer"
 		init-method="start">
 		<property name="messageListener">
 			<bean class="com.java.common.jms.MsgListener">
-				<property name="iService" ref="service" /><!-- 监听类 -->
+				<property name="iService" ref="messageService" /><!-- 监听类 -->
 			</bean>
 		</property>
 		<property name="brokerURLs" ref="brokerUrls"></property>
@@ -27,6 +27,6 @@
 
 	<!--  应用停止前清理对象    -->
 	<util:map id="serviceListenerMap" map-class="java.util.HashMap">
-		<entry key="query-merchant-core-listener" value-ref="listener" />
+		<entry key="query-merchant-core-listener" value-ref="messageListener" />
 	</util:map>
 </beans>

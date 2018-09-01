@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.java.common.cache.DeferredResultCache;
+import com.java.common.jms.AdvancedGroupQueueSender;
 import com.java.common.utils.SerialNumber;
 import com.java.mbkh.common.vo.Result;
+import com.java.mbkh.phone.jms.constant.ServerConstant;
+import com.java.mbkh.phone.jms.vo.LockReturn;
 import com.java.mbkh.phone.lock.constant.TcpConstant;
 import com.java.mbkh.phone.lock.mapper.LockOrderMapper;
 import com.java.mbkh.phone.lock.service.LockInfoService;
@@ -16,17 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class LockOrderServiceImpl implements LockOrderService {
-    private static final String uid = "123456789";
-
     private static final Logger logger = LoggerFactory.getLogger(LockOrderServiceImpl.class);
 
     @Autowired
@@ -35,6 +33,8 @@ public class LockOrderServiceImpl implements LockOrderService {
     private LockInfoService lockInfoService;
     @Autowired
     private DeferredResultCache cache;
+    @Resource(name = "messageSender")
+    private AdvancedGroupQueueSender messageSender;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -62,24 +62,17 @@ public class LockOrderServiceImpl implements LockOrderService {
         String state = lockInfoService.getLockState(openUid);
         logger.info("解锁设备[{}],状态[{}]", openUid, state);
         if ("0".equals(state)) {
-            try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
-                 InputStream inputStream = socket.getInputStream();// 获得输入流
-                 OutputStream outputStream = socket.getOutputStream()) {
+            try {
                 //入库
-                Map<String, Object> params2 = new HashMap<>();
-                params2.put("lock_no", openUid);
-                params2.put("user_id", userId);
-                params2.put("insert_author", userId);
-                params2.put("update_author", userId);
+                params.put("user_id", userId);
+                params.put("insert_author", userId);
+                params.put("update_author", userId);
                 this.insert(params);
                 lockInfoService.updateLockState(openUid, "3");
-
-                // 写入数据
-                outputStream.write(("{\"TYPE\":\"OPEN\",\"UID\":\"" + uid + "\",\"OPEN_UID\":\"" + openUid + "\"}").getBytes());
-                byte[] buf = new byte[1024];
-                int len = inputStream.read(buf);
-                String ret = new String(buf, 0, len);
-                logger.info("远程服务器返回：{}", ret);
+                String rsp = new LockReturn(openUid, TcpConstant.OPEN, TcpConstant.OK).toString();
+                logger.info("发送解锁消息：{}", rsp);
+                messageSender.sendMsg(rsp, ServerConstant.DEFAULT);
+                logger.info("发送解锁消息成功：{}", openUid);
                 //关闭资源
             } catch (Exception e) {
                 logger.error("异常：" + e.getMessage(), e);
@@ -88,7 +81,7 @@ public class LockOrderServiceImpl implements LockOrderService {
         } else {
             DeferredResult deferredResult = cache.get(openUid);
             if (deferredResult != null) {
-                logger.warn("解锁超时，lockNo:{}", openUid);
+                logger.warn("所状态不正确，lockNo:{}，state：{}", openUid, state);
                 deferredResult.setResult(new Result(100, state));
             }
         }

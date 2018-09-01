@@ -4,7 +4,7 @@
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:aop="http://www.springframework.org/schema/aop"
 	   xmlns:p="http://www.springframework.org/schema/p"
-	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 			http://www.springframework.org/schema/aop
@@ -12,7 +12,7 @@
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-4.0.xsd
 			http://www.springframework.org/schema/task
-			http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+			http://www.springframework.org/schema/task/spring-task-4.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!--spring发送邮件-->
 	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
@@ -26,6 +26,14 @@
 			</props>
 		</property>
 	</bean>
+
+	<!-- 处理tcp接收的消息 -->
+	<util:map id="lockWorkMap">
+		<entry key="REGISTER" value-ref="registerLockWork"/>
+		<entry key="CLOSE" value-ref="closeLockWork"/>
+		<entry key="OPEN" value-ref="openLockWork"/>
+		<entry key="STATUS" value-ref="statusLockWork"/>
+	</util:map>
 
 
 
