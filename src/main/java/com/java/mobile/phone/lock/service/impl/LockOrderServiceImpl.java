@@ -88,8 +88,8 @@ public class LockOrderServiceImpl implements LockOrderService {
         } else {
             DeferredResult deferredResult = cache.get(openUid);
             if (deferredResult != null) {
-                logger.warn("解锁超时，lockNo:{}", openUid);
-                deferredResult.setResult(new Result(100, state));
+                logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
+                deferredResult.setResult(new Result(302, state));
             }
         }
         return state;
