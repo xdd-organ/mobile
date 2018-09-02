@@ -22,10 +22,10 @@ public class MessageService extends MqServiceImpl {
     public void doService(String jsonStr) {
         try {
             LOGGER.info("接收到tcp服务消息：{}", jsonStr);
-            Map<String, Object> map = JSONObject.parseObject(jsonStr, Map.class);
-            Map<String, String> msg = (Map<String, String>) map.get("msg");
+            Map<String, String> map = JSONObject.parseObject(jsonStr, Map.class);
+            Map<String, String> msg = JSONObject.parseObject(map.get("msg"), Map.class);
             LockWork work = lockWorkMap.get(msg.get("TYPE"));
-            work.doService(map.get("channelId").toString(), msg);
+            work.doService(map.get("channelId"), msg);
         } catch (Exception e) {
             LOGGER.error("处理tcp服务器消息异常：" + e.getMessage(), e);
         }

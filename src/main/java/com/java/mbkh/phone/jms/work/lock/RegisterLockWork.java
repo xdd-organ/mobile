@@ -22,16 +22,16 @@ public class RegisterLockWork implements LockWork {
     @Resource(name = "messageSender")
     private AdvancedGroupQueueSender messageSender;
     @Autowired
-    private ChannelManager channelManagerl;
+    private ChannelManager channelManager;
 
     @Override
     public void doService(String channelId, Map<String, String> msg) {
         LOGGER.info("注册：channelId:{}，msg:{}", channelId, msg);
         String uid = msg.get("UID");
-        int res = channelManagerl.registerChannel(channelId, uid);
+        int res = channelManager.registerChannel(channelId, uid);
         String rsp = new LockReturn(uid, msg.get("TYPE"), res == 1 ? TcpConstant.OK : TcpConstant.ERROR).toString();
         LOGGER.info("注册结果：channelId:{}，rsp:{}", channelId, rsp);
         messageSender.sendMsg(rsp, ServerConstant.DEFAULT);
-        LOGGER.info("注册结果发送成功：channelId:{}，msg:{}", channelId, msg);
+        LOGGER.info("注册结果发送成功：channelId:{}，rsp:{}", channelId, rsp);
     }
 }
