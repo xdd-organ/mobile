@@ -89,5 +89,15 @@ public class UserController {
         return new Result(100);
     }
 
+    @RequestMapping("bindWeixinInfo")//绑定微信信息
+    public Result bindWeixinInfo(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object userId = session.getAttribute("userId");
+        logger.info("绑定微信信息参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        params.put("user_id", userId);
+        logger.info("绑定微信信息返回：{}", "");
+        return new Result(100);
+    }
+
 
 }
