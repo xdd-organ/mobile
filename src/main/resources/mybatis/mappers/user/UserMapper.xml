@@ -73,7 +73,7 @@
             <if test="openid != null and openid != ''">a.openid = #{openid},</if>
             <if test="username != null and username != ''">a.username = #{username},</if>
             <if test="password != null and password != ''">a.password = #{password},</if>
-            <if test="telphone != null and telphone != ''">a.telphone = #{telphone},</if>
+            <if test="phone != null and phone != ''">a.telphone = #{phone},</if>
             <if test="avatar != null and avatar != ''">a.avatar = #{avatar},</if>
             <if test="is_disable != null and is_disable != ''">a.is_disable = #{is_disable},</if>
             <if test="money != null and money != ''">a.money = #{money},</if>
