@@ -134,7 +134,7 @@ public class UserController {
                 logger.info("更新用户信息参数：{}", JSONObject.toJSONString(userParams));
                 int i = userService.updateByUserId(userParams);
                 logger.info("更新用户信息结果：{}", i);
-                return new Result(100);
+                return new Result(100, userService.getByUserId(userId.toString()));
             }
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
