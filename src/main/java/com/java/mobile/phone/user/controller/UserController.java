@@ -115,7 +115,7 @@ public class UserController {
             logger.info("调用接口jscode2session，返回code：{}：body:{}", httpResult.getCode(),body);
             if (body != null && body.contains(PayConstant.OPENID)) {
                 Map<String, String> bodyMap = JSONObject.parseObject(body, Map.class);
-                String encrypteData = String.valueOf(params.get("encrypteData"));
+                String encrypteData = String.valueOf(params.get("encryptedData"));
                 String iv = String.valueOf(params.get("iv"));
                 String openId = String.valueOf(params.get("openId"));
                 String sessionKey = bodyMap.get("session_key");
