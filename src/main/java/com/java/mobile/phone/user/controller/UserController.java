@@ -131,8 +131,10 @@ public class UserController {
                 userParams.put("gender", decryptMap.get("gender"));
                 userParams.put("avatar", decryptMap.get("avatarUrl"));
                 userParams.put("phone", decryptMap.get("phoneNumber"));
+                logger.info("更新用户信息参数：{}", JSONObject.toJSONString(userParams));
                 int i = userService.updateByUserId(userParams);
-                logger.info("更新用户信息", i);
+                logger.info("更新用户信息结果：{}", i);
+                return new Result(100);
             }
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
