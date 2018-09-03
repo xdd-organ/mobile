@@ -3,12 +3,17 @@ package com.java.mobile.phone.user.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.service.RedisService;
+import com.java.mobile.common.utils.httpclient.HttpClientUtil;
+import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.common.weixin.WeixinDecrypt;
+import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
 import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +38,12 @@ public class UserController {
     private UserService userService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private HttpClientUtil httpClientUtil;
+    @Value("${appid:}")
+    private String appid;
+    @Value("${appSecret:}")
+    private String appSecret;
 
     @RequestMapping("pageByTransFlowInfo")
     public Result pageByTransFlowInfo(@RequestBody Map<String, Object> params, HttpServletRequest request) {
@@ -94,9 +105,27 @@ public class UserController {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         logger.info("绑定微信信息参数：{},userId:{}", JSONObject.toJSONString(params), userId);
-        params.put("user_id", userId);
-        logger.info("绑定微信信息返回：{}", "");
-        return new Result(100);
+        String code = params.get("code").toString();
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
+        try {
+            logger.info("发送到微信获取openid参数：{}", url);
+            HttpResult httpResult = httpClientUtil.doGet(url, null, null);
+            String body = httpResult.getBody();
+            logger.info("调用接口jscode2session，返回code：{}：body:{}", httpResult.getCode(),body);
+            if (body != null && body.contains(PayConstant.OPENID)) {
+                Map<String, String> bodyMap = JSONObject.parseObject(body, Map.class);
+                String encrypteData = String.valueOf(params.get("encrypteData"));
+                String iv = String.valueOf(params.get("iv"));
+                String openId = String.valueOf(params.get("openId"));
+                String sessionKey = bodyMap.get("session_key");
+                String decrypt = WeixinDecrypt.decrypt(appid, encrypteData, sessionKey, iv);
+                logger.info("解密encrypteData结果：{}", decrypt);
+                Map<String, String> decryptMap = JSONObject.parseObject(decrypt, Map.class);
+            }
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+        }
+        return new Result(500);
     }
 
 
