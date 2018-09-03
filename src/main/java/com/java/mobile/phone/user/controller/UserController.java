@@ -130,6 +130,7 @@ public class UserController {
                 userParams.put("nickname", decryptMap.get("nickName"));
                 userParams.put("gender", decryptMap.get("gender"));
                 userParams.put("avatar", decryptMap.get("avatarUrl"));
+                userParams.put("phone", decryptMap.get("phoneNumber"));
                 int i = userService.updateByUserId(userParams);
                 logger.info("更新用户信息", i);
             }
