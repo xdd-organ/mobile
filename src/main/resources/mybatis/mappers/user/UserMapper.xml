@@ -71,7 +71,7 @@
             <if test="username != null and username != ''">a.username = #{username},</if>
             <if test="unionid != null and unionid != ''">a.unionid = #{unionid},</if>
             <if test="openid != null and openid != ''">a.openid = #{openid},</if>
-            <if test="username != null and username != ''">a.username = #{username},</if>
+            <if test="nickname != null and nickname != ''">a.nickname = #{nickname},</if>
             <if test="password != null and password != ''">a.password = #{password},</if>
             <if test="phone != null and phone != ''">a.telphone = #{phone},</if>
             <if test="avatar != null and avatar != ''">a.avatar = #{avatar},</if>
@@ -80,6 +80,7 @@
             <if test="deposit != null and deposit != ''">a.deposit = #{deposit},</if>
             <if test="session_key != null and session_key != ''">a.session_key = #{session_key},</if>
             <if test="status != null and status != ''">a.status = #{status},</if>
+            <if test="gender != null and gender != ''">a.gender = #{gender},</if>
         </set>
         where id = #{user_id}
     </update>

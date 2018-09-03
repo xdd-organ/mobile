@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -121,6 +122,16 @@ public class UserController {
                 String decrypt = WeixinDecrypt.decrypt(appid, encrypteData, sessionKey, iv);
                 logger.info("解密encrypteData结果：{}", decrypt);
                 Map<String, String> decryptMap = JSONObject.parseObject(decrypt, Map.class);
+
+                Map<String, Object> userParams = new HashMap<>();
+                userParams.put("user_id", userId);
+                userParams.put("openid", bodyMap.get("openid"));
+                userParams.put("unionid", bodyMap.get("unionid"));
+                userParams.put("nickname", decryptMap.get("nickName"));
+                userParams.put("gender", decryptMap.get("gender"));
+                userParams.put("avatar", decryptMap.get("avatarUrl"));
+                int i = userService.updateByUserId(userParams);
+                logger.info("更新用户信息", i);
             }
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
