@@ -323,6 +323,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         }
         String sign = this.wxRemoteService.signMd5ByMap(mchId, reqData);
         reqData.put("paySign", sign);
+        reqData.remove("appId");
         return reqData;
     }
 }
