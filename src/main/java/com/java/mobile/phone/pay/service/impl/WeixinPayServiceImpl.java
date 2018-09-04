@@ -310,7 +310,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private Map<String,String> combineWxGeneratePayParams(Map<String, String> params) {
         Map<String, String> reqData = new TreeMap<String, String>();
         reqData.put("appId", appid);
-        reqData.put("timeStamp", String.valueOf(new Date().getTime()/1000));
+        reqData.put("timeStamp", String.valueOf(System.currentTimeMillis()/1000 + (8 * 60 * 60)));
         reqData.put("package", "prepay_id=" + params.get("prepay_id"));
         reqData.put("signType", "MD5");
         reqData.put("nonceStr", UUID.randomUUID().toString().replace("-", ""));
