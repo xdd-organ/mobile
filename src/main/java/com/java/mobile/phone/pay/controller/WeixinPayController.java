@@ -59,6 +59,14 @@ public class WeixinPayController {
         return new Result<>(100, prepay);
     }
 
+    @RequestMapping("generatePayParams")
+    public Result generatePayParams(@RequestBody Map<String, String> params) {
+        logger.info("微信生成支付参数：{}", JSONObject.toJSONString(params));
+        Map<String, String> prepay = weixinPayService.generatePayParams(params);
+        logger.info("微信生成支付返回：{}", JSONObject.toJSONString(prepay));
+        return new Result<>(100, prepay);
+    }
+
     /**
      * 结果通知
      * @param request

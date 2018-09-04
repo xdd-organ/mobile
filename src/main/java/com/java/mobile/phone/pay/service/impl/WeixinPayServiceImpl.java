@@ -297,4 +297,32 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         reqData.put("sign", sign);
         return reqData;
     }
+
+    @Override
+    public Map<String, String> generatePayParams(Map<String, String> params) {
+        Map<String, String> prepayRsp = this.prepay(params);
+        if (!CollectionUtils.isEmpty(prepayRsp)) {
+            return this.combineWxGeneratePayParams(params);
+        }
+        return null;
+    }
+
+    private Map<String,String> combineWxGeneratePayParams(Map<String, String> params) {
+        Map<String, String> reqData = new TreeMap<String, String>();
+        reqData.put("appId", appid);
+        reqData.put("timeStamp", String.valueOf(new Date().getTime()/1000));
+        reqData.put("package", "prepay_id=" + params.get("prepay_id"));
+        reqData.put("signType", "MD5");
+        reqData.put("nonceStr", UUID.randomUUID().toString().replace("-", ""));
+        Iterator<String> it = reqData.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            if (StringUtils.isBlank(reqData.get(key))) {
+                it.remove();
+            }
+        }
+        String sign = this.wxRemoteService.signMd5ByMap(mchId, reqData);
+        reqData.put("paySign", sign);
+        return reqData;
+    }
 }

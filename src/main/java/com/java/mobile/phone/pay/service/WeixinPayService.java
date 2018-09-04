@@ -13,4 +13,6 @@ public interface WeixinPayService {
     int payNotify(Map<String, String> params);
 
     Map<String,Object> query(Map<String, String> params);
+
+    Map<String,String> generatePayParams(Map<String, String> params);
 }
