@@ -44,7 +44,7 @@ public class LockServiceImpl implements LockService {
         logger.info("上锁设备[{}]", uid);
         try {// 建立TCP服务,连接本机的TCP服务器
             Map<String, Object> params = new HashMap<>();
-            String fee = lockOrderService.calcLockOrderFee(uid) + "";
+            String fee = "-" + lockOrderService.calcLockOrderFee(uid);
             params.put("lock_no", uid);
             params.put("fee", fee);
             params.put("type", "1");
