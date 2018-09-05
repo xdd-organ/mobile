@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.utils.DateUtil;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.lock.constant.TcpConstant;
@@ -14,13 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -35,6 +39,7 @@ public class LockOrderServiceImpl implements LockOrderService {
     private LockInfoService lockInfoService;
     @Autowired
     private DeferredResultCache cache;
+    private static final int PRICE = 3;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -98,5 +103,24 @@ public class LockOrderServiceImpl implements LockOrderService {
     @Override
     public int deleteLockOrder(String lockNo) {
         return lockOrderMapper.deleteLockOrder(lockNo);
+    }
+
+    @Override
+    public int calcLockOrderFee(String lockNo) {
+        int res = 0;
+        logger.info("计算用床费用，lockNo：{}", lockNo);
+        try {
+            List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(lockNo);
+            if (!CollectionUtils.isEmpty(unLockOrder)) {
+                Date date = (Date) unLockOrder.get(0).get("start_time");
+                Date now = new Date();
+                int hours = DateUtil.calcHours(date, now);
+                res = hours * PRICE;
+            }
+        } catch (Exception e) {
+            logger.error("计算用床费用失败，lockNo：" + lockNo, e);
+        }
+        logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
+        return res;
     }
 }

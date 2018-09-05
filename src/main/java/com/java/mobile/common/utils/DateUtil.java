@@ -115,4 +115,11 @@ public class DateUtil {
     public static boolean validateyMd(String date) {
         return validateDate("yyyyMMdd", date);
     }
+
+    public static int calcHours(Date startTime, Date endTime) {
+        long start = startTime.getTime();
+        long end = endTime.getTime();
+        long s = (end - start) / 1000;
+        return (int) Math.ceil(s / 3600.0);
+    }
 }
