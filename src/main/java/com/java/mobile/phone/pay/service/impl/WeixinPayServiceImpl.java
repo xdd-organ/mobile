@@ -49,7 +49,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 
     private final static String prepayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     private final static String queryUrl = "https://api.mch.weixin.qq.com/pay/orderquery";
-    private final static String payNotifyUrl = "https://www.mbznkh.com/pay/wx/payNotify";
+    private final static String payNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/payNotify";
     private final static String SUCCESS = "SUCCESS";
 
     @Value("${appid:}")
