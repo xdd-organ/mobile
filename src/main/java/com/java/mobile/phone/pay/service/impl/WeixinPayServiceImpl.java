@@ -302,7 +302,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     public Map<String, String> generatePayParams(Map<String, String> params) {
         Map<String, String> prepayRsp = this.prepay(params);
         if (!CollectionUtils.isEmpty(prepayRsp)) {
-            return this.combineWxGeneratePayParams(params);
+            return this.combineWxGeneratePayParams(prepayRsp);
         }
         return null;
     }
