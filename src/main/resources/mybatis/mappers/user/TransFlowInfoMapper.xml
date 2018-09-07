@@ -33,5 +33,6 @@
             <if test="user_id != null and user_id != ''">a.user_id = #{user_id}</if>
             <if test="type != null and type != ''">a.type = #{type}</if>
         </where>
+        order by a.insert_time desc
     </select>
 </mapper>
