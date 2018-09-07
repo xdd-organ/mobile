@@ -40,7 +40,7 @@ public class LockOrderServiceImpl implements LockOrderService {
     private LockInfoService lockInfoService;
     @Autowired
     private DeferredResultCache cache;
-    private static final int PRICE = 3;
+    private static final int PRICE = 300;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -145,19 +145,19 @@ public class LockOrderServiceImpl implements LockOrderService {
         lockInfoService.updateLockState(openUid, "3");
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         Map<String, Object> params3 = new HashMap<>();
-        String fee = "-" + lockOrderService.calcLockOrderFee(uid);
-        params3.put("lock_no", uid);
+        String fee = "-" + lockOrderService.calcLockOrderFee(openUid);
+        params3.put("lock_no", openUid);
         params3.put("fee", fee);
         params3.put("type", "1");
-        transFlowInfoService.saveTrans(uid, fee, "0", "消费", "0");
+        transFlowInfoService.saveTrans(openUid, fee, "0", "消费", "0");
         lockOrderService.lock(params3);
-        lockInfoService.updateLockState(uid, "0");
+        lockInfoService.updateLockState(openUid, "0");
 
         DeferredResult deferredResult = cache.get(openUid);
         deferredResult.setResult(new Result(100, 0));
