@@ -11,6 +11,7 @@ import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.mapper.LockOrderMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
+import com.java.mobile.phone.user.service.TransFlowInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,13 @@ public class LockOrderServiceImpl implements LockOrderService {
     @Override
     public String unLock(Map<String, Object> params) {
         logger.info("解锁参数:{}", JSONObject.toJSONString(params));
+
+
+        this.temp(params);
         String openUid = String.valueOf(params.get("lock_no"));
         String userId = String.valueOf(params.get("user_id"));
         String state = lockInfoService.getLockState(openUid);
-        logger.info("解锁设备[{}],状态[{}]", openUid, state);
+        /*logger.info("解锁设备[{}],状态[{}]", openUid, state);
         if ("0".equals(state)) {
             try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
                  InputStream inputStream = socket.getInputStream();// 获得输入流
@@ -96,7 +100,7 @@ public class LockOrderServiceImpl implements LockOrderService {
                 logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
                 deferredResult.setResult(new Result(302, state));
             }
-        }
+        }*/
         return state;
     }
 
@@ -122,5 +126,40 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
         logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
         return res;
+    }
+
+    @Autowired
+    private LockOrderService lockOrderService;
+    @Autowired
+    private TransFlowInfoService transFlowInfoService;
+
+    private void temp(Map<String, Object> params) {
+        String openUid = String.valueOf(params.get("lock_no"));
+        String userId = String.valueOf(params.get("user_id"));
+        Map<String, Object> params2 = new HashMap<>();
+        params2.put("lock_no", openUid);
+        params2.put("user_id", userId);
+        params2.put("insert_author", userId);
+        params2.put("update_author", userId);
+        this.insert(params);
+        lockInfoService.updateLockState(openUid, "3");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Object> params3 = new HashMap<>();
+        String fee = "-" + lockOrderService.calcLockOrderFee(uid);
+        params3.put("lock_no", uid);
+        params3.put("fee", fee);
+        params3.put("type", "1");
+        transFlowInfoService.saveTrans(uid, fee, "0", "消费", "0");
+        lockOrderService.lock(params3);
+        lockInfoService.updateLockState(uid, "0");
+
+        DeferredResult deferredResult = cache.get(openUid);
+        deferredResult.setResult(new Result(100, 0));
     }
 }
