@@ -6,6 +6,7 @@ import com.java.mobile.common.utils.KeyValueUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -18,7 +19,10 @@ import java.util.Map;
 @Component("wxRemoteServiceImpl")
 public class WxRemoteServiceImpl implements WxRemoteService {
 
-	Logger logger = LoggerFactory.getLogger(WxRemoteServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(WxRemoteServiceImpl.class);
+	@Value("${weixin.key}")
+	private String key;
+
 
 	public String signMd5(final String mchId, final String plainText) throws IllegalArgumentException {
 		logger.info(String.format("调用微信MD5签名,mchId [%s],原文：[%s]", mchId, plainText));
@@ -52,7 +56,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 		plainText.remove("sign_type");
 		String sortedStr = KeyValueUtil.mapToString(plainText);
 //		String conbimedStr = sortedStr + "&key=" + account.getMd5Key();
-		String conbimedStr = sortedStr + "&key=" + "123456";
+		String conbimedStr = sortedStr + "&key=" + key;
 		String signedStr = "";
 		try {
 			byte[] inputByteArr = conbimedStr.getBytes("UTF-8");
@@ -82,8 +86,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 		byte[] b = Base64Util.decode(ciphertext);
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
 //		String md5Key=DigestUtils.md5Hex(account.getMd5Key()).toLowerCase();
-		String md5Key="123456";
-		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
+		SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
 		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		return new String(cipher.doFinal(b),"UTF-8").trim();
@@ -96,8 +99,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	public String encrypt(String plaintext, String mchId) throws Exception {
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
 //		String md5Key=DigestUtils.md5Hex(account.getMd5Key()).toLowerCase();
-		String md5Key="123456";
-		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
+		SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 		byte[] ciphertext = cipher.doFinal(plaintext.getBytes());
