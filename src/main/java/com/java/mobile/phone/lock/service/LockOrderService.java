@@ -18,4 +18,6 @@ public interface LockOrderService {
     int deleteLockOrder(String lockNo);
 
     int calcLockOrderFee(String lockNo);
+
+    int refundLockOrder(String lockNo);
 }

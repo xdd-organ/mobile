@@ -68,6 +68,7 @@ public class LockOrderController {
                     deferredResult1.setResult(new Result(408));
                     lockInfoService.updateLockState(lockNo, "0");
                     lockOrderService.deleteLockOrder(lockNo);
+                    lockOrderService.refundLockOrder(lockNo);
                 }
             }
         });

@@ -1,14 +1,18 @@
 package com.java.mobile.phone.pay.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.security.WxRemoteService;
 import com.java.mobile.common.utils.KeyValueUtil;
 import com.java.mobile.common.utils.XmlUtils;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.phone.lock.service.LockInfoService;
+import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.service.WeixinPayService;
+import com.java.mobile.phone.pay.service.impl.WeixinPayServiceImpl;
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +72,15 @@ public class WeixinPayController {
         return new Result<>(100, prepay);
     }
 
+    @RequestMapping("generatePayAndUnLockParams")
+    public Result generatePayAndUnLockParams(@RequestBody Map<String, String> params) {
+        logger.info("微信生成支付参数：{}", JSONObject.toJSONString(params));
+        params.put("notify_url", WeixinPayServiceImpl.payAndUnLockNotifyUrl);
+        Map<String, String> prepay = weixinPayService.generatePayParams(params);
+        logger.info("微信生成支付返回：{}", JSONObject.toJSONString(prepay));
+        return new Result<>(100, prepay);
+    }
+
     /**
      * 结果通知
      * @param request
@@ -85,6 +99,37 @@ public class WeixinPayController {
                 try {
                     Map<String, String> params = XmlUtils.xmlStrToMap(xmlStr);
                     weixinPayService.payNotify(params);
+                    return_code = SUCCESS;
+                    return_msg = "OK";
+                } catch (Exception e) {
+                    logger.error("异常：" + e.getMessage(), e);
+                }
+            }
+        }
+        String rtnMsg = "<xml><return_code><![CDATA[" + return_code + "]]></return_code><return_msg><![CDATA["
+                + return_msg + "]]></return_msg></xml>";
+        logger.info("返回微信通知结果：[{}]", rtnMsg);
+        return rtnMsg;
+    }
+
+    /**
+     * 结果通知
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("payAndUnLockNotifyUrl")
+    public String payAndUnLockNotifyUrl(HttpServletRequest request, HttpServletResponse response) {
+        String return_code = "FAIL";
+        String return_msg = "error";
+        String xmlStr = this.getRequestParams(request);
+        logger.info("收到微信异步通知：[{}]", xmlStr);
+        String returnCode = XmlUtils.getNodeValueFromXml("return_code", xmlStr);
+        if (SUCCESS.equals(returnCode.toUpperCase())) {
+            if (this.verify(xmlStr)) {
+                try {
+                    Map<String, String> params = XmlUtils.xmlStrToMap(xmlStr);
+                    weixinPayService.payAndUnLockNotifyUrl(params);
                     return_code = SUCCESS;
                     return_msg = "OK";
                 } catch (Exception e) {

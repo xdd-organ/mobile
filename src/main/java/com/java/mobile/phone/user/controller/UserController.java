@@ -142,5 +142,18 @@ public class UserController {
         return new Result(500);
     }
 
+    @RequestMapping("updateMoney")
+    public Result updateMoney(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String userId = session.getAttribute("userId").toString();
+        Integer money = Integer.valueOf(params.get("money").toString());
+        int i = userService.updateMoney(userId, money);
+        if (i == 1) {
+            return new Result(100);
+        } else {
+            return new Result(500);
+        }
+    }
+
 
 }

@@ -30,8 +30,9 @@
     <select id="listByTrans" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT 	a.* FROM trans_flow_info a
         <where>
-            <if test="user_id != null and user_id != ''">a.user_id = #{user_id}</if>
-            <if test="type != null and type != ''">a.type = #{type}</if>
+            and a.status = 0
+            <if test="user_id != null and user_id != ''">and a.user_id = #{user_id}</if>
+            <if test="type != null and type != ''">and a.type = #{type}</if>
         </where>
         order by a.insert_time desc
     </select>

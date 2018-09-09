@@ -50,6 +50,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private final static String prepayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     private final static String queryUrl = "https://api.mch.weixin.qq.com/pay/orderquery";
     private final static String payNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/payNotify";
+    public final static String payAndUnLockNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/payAndUnLockNotifyUrl";
     private final static String SUCCESS = "SUCCESS";
 
     @Value("${appid:}")
@@ -116,7 +117,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         wxPayInfoBean.setOrderNo(randomNum); //out_trade_no 商户系统内部订单号
         wxPayInfoBean.setTotalFee(params.get("total_fee"));//订单总金额
         wxPayInfoBean.setSpbillCreateIp(spbillCreateIp);//微信支付API的机器IP
-        wxPayInfoBean.setNotifyUrl(payNotifyUrl);//支付结果通知
+        wxPayInfoBean.setNotifyUrl(StringUtils.isNotBlank(params.get("notify_url")) ? params.get("notify_url") : payNotifyUrl);//支付结果通知
         wxPayInfoBean.setTradeType("JSAPI");
         wxPayInfoBean.setOpenId(params.get("openid"));//trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识
 
@@ -325,5 +326,42 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         reqData.put("paySign", sign);
         reqData.remove("appId");
         return reqData;
+    }
+
+    @Override
+    public int payAndUnLockNotifyUrl(Map<String, String> params) {
+        String orderNo = params.get("out_trade_no");
+        Map<String, Object> order = wxPayInfoMapper.getByOrderNo(orderNo);
+        logger.info("查询订单结果：{}", JSONObject.toJSONString(order));
+        if (!CollectionUtils.isEmpty(order)) {
+            String result = String.valueOf(order.get("result"));
+            if (!"SUCCESS".equalsIgnoreCase(result)) {
+                Map<String, Object> params2 = new HashMap<>();
+                params2.putAll(params);
+
+                //更新订单状态
+                logger.info("更新订单参数：{}", JSONObject.toJSONString(params));
+                int i = wxPayInfoMapper.updateByOrderNo(params2);
+                logger.info("更新订单结果：{}", i);
+
+                //更新流水与用户余额
+                this.saveInfo(params, order);
+
+                //开锁
+                this.unLock(params);
+            }
+        } else {
+            logger.error("订单不存在");
+        }
+        return 1;
+    }
+
+    private int unLock(Map<String,String> params) {
+        String attach = params.get("attach");
+        SortedMap<String, String> attachMap = KeyValueUtil.keyValueStringToMap(attach);
+        String type = attachMap.get("type");
+
+
+        return 1;
     }
 }

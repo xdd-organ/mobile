@@ -8,6 +8,7 @@
         INSERT INTO lock_order
         (
         lock_no,
+        fee,
         order_no,
         user_id,
         insert_author,
@@ -16,6 +17,7 @@
         VALUES
         (
         #{lock_no},
+        #{fee},
         #{order_no},
         #{user_id},
         #{user_id},

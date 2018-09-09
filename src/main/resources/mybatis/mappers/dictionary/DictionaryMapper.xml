@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.mobile.phone.dictionary.mapper.DictionaryMapper">
+
+    <insert id="insert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `dictionary`
+        (
+            `name`,
+            `key`,
+            `value`,
+            `insert_author`,
+            `update_author`
+        )
+        values (
+            #{name},
+            #{key},
+            #{value},
+            #{user_id},
+            #{user_id}
+        );
+    </insert>
+
+    <select id="getByKey" parameterType="java.lang.String" resultType="java.util.Map">
+        select * from dictionary where `key` = #{key} and status = 0
+    </select>
+
+    <select id="listByDictionary" parameterType="java.util.Map" resultType="java.util.Map">
+        select * from dictionary
+        <where>
+            and status = 0
+            <if test="key != null and key != ''">and `key` = #{key}</if>
+            <if test="id != null and id != ''">and `id` = #{id}</if>
+        </where>
+    </select>
+
+    <update id="updateByKey" parameterType="java.util.Map">
+        update dictionary
+        <set>
+            update_time = now(),
+            <if test="value != null and value != ''">`value` = #{value},</if>
+            <if test="status != null and status != ''">`status` = #{status},</if>
+            <if test="name != null and name != ''">`name` = #{name},</if>
+            <if test="update_author != null and update_author != ''">`update_author` = #{user_id},</if>
+        </set>
+        where `key` = #{key} and status = 0;
+    </update>
+
+</mapper>

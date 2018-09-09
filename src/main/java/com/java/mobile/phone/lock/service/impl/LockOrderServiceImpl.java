@@ -7,11 +7,13 @@ import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.utils.DateUtil;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.phone.dictionary.service.DictionaryService;
 import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.mapper.LockOrderMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
+import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +41,13 @@ public class LockOrderServiceImpl implements LockOrderService {
     @Autowired
     private LockInfoService lockInfoService;
     @Autowired
+    private UserService userService;
+    @Autowired
+    private TransFlowInfoService transFlowInfoService;
+    @Autowired
+    private DictionaryService dictionaryService;
+    @Autowired
     private DeferredResultCache cache;
-    private static final int PRICE = 300;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -64,13 +71,15 @@ public class LockOrderServiceImpl implements LockOrderService {
     public String unLock(Map<String, Object> params) {
         logger.info("解锁参数:{}", JSONObject.toJSONString(params));
 
-
-        this.temp(params);
         String openUid = String.valueOf(params.get("lock_no"));
         String userId = String.valueOf(params.get("user_id"));
+        String fee = params.get("fee").toString();
+        transFlowInfoService.insert(openUid, fee, "0", "消费", "0", userId);
+
+        this.temp(params);
         String state = lockInfoService.getLockState(openUid);
-        /*logger.info("解锁设备[{}],状态[{}]", openUid, state);
-        if ("0".equals(state)) {
+        logger.info("解锁设备[{}],状态[{}]", openUid, state);
+        /*if ("0".equals(state)) {
             try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
                  InputStream inputStream = socket.getInputStream();// 获得输入流
                  OutputStream outputStream = socket.getOutputStream()) {
@@ -78,6 +87,7 @@ public class LockOrderServiceImpl implements LockOrderService {
                 Map<String, Object> params2 = new HashMap<>();
                 params2.put("lock_no", openUid);
                 params2.put("user_id", userId);
+                params2.put("fee", params.get("fee"));
                 params2.put("insert_author", userId);
                 params2.put("update_author", userId);
                 this.insert(params);
@@ -117,9 +127,20 @@ public class LockOrderServiceImpl implements LockOrderService {
             List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(lockNo);
             if (!CollectionUtils.isEmpty(unLockOrder)) {
                 Date date = (Date) unLockOrder.get(0).get("start_time");
+                Integer fee = Math.abs(Integer.valueOf(unLockOrder.get(0).get("fee").toString()));//已交费用
+                String userId = unLockOrder.get(0).get("user_id").toString();//已交费用
                 Date now = new Date();
                 int hours = DateUtil.calcHours(date, now);
-                res = hours * PRICE;
+                res = hours * dictionaryService.getPrice(lockNo);
+                int actualFee = fee - res;
+                if (actualFee > 0) {
+                    //退钱
+                    transFlowInfoService.insert(lockNo, actualFee + "", "1", "实际使用比计划时间少，退费到余额", "0", userId);
+                } if(actualFee < 0) {
+                    //余额扣钱
+                    transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
+                }
+                res = fee;
             }
         } catch (Exception e) {
             logger.error("计算用床费用失败，lockNo：" + lockNo, e);
@@ -127,11 +148,6 @@ public class LockOrderServiceImpl implements LockOrderService {
         logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
         return res;
     }
-
-    @Autowired
-    private LockOrderService lockOrderService;
-    @Autowired
-    private TransFlowInfoService transFlowInfoService;
 
     private void temp(Map<String, Object> params) {
         String openUid = String.valueOf(params.get("lock_no"));
@@ -141,6 +157,7 @@ public class LockOrderServiceImpl implements LockOrderService {
         params2.put("user_id", userId);
         params2.put("insert_author", userId);
         params2.put("update_author", userId);
+        params2.put("fee", params.get("fee"));
         this.insert(params);
         lockInfoService.updateLockState(openUid, "3");
 
@@ -151,15 +168,28 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
 
         Map<String, Object> params3 = new HashMap<>();
-        String fee = "-" + lockOrderService.calcLockOrderFee(openUid);
+        String fee = "-" + this.calcLockOrderFee(openUid);
         params3.put("lock_no", openUid);
         params3.put("fee", fee);
         params3.put("type", "1");
-        transFlowInfoService.saveTrans(openUid, fee, "0", "消费", "0");
-        lockOrderService.lock(params3);
+        this.lock(params3);
         lockInfoService.updateLockState(openUid, "0");
-
         DeferredResult deferredResult = cache.get(openUid);
         deferredResult.setResult(new Result(100, 0));
+    }
+
+    @Override//开锁失败，退回金额
+    public int refundLockOrder(String lockNo) {
+        List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(lockNo);
+        if (!CollectionUtils.isEmpty(unLockOrder)) {
+            Map<String, Object> order = unLockOrder.get(0);
+            Integer fee = Math.abs(Integer.valueOf(order.get("fee").toString()));
+            String userId = order.get("user_id").toString();
+            //退回余额
+            userService.updateMoney(userId, fee);
+            transFlowInfoService.insert(lockNo, fee.toString(), "1", "开锁失败退费", "0", userId);
+            return 1;
+        }
+        return -1;
     }
 }

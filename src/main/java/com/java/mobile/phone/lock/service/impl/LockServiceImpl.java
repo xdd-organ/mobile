@@ -48,7 +48,6 @@ public class LockServiceImpl implements LockService {
             params.put("lock_no", uid);
             params.put("fee", fee);
             params.put("type", "1");
-            transFlowInfoService.saveTrans(uid, fee, "0", "消费", "0");
             lockOrderService.lock(params);
             lockInfoService.updateLockState(uid, "0");
             return TcpConstant.OK;
@@ -125,6 +124,7 @@ public class LockServiceImpl implements LockService {
                         deferredResult.setResult(new Result(500));
                         lockInfoService.updateLockState(uid, "0");
                         lockOrderService.deleteLockOrder(uid);
+                        lockOrderService.refundLockOrder(uid);
                     }
                 }
             }
