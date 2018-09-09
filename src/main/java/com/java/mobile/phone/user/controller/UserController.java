@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.lang.model.element.VariableElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -146,9 +147,9 @@ public class UserController {
     public Result updateMoney(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
         String userId = session.getAttribute("userId").toString();
-        Integer money = Integer.valueOf(params.get("money").toString());
-        int i = userService.updateMoney(userId, money);
-        if (i == 1) {
+        String money = params.get("money").toString();
+        Long i = transFlowInfoService.insert(null, money, "0", "", "0", userId);
+        if (i != null) {
             return new Result(100);
         } else {
             return new Result(500);
