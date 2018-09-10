@@ -23,4 +23,6 @@ public interface UserService {
     int updateByUserId(Map<String,Object> params);
 
     int updateDeposit(String userId, Integer integer);
+
+    int updateScore(String userId, int score);
 }

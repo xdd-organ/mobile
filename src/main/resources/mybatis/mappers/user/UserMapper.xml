@@ -89,6 +89,10 @@
         update `user` set money = money + (#{money}) where id = #{user_id}
     </update>
 
+    <update id="updateScore">
+        update `user` set score = score + (#{score}) where id = #{user_id}
+    </update>
+
     <update id="updateDeposit">
         update `user` set deposit = deposit + (#{deposit}) where id = #{user_id}
     </update>

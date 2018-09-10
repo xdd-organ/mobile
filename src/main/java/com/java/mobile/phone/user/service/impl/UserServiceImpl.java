@@ -74,6 +74,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int updateScore(String userId, int score) {
+        logger.info("更新用户分：userId:{}, fee:{}", userId, score);
+        int i = userMapper.updateScore(userId, score);
+        logger.info("更新用户分结果：", i);
+        return i;
+    }
+
+    @Override
     public int updateDeposit(String userId, Integer fee) {
         logger.info("更新用户押金：userId:{}, fee:{}", userId, fee);
         int i = userMapper.updateDeposit(userId, fee);

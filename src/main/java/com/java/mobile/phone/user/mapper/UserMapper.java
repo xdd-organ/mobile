@@ -24,5 +24,7 @@ public interface UserMapper {
 
     int updateMoney(@Param("user_id") String userId, @Param("money") Integer money);
 
+    int updateScore(@Param("user_id") String userId, @Param("score") Integer score);
+
     int updateDeposit(@Param("user_id") String userId, @Param("deposit") Integer deposit);
 }
