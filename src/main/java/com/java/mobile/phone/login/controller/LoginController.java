@@ -4,10 +4,7 @@ import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +21,7 @@ import java.util.Map;
  * @date 2018/8/1
  */
 @RestController
+@CrossOrigin
 public class LoginController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);

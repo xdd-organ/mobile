@@ -3,10 +3,12 @@ package com.java.mobile.common.controller;
 import com.java.mobile.common.vo.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 public class ExceptionHandlerController {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerController.class);

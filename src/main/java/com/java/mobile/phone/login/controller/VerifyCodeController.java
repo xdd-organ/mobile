@@ -2,6 +2,7 @@ package com.java.mobile.phone.login.controller;
 
 import com.java.mobile.common.utils.VerifyCodeUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2018/8/1
  */
 @Controller
+@CrossOrigin
 public class VerifyCodeController {
 
     @RequestMapping("anon/createVerifyCode")
