@@ -18,10 +18,10 @@
 	<context:component-scan base-package="com.java.mobile.*.controller,com.java.mobile.phone.*.controller" />
 
 	<mvc:interceptors>
-		<mvc:interceptor>
+		<!--<mvc:interceptor>
 			<mvc:mapping path="/**"/>
 			<bean class="com.java.mobile.common.interceptor.MDCInterceptor"/>
-		</mvc:interceptor>
+		</mvc:interceptor>-->
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/>
 			<mvc:exclude-mapping path="/lock"/>
