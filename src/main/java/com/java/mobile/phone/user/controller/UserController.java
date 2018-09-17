@@ -88,6 +88,15 @@ public class UserController {
         return new Result(100, user);
     }
 
+    @RequestMapping("getUserByUserId")//
+    public Result getUserByUserId(@RequestBody Map<String, Object> params) {
+        logger.info("获取用户信息参数：{},userId:{}", JSONObject.toJSONString(params));
+        Object userId = params.get("user_id");
+        Map<String, Object> user = userService.getByUserId(userId.toString());
+        logger.info("获取用户信息返回：{}", JSONObject.toJSONString(user));
+        return new Result(100, user);
+    }
+
     @RequestMapping("bindPhone")//绑定手机
     public Result bindPhone(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
