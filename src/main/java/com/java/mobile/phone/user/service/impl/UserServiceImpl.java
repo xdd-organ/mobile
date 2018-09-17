@@ -1,6 +1,8 @@
 package com.java.mobile.phone.user.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.java.mobile.phone.user.mapper.UserMapper;
 import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
@@ -87,5 +89,14 @@ public class UserServiceImpl implements UserService {
         int i = userMapper.updateDeposit(userId, fee);
         logger.info("更新用户押金结果：", i);
         return i;
+    }
+
+    @Override
+    public PageInfo pageByUser(Map<String, Object> params) {
+        logger.info("分页查询用户参数：{}", params);
+        PageHelper.startPage(Integer.valueOf(params.get("pageNum").toString()), Integer.valueOf(params.get("pageSize").toString()));
+        PageInfo pageInfo = new PageInfo(userMapper.listByUser(params));
+        logger.info("分页查询用户返回：{}", pageInfo);
+        return pageInfo;
     }
 }

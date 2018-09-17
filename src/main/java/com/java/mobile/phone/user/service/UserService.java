@@ -1,5 +1,7 @@
 package com.java.mobile.phone.user.service;
 
+import com.github.pagehelper.PageInfo;
+
 import java.util.Map;
 
 /**
@@ -25,4 +27,6 @@ public interface UserService {
     int updateDeposit(String userId, Integer integer);
 
     int updateScore(String userId, int score);
+
+    PageInfo pageByUser(Map<String,Object> params);
 }

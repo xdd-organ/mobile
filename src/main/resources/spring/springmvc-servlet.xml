@@ -32,6 +32,7 @@
 			<mvc:exclude-mapping path="/pay/**"/>
 			<mvc:exclude-mapping path="/anon/**"/>
 			<mvc:exclude-mapping path="/stat/**"/>
+			<mvc:exclude-mapping path="/user/login"/>
 			<bean class="com.java.mobile.common.interceptor.LoginInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>

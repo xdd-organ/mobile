@@ -2,6 +2,7 @@ package com.java.mobile.phone.user.mapper;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,4 +28,7 @@ public interface UserMapper {
     int updateScore(@Param("user_id") String userId, @Param("score") Integer score);
 
     int updateDeposit(@Param("user_id") String userId, @Param("deposit") Integer deposit);
+
+    List listByUser(Map<String,Object> params);
+
 }

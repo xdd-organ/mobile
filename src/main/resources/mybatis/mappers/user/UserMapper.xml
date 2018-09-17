@@ -97,4 +97,19 @@
         update `user` set deposit = deposit + (#{deposit}) where id = #{user_id}
     </update>
 
+    <select id="listByUser" resultType="java.util.List" parameterType="java.util.Map">
+        select a.* from `user` a
+        <where>
+            <if test="user_id != null and user_id != ''">and a.id = #{user_id}</if>
+            <if test="username != null and username != ''">and a.username = #{username}</if>
+            <if test="openid != null and openid != ''">and a.openid = #{openid}</if>
+            <if test="unionid != null and unionid != ''">and a.unionid = #{unionid}</if>
+            <if test="type != null and type != ''">and a.type = #{type}</if>
+            <if test="telphone != null and telphone != ''">and a.telphone = #{telphone}</if>
+            <if test="is_disable != null and is_disable != ''">and a.is_disable = #{is_disable}</if>
+            <if test="status != null and status != ''">and a.status = #{status}</if>
+            <if test="gender != null and gender != ''">and a.gender = #{gender}</if>
+        </where>
+    </select>
+
 </mapper>

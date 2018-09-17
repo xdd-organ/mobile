@@ -5,3 +5,4 @@ alter table `lock_info` add `latitude` varchar(16) DEFAULT NULL COMMENT '纬度'
 alter table `lock_info` add `longitude` varchar(16) DEFAULT NULL COMMENT '经度';
 
 alter table `user` add `score` int(11) DEFAULT 0 COMMENT '分';
+alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员';
