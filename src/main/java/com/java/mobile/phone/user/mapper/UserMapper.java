@@ -29,6 +29,6 @@ public interface UserMapper {
 
     int updateDeposit(@Param("user_id") String userId, @Param("deposit") Integer deposit);
 
-    List listByUser(Map<String,Object> params);
+    List<Map<String,Object>> listByUser(Map<String,Object> params);
 
 }
