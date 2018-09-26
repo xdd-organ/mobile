@@ -27,6 +27,8 @@
 			<mvc:exclude-mapping path="/lock"/>
 			<mvc:exclude-mapping path="/unLock"/>
 			<mvc:exclude-mapping path="/login"/>
+			<mvc:exclude-mapping path="/location"/>
+			<mvc:exclude-mapping path="/order"/>
 			<mvc:exclude-mapping path="/index"/>
 			<mvc:exclude-mapping path="/status"/>
 			<mvc:exclude-mapping path="/pay/**"/>
