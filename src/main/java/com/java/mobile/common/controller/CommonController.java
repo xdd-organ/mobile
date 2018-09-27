@@ -5,6 +5,7 @@ import com.java.mobile.common.service.RedisService;
 import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.common.weixin.AES2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.security.krb5.internal.crypto.Aes128;
 
 import java.util.Map;
 
@@ -47,6 +49,14 @@ public class CommonController {
         params.put("code", randomValue);
         aliSmsService.sendSms(phoneNumbers, templateCode, params);
         return new Result<>(100);
+    }
+
+    @RequestMapping("encrypt")
+    public Result encrypt(@RequestBody Map<String, Object> params) {
+        LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
+        byte[] src = (byte[]) params.get("encrypt");
+        byte[] decrypt = AES2.decrypt(src, AES2.key);
+        return new Result<>(100, decrypt);
     }
 
 }

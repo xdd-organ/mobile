@@ -13,6 +13,9 @@ import java.util.Arrays;
 public class AES2 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AES2.class);
 
+    public static byte[] key = new byte[]{0x3A, 0x60, 0x43, 0x2A, 0x5C, 0x01, 0x21, 0x1F,
+            0x29, 0x1E, 0x0F, 0x4E, 0x0C, 0x13, 0x28, 0x25};
+
 	// 加密
 	public static byte[] encrypt(byte[] sSrc, byte[] sKey) {
 		try {
