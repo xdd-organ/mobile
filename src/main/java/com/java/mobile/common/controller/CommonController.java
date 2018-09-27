@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sun.security.krb5.internal.crypto.Aes128;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -52,11 +53,13 @@ public class CommonController {
     }
 
     @RequestMapping("encrypt")
-    public Result encrypt(@RequestBody Map<String, Object> params) {
+    public Result encrypt(@RequestBody Map<String, byte[]> params) {
         LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
-        byte[] src = (byte[]) params.get("encrypt");
+        byte[] src = params.get("encrypt");
         byte[] decrypt = AES2.decrypt(src, AES2.key);
-        return new Result<>(100, decrypt);
+        String s = Arrays.toString(decrypt);
+        LOGGER.info("加密返回:{}", s);
+        return new Result<>(100, s);
     }
 
 }
