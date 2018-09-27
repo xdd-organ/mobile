@@ -62,4 +62,14 @@ public class CommonController {
         return new Result<>(100, s);
     }
 
+    @RequestMapping("decrypt")
+    public Result decrypt(@RequestBody Map<String, byte[]> params) {
+        LOGGER.info("解密参数:{}", JSONObject.toJSONString(params));
+        byte[] src = params.get("decrypt");
+        byte[] decrypt = AES2.decrypt(src, AES2.key);
+        String s = Arrays.toString(decrypt);
+        LOGGER.info("解密返回:{}", s);
+        return new Result<>(100, s);
+    }
+
 }
