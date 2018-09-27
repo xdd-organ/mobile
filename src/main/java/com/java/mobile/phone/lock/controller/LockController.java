@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * @author xdd
@@ -53,15 +54,15 @@ public class LockController {
     }
 
     @RequestMapping("location")
-    public String location(@RequestBody String body) {
+    public String location(@RequestBody Map<String, Object> body) {
         logger.info("锁上传位置信息:{}", body);
-        return body;
+        return body.toString();
     }
 
     @RequestMapping("order")
-    public String order(@RequestBody String body) {
+    public String order(@RequestBody Map<String, Object> body) {
         logger.info("锁上传指令信息:{}", body);
-        return body;
+        return body.toString();
     }
 
 }
