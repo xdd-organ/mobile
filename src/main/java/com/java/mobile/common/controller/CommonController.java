@@ -56,7 +56,7 @@ public class CommonController {
     public Result encrypt(@RequestBody Map<String, byte[]> params) {
         LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
         byte[] src = params.get("encrypt");
-        byte[] decrypt = AES2.decrypt(src, AES2.key);
+        byte[] decrypt = AES2.encrypt(src, AES2.key);
         String s = Arrays.toString(decrypt);
         LOGGER.info("加密返回:{}", s);
         return new Result<>(100, s);
