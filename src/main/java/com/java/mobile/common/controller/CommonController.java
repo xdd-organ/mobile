@@ -6,6 +6,7 @@ import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.common.weixin.AES2;
+import org.apache.catalina.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,21 +54,23 @@ public class CommonController {
     }
 
     @RequestMapping("encrypt")
-    public Result encrypt(@RequestBody Map<String, byte[]> params) {
+    public Result encrypt(@RequestBody Map<String, String> params) {
         LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
-        byte[] src = params.get("encrypt");
-        byte[] decrypt = AES2.encrypt(src, AES2.key);
-        String s = Arrays.toString(decrypt);
+        String src = params.get("encrypt");
+        byte[] convert = HexUtils.convert(src);
+        byte[] decrypt = AES2.encrypt(convert, AES2.key);
+        String s = HexUtils.convert(decrypt);
         LOGGER.info("加密返回:{}", s);
         return new Result<>(100, s);
     }
 
     @RequestMapping("decrypt")
-    public Result decrypt(@RequestBody Map<String, byte[]> params) {
+    public Result decrypt(@RequestBody Map<String, String> params) {
         LOGGER.info("解密参数:{}", JSONObject.toJSONString(params));
-        byte[] src = params.get("decrypt");
-        byte[] decrypt = AES2.decrypt(src, AES2.key);
-        String s = Arrays.toString(decrypt);
+        String src = params.get("decrypt");
+        byte[] convert = HexUtils.convert(src);
+        byte[] decrypt = AES2.decrypt(convert, AES2.key);
+        String s = HexUtils.convert(decrypt);
         LOGGER.info("解密返回:{}", s);
         return new Result<>(100, s);
     }
