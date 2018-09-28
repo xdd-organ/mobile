@@ -1,10 +1,12 @@
 package com.java.mobile.phone.lock.controller;
 
 import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.weixin.AES2;
 import com.java.mobile.phone.lock.service.LockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,8 @@ public class LockController {
     private LockService lockService;
     @Autowired
     private DeferredResultCache cache;
+    @Value("${userKey:testtest}")
+    private String userKey;
 
     @RequestMapping("lock")
     public String lock(@RequestParam("UID") String uid) {
@@ -56,12 +60,18 @@ public class LockController {
     @RequestMapping("location")
     public String location(@RequestBody Map<String, Object> body) {
         logger.info("锁上传位置信息:{}", body);
+        String sign = (String) body.remove("sign");
+        boolean b = AES2.verifyByMap(body, userKey, sign);
+        logger.info("锁上传位置信息验签结果:{}", b);
         return body.toString();
     }
 
     @RequestMapping("order")
     public String order(@RequestBody Map<String, Object> body) {
         logger.info("锁上传指令信息:{}", body);
+        String sign = (String) body.remove("sign");
+        boolean b = AES2.verifyByMap(body, userKey, sign);
+        logger.info("锁上传指令信息验签结果:{}", b);
         return body.toString();
     }
 

@@ -1,6 +1,7 @@
 package com.java.mobile.common.weixin;
 
 import org.apache.catalina.util.HexUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 public class AES2 {
     private static final Logger LOGGER = LoggerFactory.getLogger(AES2.class);
@@ -161,5 +164,43 @@ public class AES2 {
 
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+
+
+    public static boolean verify(String plainText, String userKey, String signature) {
+        try {
+            String signedStr = signMd5(plainText + userKey);
+            return signature.equals(signedStr);
+        } catch (Exception e) {
+            LOGGER.error("验签异常", e);
+            return false;
+        }
+    }
+
+    public static boolean verifyByMap(Map<String, Object> plainTextMap, String userKey, String signature) {
+        try {
+            String plainText = mapToString(plainTextMap);
+            boolean signedStr = verify(plainText, userKey, signature);
+            return signedStr;
+        } catch (Exception e) {
+            LOGGER.error("验签异常", e);
+            return false;
+        }
+    }
+
+    public static String signMd5(String plainText) throws UnsupportedEncodingException {
+        byte[] inputByteArr = plainText.getBytes("UTF-8");
+        String signedStr = DigestUtils.md5Hex(inputByteArr).toUpperCase();
+        return signedStr;
+    }
+
+    public static String mapToString(Map<String, Object> plainTextMap)  {
+        final StringBuilder sb = new StringBuilder();
+        Collection<Object> values = plainTextMap.values();
+        for (Object value : values) {
+            sb.append(value);
+        }
+        return sb.toString();
+    }
 
 }
