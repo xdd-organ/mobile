@@ -59,7 +59,7 @@ public class CommonController {
         LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
         String src = params.get("encrypt");
         byte[] convert = AES2.toBytes(src);
-        byte[] decrypt = AES2.encrypt(convert, AES2.toBytes(key));
+        byte[] decrypt = AES2.encrypt(convert, AES2.key);
         String s = AES2.bytesToHexFun1(decrypt);
         LOGGER.info("加密返回:{}", s);
         return new Result<>(100, s);
@@ -70,7 +70,7 @@ public class CommonController {
         LOGGER.info("解密参数:{}", JSONObject.toJSONString(params));
         String src = params.get("decrypt");
         byte[] convert = AES2.toBytes(src);
-        byte[] decrypt = AES2.decrypt(convert, AES2.toBytes(key));
+        byte[] decrypt = AES2.decrypt(convert, AES2.key);
         String s = AES2.bytesToHexFun1(decrypt);
         LOGGER.info("解密返回:{}", s);
         return new Result<>(100, s);
