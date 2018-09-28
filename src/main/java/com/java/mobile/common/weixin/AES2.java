@@ -13,9 +13,9 @@ import java.util.Arrays;
 public class AES2 {
     private static final Logger LOGGER = LoggerFactory.getLogger(AES2.class);
 
-    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};
-//    public static byte[] key = new byte[]{0x3A, 0x60, 0x43, 0x2A, 0x5C, 0x01, 0x21, 0x1F,
-//            0x29, 0x1E, 0x0F, 0x4E, 0x0C, 0x13, 0x28, 0x25};
+//    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};
+    public static byte[] key = new byte[]{0x3A, 0x60, 0x43, 0x2A, 0x5C, 0x01, 0x21, 0x1F,
+            0x29, 0x1E, 0x0F, 0x4E, 0x0C, 0x13, 0x28, 0x25};
 
     // 加密
     public static byte[] encrypt(byte[] sSrc, byte[] sKey) {
@@ -84,6 +84,16 @@ public class AES2 {
     }
 
     @Test
+    public void testtt() {
+        byte[] convert2 = HexUtils.convert("b8");
+        System.out.println(Arrays.toString(convert2));
+
+        int a = 184;
+        String s = Integer.toHexString(a);
+        System.out.println(s);
+    }
+
+    @Test
     public void test2() {
         byte[] a = {-20, 114, 33, 76, -80, -100, -47, 27, 82, -2, 115, -23, 1, -40, -36, 72};
         String s = bytes2HexString(a);
@@ -109,5 +119,47 @@ public class AES2 {
         } return ret;
     }
 
+    public static byte[] toBytes(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        return bytes;
+    }
+
+    /**
+     * 方法一：
+     * byte[] to hex string
+     *
+     * @param bytes
+     * @return
+     */
+    public static String bytesToHexFun1(byte[] bytes) {
+        // 一个byte为8位，可用两个十六进制位标识
+        char[] buf = new char[bytes.length * 2];
+        int a = 0;
+        int index = 0;
+        for(byte b : bytes) { // 使用除与取余进行转换
+            if(b < 0) {
+                a = 256 + b;
+            } else {
+                a = b;
+            }
+
+            buf[index++] = HEX_CHAR[a / 16];
+            buf[index++] = HEX_CHAR[a % 16];
+        }
+
+        return new String(buf);
+    }
+
+    private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 }
