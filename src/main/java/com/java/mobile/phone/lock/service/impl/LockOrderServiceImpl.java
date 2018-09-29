@@ -76,10 +76,32 @@ public class LockOrderServiceImpl implements LockOrderService {
         String fee = params.get("fee").toString();
         transFlowInfoService.insert(openUid, fee, "0", "消费", "0", userId);
 
-        this.temp(params);
         String state = lockInfoService.getLockState(openUid);
         logger.info("解锁设备[{}],状态[{}]", openUid, state);
-        /*if ("0".equals(state)) {
+        try  {
+            //入库
+            Map<String, Object> params2 = new HashMap<>();
+            params2.put("lock_no", openUid);
+            params2.put("user_id", userId);
+            params2.put("fee", params.get("fee"));
+            params2.put("insert_author", userId);
+            params2.put("update_author", userId);
+            this.insert(params);
+            lockInfoService.updateLockState(openUid, "3");
+
+            DeferredResult deferredResult = cache.get(openUid);
+            if (deferredResult != null) {
+                logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
+                deferredResult.setResult(new Result(100, state));
+            }
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+            return TcpConstant.ERROR;
+        }
+
+        //        this.temp(params);
+/*
+        if ("0".equals(state)) {
             try (Socket socket = new Socket(InetAddress.getLocalHost(), 8090);// 建立TCP服务,连接本机的TCP服务器
                  InputStream inputStream = socket.getInputStream();// 获得输入流
                  OutputStream outputStream = socket.getOutputStream()) {
@@ -110,7 +132,8 @@ public class LockOrderServiceImpl implements LockOrderService {
                 logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
                 deferredResult.setResult(new Result(302, state));
             }
-        }*/
+        }
+*/
         return state;
     }
 
