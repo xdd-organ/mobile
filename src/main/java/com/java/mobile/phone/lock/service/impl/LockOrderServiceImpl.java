@@ -128,10 +128,13 @@ public class LockOrderServiceImpl implements LockOrderService {
             if (!CollectionUtils.isEmpty(unLockOrder)) {
                 Date date = (Date) unLockOrder.get(0).get("start_time");
                 Integer fee = Math.abs(Integer.valueOf(unLockOrder.get(0).get("fee").toString()));//已交费用
+                logger.info("计算用床费用，lockNo：{}，已交费用：{}", lockNo, fee);
                 String userId = unLockOrder.get(0).get("user_id").toString();//已交费用
                 Date now = new Date();
                 int hours = DateUtil.calcHours(date, now);
+                logger.info("计算用床费用，lockNo：{}，使用时间：{}，开始时间：{}，结束时间：{}", lockNo, hours, DateUtil.getDateForPattern(null, date), DateUtil.getDateForPattern(null, now));
                 res = hours * dictionaryService.getPrice(lockNo);
+                logger.info("计算用床费用，lockNo：{}，实际费用：{}", lockNo, res);
                 int actualFee = fee - res;
                 if (actualFee > 0) {
                     //退钱

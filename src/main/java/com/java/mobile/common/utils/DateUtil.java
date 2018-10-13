@@ -86,6 +86,12 @@ public class DateUtil {
         return myFormat.format(calendar.getTime());
     }
 
+    public static String getDateForPattern(String pattern, Date date) {
+        if (StringUtils.isBlank(pattern)) pattern = yyyyMMddHHmmss;
+        SimpleDateFormat myFormat = new SimpleDateFormat(pattern);
+        return myFormat.format(date);
+    }
+
     public static boolean validateDate(String pattern, String date) {
         if (StringUtils.isBlank(date)) {
             return false;
