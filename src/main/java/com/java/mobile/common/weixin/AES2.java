@@ -169,8 +169,10 @@ public class AES2 {
 
     public static boolean verify(String plainText, String userKey, String signature) {
         try {
+            LOGGER.info("加密内容：{}, userKey:{}, signature:{}", plainText, userKey, signature);
             String signedStr = signMd5(plainText + userKey);
-            return signature.equals(signedStr);
+            LOGGER.info("加密结果：{}", signedStr);
+            return signature.equalsIgnoreCase(signedStr);
         } catch (Exception e) {
             LOGGER.error("验签异常", e);
             return false;

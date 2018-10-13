@@ -62,6 +62,15 @@ public class LockController {
         logger.info("锁上传位置信息:{}", body);
         String sign = (String) body.remove("sign");
         boolean b = AES2.verifyByMap(body, userKey, sign);
+        String cmd = String.valueOf(body.get("cmd"));
+        String lockStatus = String.valueOf(body.get("lockstatus"));
+        if ("close".equals(cmd) && "0".equals(lockStatus)) {
+            //关锁
+            logger.info("关锁");
+            String deviceId = String.valueOf(body.get("deviceid"));
+            String lock = lockService.lock(deviceId);
+            logger.info("关锁返回：{}", lock);
+        }
         logger.info("锁上传位置信息验签结果:{}", b);
         return body.toString();
     }
