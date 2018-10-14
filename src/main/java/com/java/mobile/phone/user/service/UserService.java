@@ -29,4 +29,6 @@ public interface UserService {
     int updateScore(String userId, int score);
 
     PageInfo pageByUser(Map<String,Object> params);
+
+    int totalUser();
 }

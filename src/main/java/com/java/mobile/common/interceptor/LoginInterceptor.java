@@ -1,10 +1,12 @@
 package com.java.mobile.common.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,6 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        MDC.put("serial_no", SerialNumber.getRandomNum(32));
         String method = request.getMethod();
         StringBuffer requestURL = request.getRequestURL();
         LOGGER.info(method + "=======" + requestURL);
@@ -45,5 +48,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        MDC.clear();
     }
 }

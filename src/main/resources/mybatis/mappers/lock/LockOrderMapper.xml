@@ -37,8 +37,8 @@
         WHERE id = #{id}
     </update>
 
-    <select id="listByLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.*, b.address from lock_order a left join lock_info b on a.lock_no = b.lock_no
+    <select id="listByLockOrder" parameterType="java.util.Map" resultMap="listByLockOrderMap">
+        select a.*, b.address, a.user_id ui from lock_order a left join lock_info b on a.lock_no = b.lock_no
         <where>
             and a.status = 0
             <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
@@ -49,8 +49,13 @@
         order by a.insert_time desc
     </select>
 
+    <resultMap id="listByLockOrderMap" type="java.util.Map">
+        <collection property="user" javaType="java.util.Map" column="ui" select="com.java.mobile.phone.user.mapper.UserMapper.getByUserId"/>
+    </resultMap>
+
     <update id="lock" parameterType="java.util.Map">
-        UPDATE lock_order set end_time = now(), fee = #{fee}, `type` = 1 where lock_no = #{lock_no} and end_time is null
+        UPDATE lock_order set end_time = now(), fee = #{fee}, `type` = 1 , total_time =(UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(start_time))
+        where lock_no = #{lock_no} and end_time is null
     </update>
 
     <update id="deleteLockOrder" parameterType="java.lang.String">
@@ -59,5 +64,18 @@
 
     <select id="getUnLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
         select a.* from lock_order a where a.lock_no = #{lock_no} and end_time is null
+    </select>
+
+
+    <select id="totalOrder" resultType="java.lang.Integer">
+        select count(id) from lock_order;
+    </select>
+
+    <select id="totalUseDevice" resultType="java.lang.Integer">
+        select count(id) from lock_order where end_time is null ;
+    </select>
+
+    <select id="totalTime" resultType="java.lang.Integer">
+        select sum(total_time) from lock_order;
     </select>
 </mapper>

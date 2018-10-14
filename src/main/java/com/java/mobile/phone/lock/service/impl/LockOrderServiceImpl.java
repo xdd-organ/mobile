@@ -219,4 +219,25 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
         return -1;
     }
+
+    @Override
+    public int totalOrder() {
+        int res = lockOrderMapper.totalOrder();
+        logger.info("总订单数：{}", res);
+        return res;
+    }
+
+    @Override
+    public int totalUseDevice() {
+        int res = lockOrderMapper.totalUseDevice();
+        logger.info("正在使用订单数：{}", res);
+        return res;
+    }
+
+    @Override
+    public long totalTime() {
+        int res = lockOrderMapper.totalTime();
+        logger.info("订单总时间：{}", res);
+        return res;
+    }
 }

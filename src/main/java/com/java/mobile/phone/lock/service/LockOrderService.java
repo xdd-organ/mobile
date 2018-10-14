@@ -20,4 +20,10 @@ public interface LockOrderService {
     int calcLockOrderFee(String lockNo);
 
     int refundLockOrder(String lockNo);
+
+    int totalOrder();
+
+    int totalUseDevice();
+
+    long totalTime();
 }

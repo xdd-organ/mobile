@@ -20,4 +20,11 @@ public interface LockOrderMapper {
     List<Map<String, Object>> getUnLockOrder(String uid);
 
     int deleteLockOrder(String lockNo);
+
+    int totalOrder();
+
+    int totalUseDevice();
+
+    int totalTime();
+
 }

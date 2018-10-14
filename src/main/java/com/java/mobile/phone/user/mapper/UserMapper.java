@@ -31,4 +31,6 @@ public interface UserMapper {
 
     List<Map<String,Object>> listByUser(Map<String,Object> params);
 
+    int totalUser();
+
 }

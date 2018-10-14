@@ -99,4 +99,11 @@ public class UserServiceImpl implements UserService {
         logger.info("分页查询用户返回：{}", pageInfo);
         return pageInfo;
     }
+
+    @Override
+    public int totalUser() {
+        int res = userMapper.totalUser();
+        logger.info("查询总用户返回：{}", res);
+        return res;
+    }
 }

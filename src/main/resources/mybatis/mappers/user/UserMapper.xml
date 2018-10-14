@@ -97,8 +97,8 @@
         update `user` set deposit = deposit + (#{deposit}) where id = #{user_id}
     </update>
 
-    <select id="listByUser" resultType="java.util.Map" parameterType="java.util.Map">
-        select a.* from `user` a
+    <select id="listByUser" resultMap="listByUserMap" parameterType="java.util.Map">
+        select a.*,a.id ii from `user` a
         <where>
             <if test="user_id != null and user_id != ''">and a.id = #{user_id}</if>
             <if test="username != null and username != ''">and a.username = #{username}</if>
@@ -110,6 +110,18 @@
             <if test="status != null and status != ''">and a.status = #{status}</if>
             <if test="gender != null and gender != ''">and a.gender = #{gender}</if>
         </where>
+    </select>
+
+    <resultMap id="listByUserMap" type="java.util.Map">
+        <association property="total_time" javaType="long" column="ii" select="aa"></association>
+    </resultMap>
+
+    <select id="aa" resultType="long">
+        select sum(total_time) from lock_order where user_id = #{value};
+    </select>
+
+    <select id="totalUser" resultType="int">
+        select count(id) from user;
     </select>
 
 </mapper>

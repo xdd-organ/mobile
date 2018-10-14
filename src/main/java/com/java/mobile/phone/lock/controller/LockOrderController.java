@@ -46,7 +46,7 @@ public class LockOrderController {
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         logger.info("分页查询订单参数：{},userId:{}", JSONObject.toJSONString(params), userId);
-        params.put("user_id", userId);
+//        params.put("user_id", userId);
         PageInfo pageInfo = lockOrderService.pageByLockOrder(params);
         logger.info("分页查询订单返回：{}", JSONObject.toJSONString(pageInfo));
         return new Result(100, pageInfo);
