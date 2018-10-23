@@ -6,7 +6,9 @@ import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.common.weixin.AES2;
+import com.java.mobile.phone.lock.service.LockInfoService;
 import org.apache.catalina.util.HexUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,10 @@ public class CommonController {
     private AliSmsService aliSmsService;
     @Autowired(required = false)
     private RedisService redisService;
+    @Autowired
+    private LockInfoService lockInfoService;
+
+    private final String DEFAULT_LOCK_KEY = "32874782547563714880658817994543";
 
     @RequestMapping("sendVerifyCode")
     public Result sendVerifyCode(@RequestBody Map<String, String> params) {
@@ -59,7 +65,9 @@ public class CommonController {
         LOGGER.info("加密参数:{}", JSONObject.toJSONString(params));
         String src = params.get("encrypt");
         byte[] convert = AES2.toBytes(src);
-        byte[] decrypt = AES2.encrypt(convert, AES2.key);
+        String lockKey = lockInfoService.getLockKey(String.valueOf(params.get("qr_code_no")));
+        byte[] res = StringUtils.isBlank(lockKey) ? AES2.key : AES2.toBytes2(lockKey);
+        byte[] decrypt = AES2.encrypt(convert, res);
         String s = AES2.bytesToHexFun1(decrypt);
         LOGGER.info("加密返回:{}", s);
         return new Result<>(100, s);
@@ -70,7 +78,9 @@ public class CommonController {
         LOGGER.info("解密参数:{}", JSONObject.toJSONString(params));
         String src = params.get("decrypt");
         byte[] convert = AES2.toBytes(src);
-        byte[] decrypt = AES2.decrypt(convert, AES2.key);
+        String lockKey = lockInfoService.getLockKey(String.valueOf(params.get("qr_code_no")));
+        byte[] res = StringUtils.isBlank(lockKey) ? AES2.key : AES2.toBytes2(lockKey);
+        byte[] decrypt = AES2.decrypt(convert, res);
         String s = AES2.bytesToHexFun1(decrypt);
         LOGGER.info("解密返回:{}", s);
         return new Result<>(100, s);

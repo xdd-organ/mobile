@@ -135,6 +135,19 @@ public class AES2 {
 
         return bytes;
     }
+    public static byte[] toBytes2(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 10);
+        }
+
+        return bytes;
+    }
 
     /**
      * 方法一：

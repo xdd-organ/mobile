@@ -30,4 +30,18 @@ public class LockInfoServiceImpl implements LockInfoService {
         logger.info("更新锁状态结果:{}", i);
         return i;
     }
+
+    @Override
+    public String getLockPwd(String qrCodeNo) {
+        String lockPwd = lockInfoMapper.getLockPwd(qrCodeNo);
+        logger.info("获取锁密码结果:{}，{}", qrCodeNo, lockPwd);
+        return lockPwd;
+    }
+
+    @Override
+    public String getLockKey(String qrCodeNo) {
+        String lockKey = lockInfoMapper.getLockKey(qrCodeNo);
+        logger.info("获取锁秘钥结果:{}，{}", qrCodeNo, lockKey);
+        return lockKey;
+    }
 }

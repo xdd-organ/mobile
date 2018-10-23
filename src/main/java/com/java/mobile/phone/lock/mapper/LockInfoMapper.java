@@ -22,4 +22,9 @@ public interface LockInfoMapper {
     int updateLockState(@Param("lock_no") String lockNo, @Param("state") String state);
 
     int updateLockStatus(@Param("lock_no")String lockNo, @Param("status")String status);
+
+    String getLockPwd(@Param("qr_code_no") String qrCodeNo);
+
+    String getLockKey(@Param("qr_code_no") String qrCodeNo);
+
 }
