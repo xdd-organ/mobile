@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class LockInfoServiceImpl implements LockInfoService {
 
@@ -32,10 +34,10 @@ public class LockInfoServiceImpl implements LockInfoService {
     }
 
     @Override
-    public String getLockPwd(String qrCodeNo) {
-        String lockPwd = lockInfoMapper.getLockPwd(qrCodeNo);
-        logger.info("获取锁密码结果:{}，{}", qrCodeNo, lockPwd);
-        return lockPwd;
+    public Map<String, Object> getLockInfo(String qrCodeNo) {
+        Map<String, Object> res = lockInfoMapper.getLockInfo(qrCodeNo);
+        logger.info("获取锁密码结果:{}，{}", qrCodeNo, res);
+        return res;
     }
 
     @Override

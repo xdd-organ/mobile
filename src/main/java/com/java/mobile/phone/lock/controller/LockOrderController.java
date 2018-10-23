@@ -79,15 +79,15 @@ public class LockOrderController {
         return deferredResult;
     }
 
-    @RequestMapping("getLockPwd")
-    public Result getLockPwd(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
+    @RequestMapping("getLockInfo")
+    public Result getLockInfo(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
         final Object userId = session.getAttribute("userId");
         params.put("user_id", userId);
         logger.info("获取锁密码参数：{},userId:{}", JSONObject.toJSONString(params), userId);
-        String lockPwd = lockInfoService.getLockPwd(String.valueOf(params.get("qr_code_no")));
-        logger.info("获取锁密码返回：{}", lockPwd);
-        return new Result(100, lockPwd);
+        Map<String, Object> res = lockInfoService.getLockInfo(String.valueOf(params.get("qr_code_no")));
+        logger.info("获取锁密码返回：{}", res);
+        return new Result(100, res);
     }
 
 }

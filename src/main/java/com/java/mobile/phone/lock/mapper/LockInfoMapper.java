@@ -23,7 +23,7 @@ public interface LockInfoMapper {
 
     int updateLockStatus(@Param("lock_no")String lockNo, @Param("status")String status);
 
-    String getLockPwd(@Param("qr_code_no") String qrCodeNo);
+    Map<String, Object> getLockInfo(@Param("qr_code_no") String qrCodeNo);
 
     String getLockKey(@Param("qr_code_no") String qrCodeNo);
 
