@@ -1,5 +1,6 @@
 package com.java.mobile.phone.lock.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import com.java.mobile.phone.lock.mapper.LockInfoMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -45,5 +47,15 @@ public class LockInfoServiceImpl implements LockInfoService {
         String lockKey = lockInfoMapper.getLockKey(qrCodeNo);
         logger.info("获取锁秘钥结果:{}，{}", qrCodeNo, lockKey);
         return lockKey;
+    }
+
+    @Override
+    public List<List<String>> importLockInfoData(List<List<String>> res) {
+        return null;
+    }
+
+    @Override
+    public PageInfo<Map<String, Object>> pageByLockInfo(Map<String, Object> params) {
+        return null;
     }
 }
