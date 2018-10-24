@@ -34,7 +34,20 @@ public class LockInfoController {
     public Result pageByLockInfo(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
         final Object userId = session.getAttribute("userId");
+        LOGGER.info("分页查询锁信息参数：{}， {}", userId, params);
         PageInfo<Map<String, Object>> res = lockInfoService.pageByLockInfo(params);
+        LOGGER.info("分页查询锁信息返回：{}", res);
+        return new Result(100, res);
+    }
+
+    @RequestMapping("update")
+    public Result update(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        final Object userId = session.getAttribute("userId");
+        params.put("update_author", userId);
+        LOGGER.info("更新锁信息参数：{}， {}", userId, params);
+        int res = lockInfoService.update(params);
+        LOGGER.info("更新查询锁信息返回：{}", res);
         return new Result(100, res);
     }
 
@@ -44,9 +57,9 @@ public class LockInfoController {
             final Object userId = session.getAttribute("userId");
             ExcelUtil excelUtil = new ExcelUtil(file.getInputStream(), "2007");
             List<List<String>> res = excelUtil.read(0);
-            LOGGER.info("导入锁数据参数：{}：{}", userId, excelUtil);
-            List<List<String>> ret = lockInfoService.importLockInfoData(res);
-            LOGGER.info("导入锁数据失败返回：{}：{}", userId, excelUtil);
+            LOGGER.info("导入锁数据参数：{}：{}", userId, res);
+            List<List<String>> ret = lockInfoService.importLockInfoData(res, userId);
+            LOGGER.info("导入锁数据返回：{}, 失败数据：{}", userId, ret);
             return new Result(100, ret);
         } catch (Exception e) {
             LOGGER.error("导入锁数据异常：" + e.getMessage(), e);

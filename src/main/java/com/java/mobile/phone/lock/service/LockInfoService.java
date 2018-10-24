@@ -14,7 +14,9 @@ public interface LockInfoService {
 
     String getLockKey(String qrCodeNo);
 
-    List<List<String>> importLockInfoData(List<List<String>> res);
+    List<List<String>> importLockInfoData(List<List<String>> res, Object userId);
 
     PageInfo<Map<String,Object>> pageByLockInfo(Map<String, Object> params);
+
+    int update(Map<String,Object> params);
 }

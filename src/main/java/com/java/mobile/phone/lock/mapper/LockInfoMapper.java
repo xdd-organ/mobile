@@ -13,6 +13,8 @@ public interface LockInfoMapper {
 
     int insert(List<Map<String, Object>> params);
 
+    int insertOne(Map<String, Object> params);
+
     int update(Map<String, Object> params);
 
     List<Map<String, Object>> listByLockInfo(Map<String, Object> params);
