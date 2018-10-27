@@ -167,7 +167,6 @@ public class LockOrderServiceImpl implements LockOrderService {
                     transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
                 }
                 userService.updateScore(userId, res / 100);
-                res = fee;
             }
         } catch (Exception e) {
             logger.error("计算用床费用失败，lockNo：" + lockNo, e);
