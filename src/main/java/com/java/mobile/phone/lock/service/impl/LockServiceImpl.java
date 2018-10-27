@@ -1,12 +1,15 @@
 package com.java.mobile.phone.lock.service.impl;
 
 import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.vo.Result;
 import com.java.mobile.phone.lock.constant.TcpConstant;
+import com.java.mobile.phone.lock.mapper.LockOrderMapper;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.lock.service.LockService;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
+import com.java.mobile.phone.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +41,12 @@ public class LockServiceImpl implements LockService {
     private TransFlowInfoService transFlowInfoService;
     @Autowired
     private DeferredResultCache cache;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AliSmsService aliSmsService;
+    @Autowired
+    private LockOrderMapper lockOrderMapper;
 
 
     @Override
@@ -49,12 +59,27 @@ public class LockServiceImpl implements LockService {
             params.put("fee", fee);
             params.put("type", "1");
             lockOrderService.lock(params);
-            lockInfoService.updateLockState(uid, "0");
+            int i = lockInfoService.updateLockState(uid, "0");
+            if (i != 0) {
+                this.sendLockSms(uid);
+            }
             return TcpConstant.OK;
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
         }
         return TcpConstant.ERROR;
+    }
+
+    private void sendLockSms(String uid) {
+        try {
+            List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(uid);
+            String userId = String.valueOf(unLockOrder.get(0).get("user_id"));
+            Map<String, Object> user = userService.getByUserId(userId);
+            aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149385609", null);
+            logger.info("发送开锁通知完成：{}", userId);
+        } catch (Exception e) {
+            logger.error("发送关锁短信失败：" + e.getMessage(), e);
+        }
     }
 
     @Override

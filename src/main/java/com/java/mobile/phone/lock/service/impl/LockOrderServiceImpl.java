@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.DateUtil;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.vo.Result;
@@ -21,10 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +45,8 @@ public class LockOrderServiceImpl implements LockOrderService {
     private DictionaryService dictionaryService;
     @Autowired
     private DeferredResultCache cache;
+    @Autowired
+    private AliSmsService aliSmsService;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -89,6 +88,8 @@ public class LockOrderServiceImpl implements LockOrderService {
             this.insert(params);
             lockInfoService.updateLockState(openUid, "3");
 
+            //发送短信
+            this.sendUnLockSms(userId);
             DeferredResult deferredResult = cache.get(openUid);
             if (deferredResult != null) {
                 logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
@@ -137,6 +138,16 @@ public class LockOrderServiceImpl implements LockOrderService {
         return state;
     }
 
+    private void sendUnLockSms(String userId) {
+        try {
+            Map<String, Object> user = userService.getByUserId(userId);
+            aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149390462", null);
+            logger.info("发送开锁通知完成：{}", userId);
+        } catch (Exception e) {
+            logger.error("发送开锁消息失败：" + e.getMessage(), e);
+        }
+    }
+
     @Override
     public int deleteLockOrder(String lockNo) {
         return lockOrderMapper.deleteLockOrder(lockNo);
@@ -156,7 +167,7 @@ public class LockOrderServiceImpl implements LockOrderService {
                 Date now = new Date();
                 int hours = DateUtil.calcHours(date, now);
                 logger.info("计算用床费用，lockNo：{}，使用时间：{}，开始时间：{}，结束时间：{}", lockNo, hours, DateUtil.getDateForPattern(null, date), DateUtil.getDateForPattern(null, now));
-                res = hours * dictionaryService.getPrice(lockNo);
+                res = this.calcActualFee(hours, dictionaryService.getPrice(lockNo));
                 logger.info("计算用床费用，lockNo：{}，实际费用：{}", lockNo, res);
                 int actualFee = fee - res;
                 if (actualFee > 0) {
@@ -173,6 +184,17 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
         logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
         return res;
+    }
+
+    private int calcActualFee(int hours, int price) {
+        int day = hours / 24;
+        int hour = hours % 24;
+        int dayPrice = day * 30;
+        int hourPrice = hour * price;
+        if (hourPrice > 30) {
+            hourPrice = 30;
+        }
+        return dayPrice + hourPrice;
     }
 
     private void temp(Map<String, Object> params) {
