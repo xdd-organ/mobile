@@ -60,7 +60,6 @@ public class LockServiceImpl implements LockService {
             params.put("fee", fee);
             params.put("type", "1");
             lockOrderService.lock(params);
-            this.sendLockSms(uid);
             int i = lockInfoService.updateLockState(uid, "0");
             return TcpConstant.OK;
         } catch (Exception e) {
@@ -69,19 +68,6 @@ public class LockServiceImpl implements LockService {
         return TcpConstant.ERROR;
     }
 
-    private void sendLockSms(String uid) {
-        try {
-            List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(uid);
-            if (!CollectionUtils.isEmpty(unLockOrder)) {
-                String userId = String.valueOf(unLockOrder.get(0).get("user_id"));
-                Map<String, Object> user = userService.getByUserId(userId);
-                aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149385609", null);
-                logger.info("发送关锁通知完成：{}", userId);
-            }
-        } catch (Exception e) {
-            logger.error("发送关锁短信失败：" + e.getMessage(), e);
-        }
-    }
 
     @Override
     public String unLock(String openUid, Object userId) {

@@ -178,12 +178,23 @@ public class LockOrderServiceImpl implements LockOrderService {
                     transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
                 }
                 userService.updateScore(userId, res / 100);
+                this.sendLockSms(userId);
             }
         } catch (Exception e) {
             logger.error("计算用床费用失败，lockNo：" + lockNo, e);
         }
         logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
         return res;
+    }
+
+    private void sendLockSms(String userId) {
+        try {
+            Map<String, Object> user = userService.getByUserId(userId);
+            aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149385609", null);
+            logger.info("发送关锁通知完成：{}", userId);
+        } catch (Exception e) {
+            logger.error("发送关锁短信失败：" + e.getMessage(), e);
+        }
     }
 
     private int calcActualFee(int hours, int price) {
