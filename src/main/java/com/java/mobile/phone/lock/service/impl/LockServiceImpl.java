@@ -60,10 +60,8 @@ public class LockServiceImpl implements LockService {
             params.put("fee", fee);
             params.put("type", "1");
             lockOrderService.lock(params);
+            this.sendLockSms(uid);
             int i = lockInfoService.updateLockState(uid, "0");
-            if (i != 0) {
-                this.sendLockSms(uid);
-            }
             return TcpConstant.OK;
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
