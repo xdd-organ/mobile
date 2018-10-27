@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.io.InputStream;
@@ -73,10 +74,12 @@ public class LockServiceImpl implements LockService {
     private void sendLockSms(String uid) {
         try {
             List<Map<String, Object>> unLockOrder = lockOrderMapper.getUnLockOrder(uid);
-            String userId = String.valueOf(unLockOrder.get(0).get("user_id"));
-            Map<String, Object> user = userService.getByUserId(userId);
-            aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149385609", null);
-            logger.info("发送开锁通知完成：{}", userId);
+            if (!CollectionUtils.isEmpty(unLockOrder)) {
+                String userId = String.valueOf(unLockOrder.get(0).get("user_id"));
+                Map<String, Object> user = userService.getByUserId(userId);
+                aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149385609", null);
+                logger.info("发送关锁通知完成：{}", userId);
+            }
         } catch (Exception e) {
             logger.error("发送关锁短信失败：" + e.getMessage(), e);
         }
