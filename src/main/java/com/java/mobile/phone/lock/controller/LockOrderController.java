@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.phone.jms.service.LockBeforeSmsService;
 import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.lock.service.LockService;
@@ -88,6 +89,17 @@ public class LockOrderController {
         Map<String, Object> res = lockInfoService.getLockInfo(String.valueOf(params.get("qr_code_no")));
         logger.info("获取锁密码返回：{}", res);
         return new Result(100, res);
+    }
+
+
+    @Autowired
+    private LockBeforeSmsService lockBeforeSmsService;
+
+    @RequestMapping("a")
+    public Result aa(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
+//        int insert = lockOrderService.insert(params);
+        lockBeforeSmsService.doService(JSONObject.toJSONString(params));
+        return new Result(100);
     }
 
 }

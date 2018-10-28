@@ -27,4 +27,6 @@ public interface LockOrderMapper {
 
     int totalTime();
 
+    Map<String, Object> getByLockOrder(Map<String, Object> params);
+
 }

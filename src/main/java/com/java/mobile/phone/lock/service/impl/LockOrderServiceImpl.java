@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.java.mobile.common.cache.DeferredResultCache;
+import com.java.mobile.common.jms.AdvancedGroupQueueSender;
 import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.DateUtil;
 import com.java.mobile.common.utils.SerialNumber;
@@ -47,6 +48,8 @@ public class LockOrderServiceImpl implements LockOrderService {
     private DeferredResultCache cache;
     @Autowired
     private AliSmsService aliSmsService;
+    @Autowired
+    private AdvancedGroupQueueSender lockBeforeSmsSender;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -89,7 +92,7 @@ public class LockOrderServiceImpl implements LockOrderService {
             lockInfoService.updateLockState(openUid, "3");
 
             //发送短信
-            this.sendUnLockSms(userId);
+            this.sendUnLockSms(userId, params);
             DeferredResult deferredResult = cache.get(openUid);
             if (deferredResult != null) {
                 logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
@@ -138,11 +141,18 @@ public class LockOrderServiceImpl implements LockOrderService {
         return state;
     }
 
-    private void sendUnLockSms(String userId) {
+    private void sendUnLockSms(String userId, Map<String, Object> params) {
         try {
             Map<String, Object> user = userService.getByUserId(userId);
             aliSmsService.sendSms(String.valueOf(user.get("telphone")), "SMS_149390462", null);
             logger.info("发送开锁通知完成：{}", userId);
+            if (params != null && params.get("hours") != null) {
+                Integer hours = Integer.valueOf(params.get("hours").toString());
+                int min = (hours * 60) - 15;
+                params.put("telphone", user.get("telphone"));
+                lockBeforeSmsSender.sendCache(JSONObject.toJSONString(params), "default", min * 1000);
+                logger.info("关锁前15分钟MQ消息发送完成：{}， {}", min, params);
+            }
         } catch (Exception e) {
             logger.error("发送开锁消息失败：" + e.getMessage(), e);
         }

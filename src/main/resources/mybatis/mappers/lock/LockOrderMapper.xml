@@ -78,4 +78,16 @@
     <select id="totalTime" resultType="java.lang.Integer">
         select sum(total_time) from lock_order;
     </select>
+
+    <select id="getByLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.* from lock_order a
+        <where>
+            and a.status = 0
+            <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
+            <if test="type != null and type != ''">and a.`type` = #{type}</if>
+            <if test="status != null and status != ''">and a.status = #{status}</if>
+            <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
+            <if test="id != null and id != ''">and a.id = #{id}</if>
+        </where>
+    </select>
 </mapper>

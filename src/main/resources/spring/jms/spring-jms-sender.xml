@@ -6,10 +6,10 @@
 	   default-lazy-init="false">
 
 	<!-- QueueSender.sendCache(aliPayInfo, "default", delayTime); -->
-	<bean id="sender" class="com.java.mobile.common.jms.AdvancedGroupQueueSender"
+	<bean id="lockBeforeSmsSender" class="com.java.mobile.common.jms.AdvancedGroupQueueSender"
 		init-method="start">
 		<property name="brokerURLs" ref="brokerUrls"></property>
 		<property name="maxConnection" value="1"></property>
-		<property name="groupQueueName" value="groupQueueName"></property>
+		<property name="groupQueueName" value="lock-before"></property>
 	</bean>
 </beans>

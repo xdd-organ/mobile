@@ -67,4 +67,8 @@
 	<!--<import resource="classpath:spring/applicationContext-job.xml"/>-->
 	<import resource="classpath:spring/applicationContext-httpclient.xml"/>
 
+	<import resource="classpath:spring/jms/spring-jms-base.xml"/>
+	<import resource="classpath:spring/jms/spring-jms-sender.xml"/>
+	<import resource="classpath:spring/jms/spring-jms-listener.xml"/>
+
 </beans>
