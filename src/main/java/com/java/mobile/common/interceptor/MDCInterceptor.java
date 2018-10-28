@@ -1,5 +1,6 @@
 package com.java.mobile.common.interceptor;
 
+import com.java.mobile.common.utils.SerialNumber;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MDCInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        MDC.put("orderId", "123456");
+        MDC.put("serial_no", SerialNumber.getRandomNum(32));
         return true;
     }
 

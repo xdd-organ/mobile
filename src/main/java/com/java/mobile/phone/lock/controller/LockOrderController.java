@@ -91,15 +91,4 @@ public class LockOrderController {
         return new Result(100, res);
     }
 
-
-    @Autowired
-    private LockBeforeSmsService lockBeforeSmsService;
-
-    @RequestMapping("a")
-    public Result aa(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
-//        int insert = lockOrderService.insert(params);
-        lockBeforeSmsService.doService(JSONObject.toJSONString(params));
-        return new Result(100);
-    }
-
 }

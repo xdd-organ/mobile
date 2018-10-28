@@ -23,7 +23,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        MDC.put("serial_no", SerialNumber.getRandomNum(32));
         String method = request.getMethod();
         StringBuffer requestURL = request.getRequestURL();
         LOGGER.info(method + "=======" + requestURL);
@@ -48,6 +47,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        MDC.clear();
+
     }
 }
