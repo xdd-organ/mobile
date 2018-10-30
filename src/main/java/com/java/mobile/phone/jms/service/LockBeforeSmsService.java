@@ -30,7 +30,7 @@ public class LockBeforeSmsService extends MqServiceImpl {
             lockParams.put("id", params.get("id"));
             Map<String, Object> lockOrder = lockOrderMapper.getByLockOrder(lockParams);
             LOGGER.info("根据id查询到的订单结果：{}", lockOrder);
-            if (lockOrder != null && lockOrder.get("end_time") != null) {
+            if (lockOrder != null && lockOrder.get("end_time") == null) {
                 aliSmsService.sendSms(String.valueOf(params.get("telphone")), "SMS_149390463", null);
                 LOGGER.info("关锁前15分钟发送短息成功");
             }
