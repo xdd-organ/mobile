@@ -150,7 +150,7 @@ public class LockOrderServiceImpl implements LockOrderService {
                 Integer hours = Integer.valueOf(params.get("hours").toString());
                 int min = (hours * 60) - 15;
                 params.put("telphone", user.get("telphone"));
-                lockBeforeSmsSender.sendCache(JSONObject.toJSONString(params), "default", min * 1000);
+                lockBeforeSmsSender.sendCache(JSONObject.toJSONString(params), "default", min * 60 * 1000);
                 logger.info("关锁前15分钟MQ消息发送完成：{}， {}", min, params);
             }
         } catch (Exception e) {
