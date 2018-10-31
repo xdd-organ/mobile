@@ -89,7 +89,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="listByLockInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="listByLockInfo" parameterType="java.util.Map" resultMap="listByLockInfoMap">
         select a.*,a.user_id ui from lock_info a where a.status = 0
         <trim>
             <if test="state != null and state != ''">and a.`state` = #{state}</if>
