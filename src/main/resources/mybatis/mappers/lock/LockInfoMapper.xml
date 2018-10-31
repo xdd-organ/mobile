@@ -83,20 +83,28 @@
             <if test="lock_mac != null and lock_mac != ''">lock_mac = #{lock_mac},</if>
             <if test="lock_pwd != null and lock_pwd != ''">lock_pwd = #{lock_pwd},</if>
             <if test="lock_key != null and lock_key != ''">lock_key = #{lock_key},</if>
+            <if test="hospital != null and hospital != ''">hospital = #{hospital},</if>
+            <if test="user_id != null and user_id != ''">user_id = #{user_id},</if>
         </set>
         WHERE id = #{id}
     </update>
 
     <select id="listByLockInfo" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.* from lock_info a where a.status = 0
+        select a.*,a.user_id ui from lock_info a where a.status = 0
         <trim>
             <if test="state != null and state != ''">and a.`state` = #{state}</if>
             <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
             <if test="device_no != null and device_no != ''">and a.device_no = #{device_no}</if>
             <if test="qr_code_no != null and qr_code_no != ''">and a.qr_code_no = #{qr_code_no}</if>
             <if test="lock_mac != null and lock_mac != ''">and a.lock_mac = #{lock_mac}</if>
+            <if test="hospital != null and hospital != ''">and a.hospital = #{hospital}</if>
+            <if test="user_id != null and user_id != ''">and a.user_id = #{user_id}</if>
         </trim>
     </select>
+
+    <resultMap id="listByLockInfoMap" type="java.util.Map">
+        <collection property="user" javaType="java.util.Map" column="ui" select="com.java.mobile.phone.user.mapper.UserMapper.getByUserId"/>
+    </resultMap>
 
     <select id="getLockState" resultType="java.lang.String">
         select a.state from lock_info a where a.lock_no = #{lock_no}
