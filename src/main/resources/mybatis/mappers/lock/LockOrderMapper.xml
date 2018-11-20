@@ -45,6 +45,10 @@
             <if test="type != null and type != ''">and a.`type` = #{type}</if>
             <if test="status != null and status != ''">and a.status = #{status}</if>
             <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
+            <if test="agency_user_id != null and agency_user_id != ''">and b.`user_id` = #{agency_user_id}</if>
+            <if test="hospital != null and hospital != ''">and b.`hospital` = #{hospital}</if>
+            <if test="qr_code_no != null and qr_code_no != ''">and b.`qr_code_no` = #{qr_code_no}</if>
+            <if test="lock_mac != null and lock_mac != ''">and b.`lock_mac` = #{lock_mac}</if>
         </where>
         order by a.insert_time desc
     </select>
