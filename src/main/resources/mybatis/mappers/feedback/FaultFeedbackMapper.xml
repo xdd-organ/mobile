@@ -37,13 +37,14 @@
     </update>
 
     <select id="listByFaultFeedback" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.* from fault_feedback a
+        select a.* from fault_feedback a LEFT JOIN lock_info b on a.device_no = b.device_no
         <where>
             and a.status = 0
             <if test="user_id != null and user_id != ''">and a.user_id = #{user_id}</if>
             <if test="type != null and type != ''">and a.type = #{type}</if>
             <if test="device_no != null and device_no != ''">and a.device_no = #{device_no}</if>
             <if test="fault_type != null and fault_type != ''">and a.fault_type = #{fault_type}</if>
+            <if test="agency_user_id != null and agency_user_id != ''">and b.`user_id` = #{agency_user_id}</if>
         </where>
     </select>
 
