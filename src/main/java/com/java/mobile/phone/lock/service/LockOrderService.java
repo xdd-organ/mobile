@@ -15,6 +15,8 @@ public interface LockOrderService {
 
     String unLock(Map<String, Object> params);
 
+    String unLockV2(Map<String, Object> params);
+
     int deleteLockOrder(String lockNo);
 
     int calcLockOrderFee(String lockNo);

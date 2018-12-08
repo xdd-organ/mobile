@@ -77,7 +77,7 @@ public class LockController {
 
     @RequestMapping("order")
     public String order(@RequestBody Map<String, Object> body) {
-        logger.info("锁上传指令信息:{}", body);
+        logger.info("锁接收指令信息:{}", body);
         String sign = (String) body.remove("sign");
         boolean b = AES2.verifyByMap(body, userKey, sign);
         logger.info("锁上传指令信息验签结果:{}", b);

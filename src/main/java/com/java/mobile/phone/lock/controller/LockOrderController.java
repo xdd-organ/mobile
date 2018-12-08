@@ -79,6 +79,33 @@ public class LockOrderController {
         logger.info("解锁返回：{}", state);
         return deferredResult;
     }
+    @RequestMapping("unLockV2")
+    public DeferredResult unLockV2(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        final Object userId = session.getAttribute("userId");
+        params.put("user_id", userId);
+        logger.info("解锁参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        final DeferredResult deferredResult = new DeferredResult(timeout);
+        final String lockNo = String.valueOf(params.get("lock_no"));
+        cache.put(lockNo, deferredResult);
+        deferredResult.onTimeout(new Runnable() {
+            @Override
+            public void run() {
+                DeferredResult deferredResult1 = cache.get(lockNo);
+                if (deferredResult1 != null) {
+                    logger.warn("解锁超时，lockNo:{}", lockNo);
+                    deferredResult1.setResult(new Result(408));
+                    lockInfoService.updateLockState(lockNo, "0");
+                    lockOrderService.deleteLockOrder(lockNo);
+                    lockOrderService.refundLockOrder(lockNo);
+                }
+            }
+        });
+        cache.put(lockNo, deferredResult);
+        String state = lockOrderService.unLockV2(params);
+        logger.info("解锁返回：{}", state);
+        return deferredResult;
+    }
 
     @RequestMapping("getLockInfo")
     public Result getLockInfo(@RequestBody final Map<String, Object> params, HttpServletRequest request) {

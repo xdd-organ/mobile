@@ -191,12 +191,14 @@ public class HttpClientUtil {
                         response.getEntity(), "UTF-8"));
             }
             return new HttpResult(response.getStatusLine().getStatusCode(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (response != null) {
                 response.close();
             }
-            return null;
         }
+        return null;
     }
 
     /**

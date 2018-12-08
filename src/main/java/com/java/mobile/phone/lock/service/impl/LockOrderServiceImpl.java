@@ -8,7 +8,10 @@ import com.java.mobile.common.jms.AdvancedGroupQueueSender;
 import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.DateUtil;
 import com.java.mobile.common.utils.SerialNumber;
+import com.java.mobile.common.utils.httpclient.HttpClientUtil;
+import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.common.vo.Result;
+import com.java.mobile.common.weixin.AES2;
 import com.java.mobile.phone.dictionary.service.DictionaryService;
 import com.java.mobile.phone.lock.constant.TcpConstant;
 import com.java.mobile.phone.lock.mapper.LockOrderMapper;
@@ -16,13 +19,17 @@ import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
 import com.java.mobile.phone.user.service.UserService;
+import org.apache.activemq.util.Suspendable;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +57,14 @@ public class LockOrderServiceImpl implements LockOrderService {
     private AliSmsService aliSmsService;
     @Autowired
     private AdvancedGroupQueueSender lockBeforeSmsSender;
+    @Autowired
+    private HttpClientUtil httpClientUtil;
+    @Value("${lockUrl:http://gps.dola520.com:8888}")
+    private String lockUrl;
+    @Value("${userKey:testtest}")
+    private String userKey;
+    @Value("${userId:20180928test01}")
+    private String userId;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -281,5 +296,82 @@ public class LockOrderServiceImpl implements LockOrderService {
         int res = lockOrderMapper.totalTime();
         logger.info("订单总时间：{}", res);
         return res;
+    }
+
+    @Override
+    public String unLockV2(Map<String, Object> params) {
+        try {
+            logger.info("解锁参数:{}", JSONObject.toJSONString(params));
+            String lockNo = params.get("lock_no").toString();
+            String paramJson = this.assembleOrderParams(lockNo);
+            HttpResult httpResult = httpClientUtil.doPostJson(lockUrl, paramJson, null);
+            logger.info("发送远程开锁返回结果：" + httpResult.getBody() + "==" + httpResult.getCode());
+
+            String openUid = String.valueOf(params.get("lock_no"));
+            String userId = String.valueOf(params.get("user_id"));
+            String fee = params.get("fee").toString();
+            transFlowInfoService.insert(openUid, fee, "0", "消费", "0", userId);
+
+            String state = lockInfoService.getLockState(openUid);
+            logger.info("解锁设备[{}],状态[{}]", openUid, state);
+            try  {
+                //入库
+                Map<String, Object> params2 = new HashMap<>();
+                params2.put("lock_no", openUid);
+                params2.put("user_id", userId);
+                params2.put("fee", params.get("fee"));
+                params2.put("insert_author", userId);
+                params2.put("update_author", userId);
+                this.insert(params);
+                lockInfoService.updateLockState(openUid, "3");
+
+                //发送短信
+                this.sendUnLockSms(userId, params);
+                DeferredResult deferredResult = cache.get(openUid);
+                if (deferredResult != null) {
+                    logger.warn("锁状态不正确超时，lockNo:{}， state:{}", openUid, state);
+                    deferredResult.setResult(new Result(100, state));
+                }
+            } catch (Exception e) {
+                logger.error("异常：" + e.getMessage(), e);
+                return TcpConstant.ERROR;
+            }
+            return state;
+        } catch (Exception e) {
+            logger.error("开锁异常：" + e.getMessage(), e);
+        }
+        return TcpConstant.ERROR;
+    }
+
+    private String assembleOrderParams(String lockNo) {
+        String serialNum = SerialNumber.generateRandomSerial(9);
+        String cmd = "open";
+        Map<String, Object> params = new HashMap<>();
+        params.put("userid", userId);
+        params.put("cmd", cmd);
+        params.put("deviceid", lockNo);
+        params.put("serialnum", Long.valueOf(serialNum));
+
+        String plainText = userId + cmd + lockNo + serialNum;
+        String sign = null;
+        try {
+            sign = AES2.signMd5(plainText + userKey);
+            sign = sign.toLowerCase();
+        } catch (UnsupportedEncodingException e) {
+            logger.error("MD5异常：" + e.getMessage(), e);
+        }
+        params.put("sign", sign);
+
+
+
+
+
+
+        return JSONObject.toJSONString(params);
+    }
+
+    @Test
+    public void test() {
+        System.out.println(SerialNumber.generateRandomSerial(11));
     }
 }

@@ -115,7 +115,7 @@
     </update>
 
     <select id="getLockInfo" resultType="java.util.Map" parameterType="java.lang.String">
-        select a.lock_pwd, a.lock_mac, a.state from lock_info a where a.qr_code_no = #{qr_code_no}
+        select a.lock_pwd, a.lock_mac, a.state, a.lock_no from lock_info a where a.qr_code_no = #{qr_code_no}
     </select>
     <select id="getLockKey" resultType="java.lang.String">
         select a.lock_key from lock_info a where a.qr_code_no = #{qr_code_no}
