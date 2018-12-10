@@ -8,6 +8,7 @@ alter table `lock_info` add `lock_key` varchar(32) DEFAULT NULL COMMENT '锁秘�
 alter table `lock_info` add `lock_mac` varchar(32) DEFAULT NULL COMMENT '锁mac地址';
 alter table `lock_info` add `hospital` varchar(32) DEFAULT NULL COMMENT '所属医院';
 alter table `lock_info` add `user_id` int(11) DEFAULT NULL COMMENT '所属用户(即经销商)';
+alter table `lock_info` add `type` int(11) DEFAULT 0 COMMENT '0:蓝牙,1:GPS';
 
 alter table `user` add `score` int(11) DEFAULT 0 COMMENT '分';
 alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员，2：经销商管理员';

@@ -304,8 +304,9 @@ public class LockOrderServiceImpl implements LockOrderService {
             logger.info("解锁参数:{}", JSONObject.toJSONString(params));
             String lockNo = params.get("lock_no").toString();
             String paramJson = this.assembleOrderParams(lockNo);
+            logger.info("发送GPS远程解锁数据：{}", paramJson);
             HttpResult httpResult = httpClientUtil.doPostJson(lockUrl, paramJson, null);
-            logger.info("发送远程开锁返回结果：" + httpResult.getBody() + "==" + httpResult.getCode());
+            logger.info("发送GPS远程开锁返回结果：" + httpResult.getBody() + "==" + httpResult.getCode());
 
             String openUid = String.valueOf(params.get("lock_no"));
             String userId = String.valueOf(params.get("user_id"));
