@@ -77,11 +77,25 @@ public class LockController {
 
     @RequestMapping("order")
     public String order(@RequestBody Map<String, Object> body) {
-        logger.info("锁接收指令信息:{}", body);
-        String sign = (String) body.remove("sign");
-        boolean b = AES2.verifyByMap(body, userKey, sign);
-        logger.info("锁上传指令信息验签结果:{}", b);
-        return body.toString();
+        try {
+            logger.info("锁接收指令信息:{}", body);
+            String type = String.valueOf(body.get("type"));
+            if ("locationCallback".equalsIgnoreCase(type)) {
+                Map<String, Object> data = (Map<String, Object>) body.get("data");
+                if ("0".equalsIgnoreCase(String.valueOf(data.get("lockStatus")))) {
+                    logger.info("关锁回调");
+                    String deviceId = String.valueOf(body.get("terminalPhone"));
+                    String lock = lockService.lock(deviceId);
+                    logger.info("关锁返回：{}", lock);
+                }
+            } else if ("openCallback".equalsIgnoreCase(type)) {
+                logger.info("开锁回调");
+            }
+            return body.toString();
+        } catch (Exception e ) {
+            logger.error("关锁返回：{}", e);
+        }
+        return null;
     }
 
 }

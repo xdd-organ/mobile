@@ -61,10 +61,16 @@ public class LockOrderServiceImpl implements LockOrderService {
     private HttpClientUtil httpClientUtil;
     @Value("${lockUrl:http://gps.dola520.com:8888}")
     private String lockUrl;
+    @Value("${lockUrl2:http://gps.nokelock.com:30008/gps/commandOrder}")
+    private String lockUrl2;
     @Value("${userKey:testtest}")
     private String userKey;
     @Value("${userId:20180928test01}")
     private String userId;
+    @Value("${token:3c059f186eed40309471db46169f73c2}")
+    private String token;
+    @Value("${companyId:217}")
+    private String companyId;
 
     @Override
     public int insert(Map<String, Object> params) {
@@ -303,9 +309,10 @@ public class LockOrderServiceImpl implements LockOrderService {
         try {
             logger.info("解锁参数:{}", JSONObject.toJSONString(params));
             String lockNo = params.get("lock_no").toString();
-            String paramJson = this.assembleOrderParams(lockNo);
+            String paramJson = this.assembleOrderParams2(lockNo);
+            Map<String, String> headers = this.assembleHeaders();
             logger.info("发送GPS远程解锁数据：{}", paramJson);
-            HttpResult httpResult = httpClientUtil.doPostJson(lockUrl, paramJson, null);
+            HttpResult httpResult = httpClientUtil.doPostJson(lockUrl2, paramJson, headers);
             logger.info("发送GPS远程开锁返回结果：" + httpResult.getBody() + "==" + httpResult.getCode());
 
             String openUid = String.valueOf(params.get("lock_no"));
@@ -344,6 +351,13 @@ public class LockOrderServiceImpl implements LockOrderService {
         return TcpConstant.ERROR;
     }
 
+    private Map<String,String> assembleHeaders() {
+        Map<String,String> headers = new HashMap<>();
+        headers.put("token", token);
+        headers.put("companyId", companyId);
+        return headers;
+    }
+
     private String assembleOrderParams(String lockNo) {
         String serialNum = SerialNumber.generateRandomSerial(9);
         String cmd = "open";
@@ -362,12 +376,16 @@ public class LockOrderServiceImpl implements LockOrderService {
             logger.error("MD5异常：" + e.getMessage(), e);
         }
         params.put("sign", sign);
-
-
-
-
-
-
+        return JSONObject.toJSONString(params);
+    }
+    private String assembleOrderParams2(String lockNo) {
+        String serialNum = SerialNumber.generateRandomSerial(9);
+        Map<String, String> params = new HashMap<>();
+        params.put("companyId", companyId);
+        params.put("order", "open");
+        params.put("deviceId", lockNo);
+        params.put("buzzerType", "0");
+        params.put("orderNumber", serialNum);
         return JSONObject.toJSONString(params);
     }
 
