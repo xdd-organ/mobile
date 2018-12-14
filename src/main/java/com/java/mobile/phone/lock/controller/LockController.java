@@ -84,7 +84,7 @@ public class LockController {
                 Map<String, Object> data = (Map<String, Object>) body.get("data");
                 if ("0".equalsIgnoreCase(String.valueOf(data.get("lockStatus")))) {
                     logger.info("关锁回调");
-                    String deviceId = String.valueOf(body.get("terminalPhone"));
+                    String deviceId = String.valueOf(data.get("terminalPhone"));
                     String lock = lockService.lock(deviceId);
                     logger.info("关锁返回：{}", lock);
                 }
