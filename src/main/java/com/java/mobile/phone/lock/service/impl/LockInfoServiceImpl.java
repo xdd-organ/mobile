@@ -93,4 +93,24 @@ public class LockInfoServiceImpl implements LockInfoService {
     public int update(Map<String, Object> params) {
         return lockInfoMapper.update(params);
     }
+
+    @Override
+    public int updateUnitPrice(Map<String, Object> params) {
+        return lockInfoMapper.updateUnitPrice(params);
+    }
+
+    @Override
+    public int getUnitPrice(String lockNo) {
+        int unitPrice = lockInfoMapper.getUnitPrice(lockNo);
+        logger.info("锁：{}，单位价格：{}", lockNo, unitPrice);
+        return unitPrice;
+    }
+
+    @Override
+    public int updateByLockNo(Map<String, Object> params) {
+        logger.info("根据锁编号更新锁信息参数：{}", params);
+        int res = lockInfoMapper.updateByLockNo(params);
+        logger.info("根据锁编号更新锁信息结果：{}", res);
+        return res;
+    }
 }

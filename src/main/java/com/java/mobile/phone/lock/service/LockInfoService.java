@@ -19,4 +19,10 @@ public interface LockInfoService {
     PageInfo<Map<String,Object>> pageByLockInfo(Map<String, Object> params);
 
     int update(Map<String,Object> params);
+
+    int updateUnitPrice(Map<String,Object> params);
+
+    int getUnitPrice(String lockNo);
+
+    int updateByLockNo(Map<String, Object> params);
 }

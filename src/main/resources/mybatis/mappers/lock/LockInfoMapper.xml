@@ -89,6 +89,28 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateByLockNo" parameterType="java.util.Map">
+        UPDATE lock_info
+        <set>
+            update_time = now(),
+            <if test="address != null and address != ''">`address` = #{address},</if>
+            <if test="latitude != null and latitude != ''">latitude = #{latitude},</if>
+            <if test="longitude != null and longitude != ''">longitude = #{longitude},</if>
+            <if test="qr_code_no != null and qr_code_no != ''">qr_code_no = #{qr_code_no},</if>
+            <if test="device_no != null and device_no != ''">device_no = #{device_no},</if>
+            <if test="state != null and state != ''">state = #{state},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="update_author != null and update_author != ''">update_author = #{update_author},</if>
+            <if test="lock_mac != null and lock_mac != ''">lock_mac = #{lock_mac},</if>
+            <if test="lock_pwd != null and lock_pwd != ''">lock_pwd = #{lock_pwd},</if>
+            <if test="lock_key != null and lock_key != ''">lock_key = #{lock_key},</if>
+            <if test="hospital != null and hospital != ''">hospital = #{hospital},</if>
+            <if test="user_id != null and user_id != ''">user_id = #{user_id},</if>
+            <if test="battery != null and battery != ''">battery = #{battery},</if>
+        </set>
+        WHERE lock_no = #{lock_no}
+    </update>
+
     <select id="listByLockInfo" parameterType="java.util.Map" resultMap="listByLockInfoMap">
         select a.*,a.user_id ui from lock_info a where a.status = 0
         <trim>
@@ -115,9 +137,24 @@
     </update>
 
     <select id="getLockInfo" resultType="java.util.Map" parameterType="java.lang.String">
-        select a.lock_pwd, a.lock_mac, a.state, a.lock_no, a.type from lock_info a where a.qr_code_no = #{qr_code_no}
+        select a.lock_pwd, a.lock_mac, a.state, a.lock_no, a.type, a.unit_price,a.battery from lock_info a where a.qr_code_no = #{qr_code_no}
     </select>
     <select id="getLockKey" resultType="java.lang.String">
         select a.lock_key from lock_info a where a.qr_code_no = #{qr_code_no}
+    </select>
+
+    <update id="updateUnitPrice" parameterType="java.util.Map">
+        UPDATE lock_info
+        <set>
+            update_time = now(),
+            <if test="unit_price != null and unit_price != ''">unit_price = #{unit_price},</if>
+            <if test="update_author != null and update_author != ''">update_author = #{update_author},</if>
+        </set>
+        WHERE hospital = #{hospital}
+        <if test="user_id != null and user_id != ''">and user_id = #{user_id}</if>
+    </update>
+
+    <select id="getUnitPrice" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select unit_price from lock_info where lock_no = #{lock_no}
     </select>
 </mapper>

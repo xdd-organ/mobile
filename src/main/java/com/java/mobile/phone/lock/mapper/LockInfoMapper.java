@@ -29,4 +29,9 @@ public interface LockInfoMapper {
 
     String getLockKey(@Param("qr_code_no") String qrCodeNo);
 
+    int updateUnitPrice(Map<String, Object> params);
+
+    int getUnitPrice(@Param("lock_no")String lockNo);
+
+    int updateByLockNo(Map<String, Object> params);
 }

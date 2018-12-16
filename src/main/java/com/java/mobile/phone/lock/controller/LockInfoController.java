@@ -67,6 +67,28 @@ public class LockInfoController {
         }
     }
 
+    @RequestMapping("updateUnitPrice")
+    public Result updateUnitPrice(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        final Object userId = session.getAttribute("userId");
+        params.put("update_author", userId);
+        LOGGER.info("更新锁单位价格参数：{}， {}", userId, params);
+        int res = lockInfoService.updateUnitPrice(params);
+        LOGGER.info("更新锁单位价格返回：{}", res);
+        return new Result(100, res);
+    }
+
+    @RequestMapping("getUnitPrice")
+    public Result getUnitPrice(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        final Object userId = session.getAttribute("userId");
+        params.put("update_author", userId);
+        LOGGER.info("查询锁单位价格参数：{}， {}", userId, params);
+        int res = lockInfoService.getUnitPrice(String.valueOf(params.get("lock_no")));
+        LOGGER.info("查询锁单位价格返回：{}", res);
+        return new Result(100, res);
+    }
+
 
 
 

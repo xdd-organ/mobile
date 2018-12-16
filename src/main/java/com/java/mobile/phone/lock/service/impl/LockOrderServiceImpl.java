@@ -198,7 +198,7 @@ public class LockOrderServiceImpl implements LockOrderService {
                 Date now = new Date();
                 int hours = DateUtil.calcHours(date, now);
                 logger.info("计算用床费用，lockNo：{}，使用时间：{}，开始时间：{}，结束时间：{}", lockNo, hours, DateUtil.getDateForPattern(null, date), DateUtil.getDateForPattern(null, now));
-                res = this.calcActualFee(hours, dictionaryService.getPrice(lockNo));
+                res = this.calcActualFee(hours, lockInfoService.getUnitPrice(lockNo));
                 logger.info("计算用床费用，lockNo：{}，实际费用：{}", lockNo, res);
                 int actualFee = fee - res;
                 if (actualFee > 0) {
