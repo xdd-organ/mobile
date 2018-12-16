@@ -100,16 +100,18 @@ public class LockController {
                     String lock = lockService.lock(deviceId);
                     logger.info("关锁返回：{}", lock);
                 }
-                try {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("lock_no", deviceId);
-                    params.put("battery", data.get("battery"));
-                    lockInfoService.updateByLockNo(params);
-                } catch (Exception e) {
-                    logger.error("更新电量异常", e);
-                }
             } else if ("openCallback".equalsIgnoreCase(type)) {
                 logger.info("开锁回调");
+            }
+            try {
+                Map<String, Object> data = (Map<String, Object>) body.get("data");
+                String deviceId = String.valueOf(data.get("terminalPhone"));
+                Map<String, Object> params = new HashMap<>();
+                params.put("lock_no", deviceId);
+                params.put("battery", data.get("battery"));
+                lockInfoService.updateByLockNo(params);
+            } catch (Exception e) {
+                logger.error("更新电量异常", e);
             }
             return body.toString();
         } catch (Exception e ) {
