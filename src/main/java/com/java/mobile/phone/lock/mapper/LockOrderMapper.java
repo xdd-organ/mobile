@@ -29,4 +29,5 @@ public interface LockOrderMapper {
 
     Map<String, Object> getByLockOrder(Map<String, Object> params);
 
+    List<Map<String,Object>> unPayLockOrder(String userId);
 }

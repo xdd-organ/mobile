@@ -16,3 +16,4 @@ alter table `user` add `score` int(11) DEFAULT 0 COMMENT '分';
 alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员，2：经销商管理员';
 
 alter table `lock_order` add `total_time` varchar(16) DEFAULT 0 COMMENT '使用总时间（秒）';
+alter table `lock_order` add `diff_fee` varchar(16) DEFAULT 0 COMMENT '需要补的钱';

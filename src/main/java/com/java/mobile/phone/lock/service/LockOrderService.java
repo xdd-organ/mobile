@@ -2,6 +2,7 @@ package com.java.mobile.phone.lock.service;
 
 import com.github.pagehelper.PageInfo;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -28,4 +29,10 @@ public interface LockOrderService {
     int totalUseDevice();
 
     long totalTime();
+
+    List<Map<String, Object>> unPayLockOrder(String userId);
+
+    int update(Map<String, Object> params);
+
+    void exportLockOrderData(Map<String,Object> params, OutputStream outputStream) throws Exception;
 }

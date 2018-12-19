@@ -7,6 +7,7 @@ import com.java.mobile.common.cache.DeferredResultCache;
 import com.java.mobile.common.jms.AdvancedGroupQueueSender;
 import com.java.mobile.common.sms.AliSmsService;
 import com.java.mobile.common.utils.DateUtil;
+import com.java.mobile.common.utils.ExcelUtil;
 import com.java.mobile.common.utils.SerialNumber;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
@@ -19,8 +20,6 @@ import com.java.mobile.phone.lock.service.LockInfoService;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.user.service.TransFlowInfoService;
 import com.java.mobile.phone.user.service.UserService;
-import org.apache.activemq.util.Suspendable;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class LockOrderServiceImpl implements LockOrderService {
@@ -207,6 +206,8 @@ public class LockOrderServiceImpl implements LockOrderService {
                 } if(actualFee < 0) {
                     //余额扣钱
                     transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
+
+                    this.handlerDiffFee(actualFee, userId, unLockOrder.get(0).get("id"));
                 }
                 userService.updateScore(userId, res / 100);
                 this.sendLockSms(userId);
@@ -216,6 +217,21 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
         logger.info("计算用床费用，lockNo：{}，费用：{}", lockNo, res);
         return res;
+    }
+
+    private void handlerDiffFee(int actualFee, String userId, Object id) {
+        Map<String, Object> user = userService.getByUserId(userId);
+        int money = Integer.valueOf(user.get("money").toString()).intValue();
+        int diffFee = actualFee;
+        if (money > 0) {
+            diffFee = money + actualFee;
+        }
+        if (diffFee < 0) {
+            Map<String, Object> feeParams = new HashMap<>();
+            feeParams.put("id", id);
+            feeParams.put("diff_fee", diffFee);
+            lockOrderMapper.update(feeParams);
+        }
     }
 
     private void sendLockSms(String userId) {
@@ -390,8 +406,49 @@ public class LockOrderServiceImpl implements LockOrderService {
         return JSONObject.toJSONString(params);
     }
 
-    @Test
-    public void test() {
-        System.out.println(SerialNumber.generateRandomSerial(11));
+    @Override
+    public List<Map<String, Object>> unPayLockOrder(String userId) {
+        return lockOrderMapper.unPayLockOrder(userId);
+    }
+
+    @Override
+    public int update(Map<String, Object> params) {
+        return lockOrderMapper.update(params);
+    }
+
+    @Override
+    public void exportLockOrderData(Map<String, Object> params, OutputStream outputStream) throws Exception{
+        List<Map<String, Object>> list = lockOrderMapper.listByLockOrder(params);
+        InputStream in = LockOrderServiceImpl.class.getResourceAsStream("/lock.xlsx");
+        List<List<String>> data = this.toListData(list);
+        ExcelUtil excelUtil = new ExcelUtil(in, "2007");
+        excelUtil.write(0, data, true);
+        excelUtil.getWorkbook().write(outputStream);
+    }
+
+    private List<List<String>> toListData(List<Map<String,Object>> list) {
+        List<List<String>> res = new ArrayList<>();
+        Iterator<Map<String, Object>> iterator = list.iterator();
+        List<String> i;
+        while (iterator.hasNext()) {
+            Map<String, Object> next = iterator.next();
+            i = new ArrayList<>();
+            i.add(String.valueOf(next.get("order_no")));
+            if (next.get("user") != null) {
+                i.add(String.valueOf(((Map)next.get("user")).get("id")));
+                i.add(String.valueOf(((Map)next.get("user")).get("telphone")));
+            } else {
+                i.add("");
+                i.add("");
+            }
+            i.add(String.valueOf(next.get("id")));
+            i.add(String.valueOf(next.get("lock_no")));
+            i.add(Math.abs(Integer.valueOf(next.get("fee").toString()))/100 + "");
+            i.add(String.valueOf(next.get("start_time")));
+            i.add(String.valueOf(next.get("end_time")));
+            i.add(Math.abs(Integer.valueOf(next.get("diff_fee").toString()))/100 + "");
+            res.add(i);
+        }
+        return res;
     }
 }

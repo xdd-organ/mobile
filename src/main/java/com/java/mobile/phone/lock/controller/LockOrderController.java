@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -116,6 +119,20 @@ public class LockOrderController {
         Map<String, Object> res = lockInfoService.getLockInfo(String.valueOf(params.get("qr_code_no")));
         logger.info("获取锁密码返回：{}", res);
         return new Result(100, res);
+    }
+
+    @RequestMapping("exportLockOrderData")
+    public void exportLockOrderData(@RequestBody(required = false) final Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("octets/stream");
+        response.addHeader("Content-Disposition", "attachment;filename="+String.valueOf(params.remove("file_name"))+".xlsx");
+//        response.addHeader("Content-Disposition", "attachment;filename=file_name.xlsx");
+        HttpSession session = request.getSession();
+        Object userId = session.getAttribute("userId");
+        logger.info("导出订单数据参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        OutputStream outputStream = response.getOutputStream();
+        lockOrderService.exportLockOrderData(params, outputStream);
+        outputStream.close();
+        logger.info("分页查询订单返回：{}", "");
     }
 
 }

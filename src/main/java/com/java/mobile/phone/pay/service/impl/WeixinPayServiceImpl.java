@@ -5,6 +5,7 @@ import com.java.mobile.common.security.WxRemoteService;
 import com.java.mobile.common.utils.*;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
+import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.pay.bean.WxPayInfoBean;
 import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.mapper.WxPayInfoMapper;
@@ -43,6 +44,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private WxPayInfoMapper wxPayInfoMapper;
     @Autowired
     private TransFlowInfoMapper transFlowInfoMapper;
+    @Autowired
+    private LockOrderService lockOrderService;
 
     @Autowired
     private HttpClientUtil httpClientUtil;
@@ -243,6 +246,9 @@ public class WeixinPayServiceImpl implements WeixinPayService{
             logger.info("插入充值流水参数：{}", JSONObject.toJSONString(flowPrams));
             transFlowInfoMapper.insert(flowPrams);
 
+            //更新未支付的订单金额
+            this.updateDiffFee(totalFee, userId);
+
             //更新用户余额/押金
             logger.info("更新余额/押金参数：userId:{}，totalFee:{},type:{}", userId, totalFee,type);
             if ("4".equals(type)) {
@@ -252,6 +258,24 @@ public class WeixinPayServiceImpl implements WeixinPayService{
             }
         } catch (Exception e) {
             logger.error("异常：" + e.getMessage(), e);
+        }
+    }
+
+    private void updateDiffFee(String totalFee, String userId) {
+        List<Map<String, Object>> list = lockOrderService.unPayLockOrder(userId);
+        if (!CollectionUtils.isEmpty(list)) {
+            int diffFee = Integer.valueOf(list.get(0).get("diff_fee").toString()).intValue();
+            int diffFeeInt = Integer.valueOf(totalFee).intValue();
+            int fee = diffFee + diffFeeInt;
+
+            Map<String, Object> feeParams = new HashMap<>();
+            if (fee >= 0) {
+                feeParams.put("diff_fee", "0");
+            } else {
+                feeParams.put("diff_fee", fee);
+            }
+            feeParams.put("id", list.get(0).get("id"));
+            lockOrderService.update(feeParams);
         }
     }
 

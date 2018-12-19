@@ -96,4 +96,8 @@
             <if test="id != null and id != ''">and a.id = #{id}</if>
         </where>
     </select>
+
+    <select id="unPayLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select * from lock_order a a.status = 0 and a.`user_id` = #{user_id} and end_time is not null and a.diff_fee &lt; 0;
+    </select>
 </mapper>
