@@ -75,10 +75,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         res.put("lock_no", strings.get(0));
         res.put("qr_code_no", strings.get(1));
         res.put("lock_mac", strings.get(2));
-        res.put("device_no", strings.get(2));
+        res.put("device_no", strings.get(1));
         res.put("address", strings.get(3));
         res.put("lock_pwd", strings.get(4));
         res.put("lock_key", strings.get(5));
+        res.put("type", strings.get(6));
         res.put("user_id", userId);
         return res;
     }

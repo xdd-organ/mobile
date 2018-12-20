@@ -49,6 +49,7 @@
         lock_pwd,
         lock_key,
         insert_author,
+        `type`,
         update_author
         )
         VALUES
@@ -63,6 +64,7 @@
         #{lock_pwd},
         #{lock_key},
         #{user_id},
+        #{type},
         #{user_id}
         )
     </insert>
