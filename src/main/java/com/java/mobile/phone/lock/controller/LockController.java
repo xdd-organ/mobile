@@ -109,6 +109,7 @@ public class LockController {
                 Map<String, Object> params = new HashMap<>();
                 params.put("lock_no", deviceId);
                 params.put("battery", data.get("battery"));
+                params.put("wifi", data.get("wifi"));
                 lockInfoService.updateByLockNo(params);
             } catch (Exception e) {
                 logger.error("更新电量异常", e);

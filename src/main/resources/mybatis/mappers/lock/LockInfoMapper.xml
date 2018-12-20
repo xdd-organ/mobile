@@ -107,6 +107,7 @@
             <if test="hospital != null and hospital != ''">hospital = #{hospital},</if>
             <if test="user_id != null and user_id != ''">user_id = #{user_id},</if>
             <if test="battery != null and battery != ''">battery = #{battery},</if>
+            <if test="wifi != null and wifi != ''">wifi = #{wifi},</if>
         </set>
         WHERE lock_no = #{lock_no}
     </update>
