@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -122,10 +125,11 @@ public class LockOrderController {
     }
 
     @RequestMapping("exportLockOrderData")
-    public void exportLockOrderData(@RequestBody(required = false) final Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void exportLockOrderData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> params = this.getParams(request);
         response.setContentType("octets/stream");
-//        response.addHeader("Content-Disposition", "attachment;filename="+String.valueOf(params.remove("file_name"))+".xlsx");
-        response.addHeader("Content-Disposition", "attachment;filename=file_name.xlsx");
+        response.addHeader("Content-Disposition", "attachment;filename="+String.valueOf(params.remove("file_name"))+".xlsx");
+//        response.addHeader("Content-Disposition", "attachment;filename=file_name.xlsx");
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
         logger.info("导出订单数据参数：{},userId:{}", params, userId);
@@ -133,6 +137,19 @@ public class LockOrderController {
         lockOrderService.exportLockOrderData(params, outputStream);
         outputStream.close();
         logger.info("分页查询订单返回：{}", "");
+    }
+
+    private Map<String, Object> getParams(HttpServletRequest request) {
+        Map<String, Object> parameterMap = new HashMap<>();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        if (parameterNames != null) {
+            while (parameterNames.hasMoreElements()) {
+                String name = parameterNames.nextElement();
+                parameterMap.put(name, request.getParameter(name));
+            }
+
+        }
+        return parameterMap;
     }
 
 }
