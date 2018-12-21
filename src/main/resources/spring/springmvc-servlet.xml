@@ -35,6 +35,7 @@
 			<mvc:exclude-mapping path="/anon/**"/>
 			<mvc:exclude-mapping path="/stat/**"/>
 			<mvc:exclude-mapping path="/user/login"/>
+			<mvc:exclude-mapping path="/lockOrder/exportLockOrderData"/>
 			<bean class="com.java.mobile.common.interceptor.LoginInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
