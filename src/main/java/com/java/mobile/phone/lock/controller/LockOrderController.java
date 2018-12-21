@@ -124,11 +124,11 @@ public class LockOrderController {
     @RequestMapping("exportLockOrderData")
     public void exportLockOrderData(@RequestBody(required = false) final Map<String, Object> params, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("octets/stream");
-        response.addHeader("Content-Disposition", "attachment;filename="+String.valueOf(params.remove("file_name"))+".xlsx");
-//        response.addHeader("Content-Disposition", "attachment;filename=file_name.xlsx");
+//        response.addHeader("Content-Disposition", "attachment;filename="+String.valueOf(params.remove("file_name"))+".xlsx");
+        response.addHeader("Content-Disposition", "attachment;filename=file_name.xlsx");
         HttpSession session = request.getSession();
         Object userId = session.getAttribute("userId");
-        logger.info("导出订单数据参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        logger.info("导出订单数据参数：{},userId:{}", params, userId);
         OutputStream outputStream = response.getOutputStream();
         lockOrderService.exportLockOrderData(params, outputStream);
         outputStream.close();
