@@ -4,6 +4,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
@@ -66,7 +67,7 @@ public class CustomRegistry{
     public Registry<ConnectionSocketFactory> buildHttps(){
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
-                .register("https", new SSLConnectionSocketFactory(createIgnoreVerifySSL2())).build();
+                .register("https", new SSLConnectionSocketFactory(createIgnoreVerifySSL2(),NoopHostnameVerifier.INSTANCE)).build();
         return socketFactoryRegistry;
     }
 
