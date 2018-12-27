@@ -394,6 +394,19 @@ public class HttpClientUtil {
     }*/
 
 
+    public CloseableHttpClient getHttpClient() {
+        return httpClient;
+    }
 
+    public void setHttpClient(CloseableHttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
+    public RequestConfig getRequestConfig() {
+        return requestConfig;
+    }
+
+    public void setRequestConfig(RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
+    }
 }
