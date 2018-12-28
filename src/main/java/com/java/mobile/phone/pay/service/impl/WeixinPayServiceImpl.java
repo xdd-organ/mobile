@@ -3,6 +3,7 @@ package com.java.mobile.phone.pay.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.java.mobile.common.security.WxRemoteService;
 import com.java.mobile.common.utils.*;
+import com.java.mobile.common.utils.httpclient.CustomHttpRequestRetryHandler;
 import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.phone.lock.service.LockOrderService;
@@ -13,6 +14,22 @@ import com.java.mobile.phone.pay.service.WeixinPayService;
 import com.java.mobile.phone.user.mapper.TransFlowInfoMapper;
 import com.java.mobile.phone.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpMessage;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +39,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.KeyStore;
 import java.util.*;
 
 /**
@@ -46,6 +70,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private TransFlowInfoMapper transFlowInfoMapper;
     @Autowired
     private LockOrderService lockOrderService;
+    private String filePath;
+    private String pwd;
 
     @Autowired
     private HttpClientUtil httpClientUtil;
@@ -388,4 +414,115 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 
         return 1;
     }
+
+
+
+    @PostConstruct
+    public void init () {
+        HttpClientBuilder httpClientBuilder = this.initBuilder();
+        this.httpClient = httpClientBuilder.build();
+    }
+
+    @Value("${maxTotal}")
+    private int maxTotal;
+    @Value("${defaultMaxPerRoute}")
+    private int defaultMaxPerRoute;
+    @Value("${validateAfterInactivity}")
+    private int validateAfterInactivity;
+    @Autowired
+    private CustomHttpRequestRetryHandler retryHandler;
+    @Autowired(required = false)
+    private RequestConfig requestConfig;
+    private CloseableHttpClient httpClient;
+
+    public SSLContext createIgnoreVerifySSL(){
+        try {
+            //String path = this.getClass().getClassLoader().getResource("certificate").getPath().toString();
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            FileInputStream inputStream = new FileInputStream(filePath);
+            try {
+                keyStore.load(inputStream, pwd.toCharArray());
+            } finally {
+                inputStream.close();
+            }
+            SSLContext sc = SSLContexts.custom().loadKeyMaterial(keyStore, pwd.toCharArray()).build();
+            return sc;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public Registry<ConnectionSocketFactory> buildHttps(){
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(createIgnoreVerifySSL(), NoopHostnameVerifier.INSTANCE)).build();
+        return socketFactoryRegistry;
+    }
+
+    public PoolingHttpClientConnectionManager initManager() {
+        Registry<ConnectionSocketFactory> registry = this.buildHttps();
+        PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
+        manager.setMaxTotal(maxTotal);
+        manager.setDefaultMaxPerRoute(defaultMaxPerRoute);
+        manager.setValidateAfterInactivity(validateAfterInactivity);
+        return manager;
+    }
+
+    public HttpClientBuilder initBuilder() {
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        httpClientBuilder.setConnectionManager(this.initManager());
+        httpClientBuilder.setRetryHandler(retryHandler);
+        return httpClientBuilder;
+    }
+
+    /**
+     * post请求(表单提交)
+     * @param url 请求url
+     * @param params 请求参数，可以为null
+     * @return 返回请求结果
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public HttpResult doPost(String url, String params, Map<String, String> headers) throws URISyntaxException, IOException{
+        // 创建http POST请求
+        HttpPost httpPost = new HttpPost(url);
+        this.setRequestHeaders(headers, httpPost);
+        httpPost.setConfig(this.requestConfig);
+        if (StringUtils.isNotBlank(params)) {
+            // 构造一个body实体
+            StringEntity entity = new StringEntity(params, Charset.forName("UTF-8"));
+            // 将请求实体设置到httpPost对象中
+            httpPost.setEntity(entity);
+        }
+
+        CloseableHttpResponse response = null;
+        try {
+            // 执行请求
+            response = httpClient.execute(httpPost);
+            if (response.getEntity() != null) {
+                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(
+                        response.getEntity(), "UTF-8"));
+            }
+            return new HttpResult(response.getStatusLine().getStatusCode(), null);
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+        return null;
+    }
+
+    private void setRequestHeaders(Map<String, String> headers, HttpMessage httpMessage){
+        if (null == httpMessage) return;
+        if (null != headers && !headers.isEmpty()) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                httpMessage.setHeader(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+
 }
