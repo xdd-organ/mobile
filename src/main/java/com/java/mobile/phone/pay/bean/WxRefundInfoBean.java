@@ -75,14 +75,6 @@ public class WxRefundInfoBean implements Serializable{
 	 * 现金支付金额，单位为分，只能为整数，详见支付金额
 	 * */
 	private String cashFee;
-	/**
-	 * 请求时间
-	 * */
-	private String reqDate;
-	/**
-	 * 批次号
-	 * */
-	private String batchNo;
 
 	public String getAppId() {
 		return appId;
@@ -211,23 +203,6 @@ public class WxRefundInfoBean implements Serializable{
 	public void setCashFee(String cashFee) {
 		this.cashFee = cashFee;
 	}
-
-	public String getReqDate() {
-		return reqDate;
-	}
-
-	public void setReqDate(String reqDate) {
-		this.reqDate = reqDate;
-	}
-
-	public String getBatchNo() {
-		return batchNo;
-	}
-
-	public void setBatchNo(String batchNo) {
-		this.batchNo = batchNo;
-	}
-	
 
 	@Override
 	public String toString() {
