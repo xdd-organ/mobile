@@ -37,7 +37,7 @@
         UPDATE wx_refund_info
         <set>
             <if test="time_end != null and time_end != ''">`time_end` = #{time_end},</if>
-            <if test="return_code != null and return_code != ''">result = #{return_code},</if>
+            <if test="return_code != null and return_code != ''">result = #{refund_status},</if>
         </set>
         WHERE out_refund_no = #{out_refund_no}
     </update>

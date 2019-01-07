@@ -115,6 +115,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
                     Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
                     resp.put("prepay_id", weixinRsp.get("prepay_id"));
                     resp.put("out_trade_no", wxPayInfoBean.getOrderNo());
+                    resp.put("total_fee", wxPayInfoBean.getTotalFee());
                 }
             }
         } catch (Exception e) {
@@ -412,6 +413,8 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         }
         String sign = this.wxRemoteService.signMd5ByMap(mchId, reqData);
         reqData.put("paySign", sign);
+        reqData.put("out_trade_no", params.get("out_trade_no"));
+        reqData.put("total_fee", params.get("total_fee"));
         reqData.remove("appId");
         return reqData;
     }
