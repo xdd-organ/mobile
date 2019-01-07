@@ -259,7 +259,7 @@ CREATE TABLE `wx_refund_info` (
    `refund_fee` int(11) DEFAULT NULL COMMENT '退款金额金额，单位为分',
    `notify_url` varchar(512) DEFAULT NULL COMMENT '通知地址',
    `result` varchar(16) DEFAULT NULL COMMENT '退款结果：SUCCESS/FAIL',
-   `time_end` varchar(16) DEFAULT NULL COMMENT '支付完成时间，格式为yyyyMMddHHmmss',
+   `time_end` varchar(32) DEFAULT NULL COMMENT '支付完成时间，格式为yyyyMMddHHmmss',
    `user_id` int(11) DEFAULT NULL COMMENT '用户id',
    `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
