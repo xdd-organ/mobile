@@ -198,6 +198,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         refundParams.put("total_fee", wxRefundInfoBean.getTotalFee());
         refundParams.put("refund_fee", wxRefundInfoBean.getRefundFee());
         refundParams.put("out_refund_no", randomNum);
+        refundParams.put("user_id", params.get("user_id"));
         refundParams.put("notify_url", refundNotifyUrl);
         logger.info("微信支付参数入库：{}", JSONObject.toJSONString(refundParams));
         wxRefundInfoMapper.insert(refundParams);

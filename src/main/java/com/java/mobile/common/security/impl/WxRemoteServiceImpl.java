@@ -87,7 +87,7 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
 		String md5Key=DigestUtils.md5Hex(key).toLowerCase();
 		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
-		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS7Padding");//AES/ECB/PKCS7Padding  AES/ECB/NoPadding
+		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");//AES/ECB/PKCS7Padding  AES/ECB/NoPadding
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		return new String(cipher.doFinal(b),"UTF-8").trim();
 	}
