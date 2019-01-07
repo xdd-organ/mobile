@@ -36,7 +36,7 @@
     <update id="updateByRefundNo" parameterType="java.util.Map">
         UPDATE wx_refund_info
         <set>
-            <if test="time_end != null and time_end != ''">`time_end` = #{time_end},</if>
+            <if test="success_time != null and success_time != ''">`time_end` = #{success_time},</if>
             <if test="refund_status != null and refund_status != ''">result = #{refund_status},</if>
         </set>
         WHERE out_refund_no = #{out_refund_no}
