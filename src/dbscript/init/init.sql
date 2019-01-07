@@ -247,3 +247,23 @@ CREATE TABLE `fault_feedback` (
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='故障反馈';
 
+CREATE TABLE `wx_refund_info` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `appid` varchar(64) DEFAULT NULL COMMENT '小程序ID',
+   `mch_id` varchar(64) DEFAULT NULL COMMENT '商户号',
+   `nonce_str` varchar(64) DEFAULT NULL COMMENT '随机字符串',
+   `sign` varchar(64) DEFAULT NULL COMMENT '签名',
+   `out_trade_no` varchar(64) DEFAULT NULL COMMENT '商户支付订单号',
+   `out_refund_no` varchar(64) DEFAULT NULL COMMENT '退款订单号',
+   `total_fee` int(11) DEFAULT NULL COMMENT '订单总金额，单位为分',
+   `refund_fee` int(11) DEFAULT NULL COMMENT '退款金额金额，单位为分',
+   `notify_url` varchar(512) DEFAULT NULL COMMENT '通知地址',
+   `result` varchar(16) DEFAULT NULL COMMENT '退款结果：SUCCESS/FAIL',
+   `time_end` varchar(16) DEFAULT NULL COMMENT '支付完成时间，格式为yyyyMMddHHmmss',
+   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+   `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信退款信息';
+
+
+

@@ -83,6 +83,14 @@ public class WeixinPayController {
         return new Result<>(100, prepay);
     }
 
+    @RequestMapping("refund")
+    public Result refund(@RequestBody Map<String, String> params) {
+        logger.info("微信生成退款参数：{}", JSONObject.toJSONString(params));
+        Map<String, String> prepay = weixinPayService.refund(params);
+        logger.info("微信生成退款返回：{}", JSONObject.toJSONString(prepay));
+        return new Result<>(100, prepay);
+    }
+
     /**
      * 结果通知
      * @param request
@@ -111,6 +119,32 @@ public class WeixinPayController {
         String rtnMsg = "<xml><return_code><![CDATA[" + return_code + "]]></return_code><return_msg><![CDATA["
                 + return_msg + "]]></return_msg></xml>";
         logger.info("返回微信通知结果：[{}]", rtnMsg);
+        return rtnMsg;
+    }
+
+    @RequestMapping("refundNotify")
+    public String refundNotify(HttpServletRequest request, HttpServletResponse response) {
+        String return_code = "FAIL";
+        String return_msg = "error";
+        String xmlStr = this.getRequestParams(request);
+        logger.info("收到微信异步通知：[{}]", xmlStr);
+        String returnCode = XmlUtils.getNodeValueFromXml("return_code", xmlStr);
+        if (SUCCESS.equals(returnCode.toUpperCase())) {
+            String s = this.refundVerify(xmlStr);
+            if (s != null) {
+                try {
+                    Map<String, String> params = XmlUtils.xmlStrToMap(s);
+                    weixinPayService.refundNotify(params);
+                    return_code = SUCCESS;
+                    return_msg = "OK";
+                } catch (Exception e) {
+                    logger.error("异常：" + e.getMessage(), e);
+                }
+            }
+        }
+        String rtnMsg = "<xml><return_code><![CDATA[" + return_code + "]]></return_code><return_msg><![CDATA["
+                + return_msg + "]]></return_msg></xml>";
+        logger.info("返回微信退款通知结果：[{}]", rtnMsg);
         return rtnMsg;
     }
 
@@ -156,6 +190,22 @@ public class WeixinPayController {
         } catch (DocumentException e) {
             logger.error("异常：" + e.getMessage(), e);
             return false;
+        }
+
+        return flag;
+    }
+
+    private String refundVerify(String xml){
+        String flag = null;
+        try {
+            SortedMap<String, String> map = XmlUtils.xmlStrToMap(xml);
+            String sign = map.get("mch_id");
+            String reqInfo = map.get("req_info");
+            map.remove("mch_id");
+            flag = wxRemoteService.decryption(reqInfo, sign);
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+            return null;
         }
 
         return flag;

@@ -75,6 +75,8 @@ public class WxRefundInfoBean implements Serializable{
 	 * 现金支付金额，单位为分，只能为整数，详见支付金额
 	 * */
 	private String cashFee;
+	private String notifyUrl;
+
 
 	public String getAppId() {
 		return appId;
@@ -202,6 +204,14 @@ public class WxRefundInfoBean implements Serializable{
 
 	public void setCashFee(String cashFee) {
 		this.cashFee = cashFee;
+	}
+
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
 	}
 
 	@Override

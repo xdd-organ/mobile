@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.java.mobile.phone.pay.mapper.WxRefundInfoMapper">
+    <insert id="insert" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select last_insert_id()
+        </selectKey>
+        INSERT INTO wx_refund_info
+        (
+            appid,
+            mch_id,
+            nonce_str,
+            sign,
+            out_trade_no,
+            out_refund_no,
+            total_fee,
+            refund_fee,
+            notify_url,
+            user_id
+        )
+        VALUES
+        (
+            #{appid},
+            #{mch_id},
+            #{nonce_str},
+            #{sign},
+            #{out_trade_no},
+            #{out_refund_no},
+            #{total_fee},
+            #{refund_fee},
+            #{notify_url},
+            #{user_id}
+        );
+    </insert>
+
+    <update id="updateByRefundNo" parameterType="java.util.Map">
+        UPDATE wx_refund_info
+        <set>
+            <if test="time_end != null and time_end != ''">`time_end` = #{time_end},</if>
+            <if test="return_code != null and return_code != ''">result = #{return_code},</if>
+        </set>
+        WHERE out_refund_no = #{out_refund_no}
+    </update>
+
+    <select id="getByRefundNo" parameterType="java.lang.String" resultType="java.util.Map">
+        select a.* from wx_refund_info a where a.`out_refund_no` = #{out_refund_no}
+    </select>
+
+</mapper>

@@ -8,8 +8,10 @@ import com.java.mobile.common.utils.httpclient.HttpClientUtil;
 import com.java.mobile.common.utils.httpclient.HttpResult;
 import com.java.mobile.phone.lock.service.LockOrderService;
 import com.java.mobile.phone.pay.bean.WxPayInfoBean;
+import com.java.mobile.phone.pay.bean.WxRefundInfoBean;
 import com.java.mobile.phone.pay.constant.PayConstant;
 import com.java.mobile.phone.pay.mapper.WxPayInfoMapper;
+import com.java.mobile.phone.pay.mapper.WxRefundInfoMapper;
 import com.java.mobile.phone.pay.service.WeixinPayService;
 import com.java.mobile.phone.user.mapper.TransFlowInfoMapper;
 import com.java.mobile.phone.user.service.UserService;
@@ -41,6 +43,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -70,15 +73,20 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     private TransFlowInfoMapper transFlowInfoMapper;
     @Autowired
     private LockOrderService lockOrderService;
-    private String filePath;
+    @Autowired
+    private WxRefundInfoMapper wxRefundInfoMapper;
+
+    @Value("${mchId:}")
     private String pwd;
 
     @Autowired
     private HttpClientUtil httpClientUtil;
 
     private final static String prepayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    private final static String refundUrl = "https://api.mch.weixin.qq.com/secapi/pay/refund";
     private final static String queryUrl = "https://api.mch.weixin.qq.com/pay/orderquery";
     private final static String payNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/payNotify";
+    private final static String refundNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/refundNotify";
     public final static String payAndUnLockNotifyUrl = "https://www.chmbkh.com/mobile/pay/wx/payAndUnLockNotifyUrl";
     private final static String SUCCESS = "SUCCESS";
 
@@ -106,6 +114,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
                 if (this.verify(rspXml)) {
                     Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
                     resp.put("prepay_id", weixinRsp.get("prepay_id"));
+                    resp.put("out_trade_no", wxPayInfoBean.getOrderNo());
                 }
             }
         } catch (Exception e) {
@@ -164,6 +173,35 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         wxPayInfoMapper.insert(payParams);
         logger.info("组装wxPayInfoBean：{}", JSONObject.toJSONString(wxPayInfoBean));
         return wxPayInfoBean;
+    }
+
+    private WxRefundInfoBean combineWxRefundInfoBean(Map<String, String> params) {
+        String randomNum = SerialNumber.getRandomNum(32);
+        WxRefundInfoBean wxRefundInfoBean = new WxRefundInfoBean();
+        wxRefundInfoBean.setAppId(appid);//微信分配的小程序ID
+        wxRefundInfoBean.setMchId(mchId);//微信支付分配的商户号
+        wxRefundInfoBean.setNonceStr(randomNum);//随机字符串
+        wxRefundInfoBean.setOutTradeNo(params.get("out_trade_no"));//商品简单描述
+        wxRefundInfoBean.setOutRefundNo(randomNum); //out_trade_no 商户系统内部订单号
+        wxRefundInfoBean.setTotalFee(params.get("total_fee"));//订单总金额
+        wxRefundInfoBean.setRefundFee(params.get("total_fee"));//微信支付API的机器IP
+        wxRefundInfoBean.setNotifyUrl(refundNotifyUrl);//微信支付API的机器IP
+
+
+        Map<String, Object> refundParams = new HashMap<>();
+        refundParams.putAll(params);
+        refundParams.put("appid", appid);
+        refundParams.put("mch_id", mchId);
+        refundParams.put("nonce_str", randomNum);
+        refundParams.put("out_trade_no", wxRefundInfoBean.getOutTradeNo());
+        refundParams.put("total_fee", wxRefundInfoBean.getTotalFee());
+        refundParams.put("refund_fee", wxRefundInfoBean.getRefundFee());
+        refundParams.put("out_refund_no", randomNum);
+        refundParams.put("notify_url", refundNotifyUrl);
+        logger.info("微信支付参数入库：{}", JSONObject.toJSONString(refundParams));
+        wxRefundInfoMapper.insert(refundParams);
+        logger.info("组装wxPayInfoBean：{}", JSONObject.toJSONString(wxRefundInfoBean));
+        return wxRefundInfoBean;
     }
 
     private boolean verify(String xml){
@@ -415,7 +453,92 @@ public class WeixinPayServiceImpl implements WeixinPayService{
         return 1;
     }
 
+    @Override
+    public Map<String, String> refund(Map<String, String> params) {
+        try {
+            WxRefundInfoBean wxPayInfoBean = this.combineWxRefundInfoBean(params);
+            String reqXml = ftlTemplateEngine.genMessage("wx_refund_request.ftl", wxPayInfoBean);
+            String sign = this.getRefundSign(wxPayInfoBean);
+            reqXml = XmlUtils.replaceNodeContent("<sign>", "</sign>", sign, reqXml);
+            logger.info("微信退款参数：{}", reqXml);
+            HttpResult httpResult = this.doPost(refundUrl, reqXml, null);
+            logger.info("微信退款返回：{}", JSONObject.toJSONString(httpResult));
+            String rspXml = httpResult.getBody();
+            String returnCode = XmlUtils.getNodeValueFromXml("<return_code>", "</return_code>", rspXml);
+            if (SUCCESS.equalsIgnoreCase(returnCode)) {
+                if (this.verify(rspXml)) {
+                    Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
+                    logger.info("退款同步结果：{}", weixinRsp);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("退款失败", e);
+        }
+        return null;
+    }
 
+    @Override
+    public int refundNotify(Map<String, String> params) {
+        String refundNo = params.get("out_refund_no");
+        Map<String, Object> order = wxRefundInfoMapper.getByRefundNo(refundNo);
+        logger.info("查询退款订单结果：{}", JSONObject.toJSONString(order));
+        if (!CollectionUtils.isEmpty(order)) {
+            String result = String.valueOf(order.get("result"));
+            if (!"SUCCESS".equalsIgnoreCase(result)) {
+                Map<String, Object> params2 = new HashMap<>();
+                params2.putAll(params);
+
+                //更新订单状态
+                logger.info("更新退款订单参数：{}", JSONObject.toJSONString(params));
+                int i = wxRefundInfoMapper.updateByRefundNo(params2);
+                logger.info("更新退款订单结果：{}", i);
+
+                //更新流水与用户余额
+                this.saveInfoByRefund(params, order);
+            }
+        } else {
+            logger.error("退款订单不存在");
+        }
+        return 1;
+    }
+
+    private void saveInfoByRefund(Map<String, String> params, Map<String, Object> order) {
+        try {
+            String type = "1";
+            String userId = order.get("user_id").toString();
+            String totalFee = "-" + params.get("refund_fee");
+
+            //插入流水
+            Map<String, Object> flowPrams = new HashMap<>();
+            flowPrams.put("type", type);
+            flowPrams.put("fee", totalFee);
+            flowPrams.put("user_id", userId);
+            flowPrams.put("status", "0");
+            flowPrams.put("insert_author", userId);
+            flowPrams.put("update_time", userId);
+            logger.info("插入退款流水参数：{}", JSONObject.toJSONString(flowPrams));
+            transFlowInfoMapper.insert(flowPrams);
+
+            //更新用户余额/押金
+            logger.info("更新余额/押金参数：userId:{}，totalFee:{},type:{}", userId, totalFee,type);
+            userService.updateMoney(userId, Integer.valueOf(totalFee));
+        } catch (Exception e) {
+            logger.error("异常：" + e.getMessage(), e);
+        }
+    }
+
+    private String getRefundSign(WxRefundInfoBean wxRefundInfoBean) {
+        Map<String, String> reqData = new HashMap<String, String>();
+        reqData.put("appid", wxRefundInfoBean.getAppId());
+        reqData.put("mch_id", wxRefundInfoBean.getMchId());
+        reqData.put("nonce_str", wxRefundInfoBean.getNonceStr());
+        reqData.put("out_trade_no", wxRefundInfoBean.getOutTradeNo());
+        reqData.put("out_refund_no", wxRefundInfoBean.getOutRefundNo());
+        reqData.put("total_fee", wxRefundInfoBean.getTotalFee());
+        reqData.put("refund_fee", wxRefundInfoBean.getRefundFee());
+        reqData.put("notify_url", wxRefundInfoBean.getNotifyUrl());
+        return wxRemoteService.signMd5ByMap(wxRefundInfoBean.getMchId(), reqData);
+    }
 
     @PostConstruct
     public void init () {
@@ -437,9 +560,10 @@ public class WeixinPayServiceImpl implements WeixinPayService{
 
     public SSLContext createIgnoreVerifySSL(){
         try {
-            //String path = this.getClass().getClassLoader().getResource("certificate").getPath().toString();
+            String path = this.getClass().getClassLoader().getResource("/").getPath().toString();
+            path = path + File.separator + "apiclient_cert.p12";
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            FileInputStream inputStream = new FileInputStream(filePath);
+            FileInputStream inputStream = new FileInputStream(path);
             try {
                 keyStore.load(inputStream, pwd.toCharArray());
             } finally {
