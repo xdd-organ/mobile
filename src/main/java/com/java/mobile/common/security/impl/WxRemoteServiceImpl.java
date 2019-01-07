@@ -83,13 +83,16 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	 */
 	@Override
 	public String decryption(String ciphertext, String mchId) throws Exception {
+		logger.info("微信退款解密密文：{}", ciphertext);
 		byte[] b = Base64Util.decode(ciphertext);
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
 		String md5Key=DigestUtils.md5Hex(key).toLowerCase();
 		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
 		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");//AES/ECB/PKCS7Padding  AES/ECB/NoPadding
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		return new String(cipher.doFinal(b),"UTF-8").trim();
+		String trim = new String(cipher.doFinal(b), "UTF-8").trim();
+		logger.info("微信退款解密结果：{}", trim);
+		return trim;
 	}
 /*
 	@Override
