@@ -85,12 +85,23 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	public String decryption(String ciphertext, String mchId) throws Exception {
 		byte[] b = Base64Util.decode(ciphertext);
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
-//		String md5Key=DigestUtils.md5Hex(account.getMd5Key()).toLowerCase();
-		SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
-		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+		String md5Key=DigestUtils.md5Hex(key).toLowerCase();
+		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
+		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");//AES/ECB/PKCS7Padding
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		return new String(cipher.doFinal(b),"UTF-8").trim();
 	}
+/*
+	@Override
+	public String decryption(String ciphertext, String mchId) throws Exception {
+		byte[] b = Base64Util.decode(ciphertext);
+		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
+		String md5Key=DigestUtils.md5Hex(account.getMd5Key()).toLowerCase();
+		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
+		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		return new String(cipher.doFinal(b),"UTF-8").trim();
+	}*/
 
 	/**
 	 * 对明文plaintext进行SHA-256-EBC加密再进行base64编码
@@ -98,8 +109,8 @@ public class WxRemoteServiceImpl implements WxRemoteService {
 	@Override
 	public String encrypt(String plaintext, String mchId) throws Exception {
 //		WxAccount account = wxAccountContainer.getWxAccountMap().get(mchId);
-//		String md5Key=DigestUtils.md5Hex(account.getMd5Key()).toLowerCase();
-		SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+		String md5Key=DigestUtils.md5Hex(key).toLowerCase();
+		SecretKeySpec secretKey = new SecretKeySpec(md5Key.getBytes(), "AES");
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 		byte[] ciphertext = cipher.doFinal(plaintext.getBytes());
