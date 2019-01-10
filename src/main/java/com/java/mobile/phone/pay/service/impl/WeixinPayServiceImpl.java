@@ -460,20 +460,41 @@ public class WeixinPayServiceImpl implements WeixinPayService{
     @Override
     public Map<String, String> refund(Map<String, String> params) {
         try {
-            WxRefundInfoBean wxPayInfoBean = this.combineWxRefundInfoBean(params);
-            String reqXml = ftlTemplateEngine.genMessage("wx_refund_request.ftl", wxPayInfoBean);
-            String sign = this.getRefundSign(wxPayInfoBean);
-            reqXml = XmlUtils.replaceNodeContent("<sign>", "</sign>", sign, reqXml);
-            logger.info("微信退款参数：{}", reqXml);
-            HttpResult httpResult = this.doPost(refundUrl, reqXml, null);
-            logger.info("微信退款返回：{}", JSONObject.toJSONString(httpResult));
-            String rspXml = httpResult.getBody();
-            String returnCode = XmlUtils.getNodeValueFromXml("<return_code>", "</return_code>", rspXml);
-            if (SUCCESS.equalsIgnoreCase(returnCode)) {
-                if (this.verify(rspXml)) {
-                    Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
-                    logger.info("退款同步结果：{}", weixinRsp);
+            boolean outTradeNo = StringUtils.isNoneBlank(params.get("out_trade_no"));
+            if (outTradeNo) {
+                WxRefundInfoBean wxPayInfoBean = this.combineWxRefundInfoBean(params);
+                String reqXml = ftlTemplateEngine.genMessage("wx_refund_request.ftl", wxPayInfoBean);
+                String sign = this.getRefundSign(wxPayInfoBean);
+                reqXml = XmlUtils.replaceNodeContent("<sign>", "</sign>", sign, reqXml);
+                logger.info("微信退款参数：{}", reqXml);
+                HttpResult httpResult = this.doPost(refundUrl, reqXml, null);
+                logger.info("微信退款返回：{}", JSONObject.toJSONString(httpResult));
+                String rspXml = httpResult.getBody();
+                String returnCode = XmlUtils.getNodeValueFromXml("<return_code>", "</return_code>", rspXml);
+                if (SUCCESS.equalsIgnoreCase(returnCode)) {
+                    if (this.verify(rspXml)) {
+                        Map<String, String> weixinRsp = XmlUtils.xmlStrToMap(rspXml);
+                        logger.info("退款同步结果：{}", weixinRsp);
+                    }
                 }
+            } else {
+                String userId = params.get("user_id");
+                String totalFee = params.get("total_fee");
+                String type = "1";
+                //插入流水
+                Map<String, Object> flowPrams = new HashMap<>();
+                flowPrams.put("type", type);
+                flowPrams.put("fee", totalFee);
+                flowPrams.put("user_id", userId);
+                flowPrams.put("status", "0");
+                flowPrams.put("insert_author", userId);
+                flowPrams.put("update_time", userId);
+                logger.info("插入退款流水参数：{}", JSONObject.toJSONString(flowPrams));
+                transFlowInfoMapper.insert(flowPrams);
+
+                //更新用户余额/押金
+                logger.info("更新余额/押金参数：userId:{}，totalFee:{},type:{}", userId, totalFee,type);
+                userService.updateMoney(userId, Integer.valueOf(totalFee));
             }
         } catch (Exception e) {
             logger.error("退款失败", e);
