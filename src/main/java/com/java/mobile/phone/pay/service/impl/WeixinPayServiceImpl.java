@@ -479,7 +479,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
                 }
             } else {
                 String userId = params.get("user_id");
-                String totalFee = params.get("total_fee");
+                String totalFee = "-" + params.get("total_fee");
                 String type = "1";
                 //插入流水
                 Map<String, Object> flowPrams = new HashMap<>();
