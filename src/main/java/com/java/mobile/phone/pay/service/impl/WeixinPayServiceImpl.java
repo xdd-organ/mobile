@@ -477,7 +477,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
                         logger.info("退款同步结果：{}", weixinRsp);
                     }
                 }
-            } else {
+            } /*else {
                 String userId = params.get("user_id");
                 String totalFee = params.get("total_fee");
                 String type = "1";
@@ -489,13 +489,14 @@ public class WeixinPayServiceImpl implements WeixinPayService{
                 flowPrams.put("status", "0");
                 flowPrams.put("insert_author", userId);
                 flowPrams.put("update_time", userId);
+                flowPrams.put("desc", "退费到余额");
                 logger.info("插入退款流水参数：{}", JSONObject.toJSONString(flowPrams));
                 transFlowInfoMapper.insert(flowPrams);
 
                 //更新用户余额/押金
                 logger.info("更新余额/押金参数：userId:{}，totalFee:{},type:{}", userId, totalFee,type);
                 userService.updateMoney(userId, Integer.valueOf(totalFee));
-            }
+            }*/
         } catch (Exception e) {
             logger.error("退款失败", e);
         }
@@ -541,6 +542,7 @@ public class WeixinPayServiceImpl implements WeixinPayService{
             flowPrams.put("status", "0");
             flowPrams.put("insert_author", userId);
             flowPrams.put("update_time", userId);
+            flowPrams.put("desc", "退费到微信");
             logger.info("插入退款流水参数：{}", JSONObject.toJSONString(flowPrams));
             transFlowInfoMapper.insert(flowPrams);
 
