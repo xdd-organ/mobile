@@ -245,12 +245,13 @@ public class LockOrderServiceImpl implements LockOrderService {
     }
 
     private int calcActualFee(int hours, int price) {
+        int temp = price * 10;
         int day = hours / 24;
         int hour = hours % 24;
-        int dayPrice = day * 3000;
+        int dayPrice = day * temp;
         int hourPrice = hour * price;
-        if (hourPrice > 3000) {
-            hourPrice = 3000;
+        if (hourPrice > temp) {
+            hourPrice = temp;
         }
         return dayPrice + hourPrice;
     }

@@ -112,6 +112,16 @@ public class UserController {
         return new Result(100);
     }
 
+    @RequestMapping("updateByUserId")//修改用户信息
+    public Result updateByUserId(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object userId = session.getAttribute("userId");
+        logger.info("修改用户信息参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        int i = userService.updateByUserId(params);
+        logger.info("修改用户信息返回：{}", i);
+        return new Result(100);
+    }
+
     @RequestMapping("bindWeixinInfo")//绑定微信信息
     public Result bindWeixinInfo(@RequestBody Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
