@@ -81,6 +81,7 @@
             <if test="session_key != null and session_key != ''">a.session_key = #{session_key},</if>
             <if test="status != null and status != ''">a.status = #{status},</if>
             <if test="gender != null and gender != ''">a.gender = #{gender},</if>
+            <if test="type != null and type != ''">a.type = #{type},</if>
         </set>
         where id = #{user_id}
     </update>
