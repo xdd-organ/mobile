@@ -205,9 +205,8 @@ public class LockOrderServiceImpl implements LockOrderService {
                     transFlowInfoService.insert(lockNo, actualFee + "", "1", "实际使用比计划时间少，退费到余额", "0", userId);
                 } if(actualFee < 0) {
                     //余额扣钱
-                    transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
-
                     this.handlerDiffFee(actualFee, userId, unLockOrder.get(0).get("id"));
+                    transFlowInfoService.insert(lockNo, actualFee + "", "0", "实际使用比计划时间多，余额扣除", "0", userId);
                 }
                 userService.updateScore(userId, res / 100);
                 this.sendLockSms(userId);
@@ -220,12 +219,15 @@ public class LockOrderServiceImpl implements LockOrderService {
     }
 
     private void handlerDiffFee(int actualFee, String userId, Object id) {
+        logger.info("计算订单是否金额不足，差价：{}，用户id：{}，订单id：{}", actualFee, userId, id);
         Map<String, Object> user = userService.getByUserId(userId);
         int money = Integer.valueOf(user.get("money").toString()).intValue();
+        logger.info("计算订单是否金额不足，用户余额：{}，用户id：{}", money, userId);
         int diffFee = actualFee;
         if (money > 0) {
             diffFee = money + actualFee;
         }
+        logger.info("计算订单是否金额不足，差价：{}，用户id：{}", diffFee, userId);
         if (diffFee < 0) {
             Map<String, Object> feeParams = new HashMap<>();
             feeParams.put("id", id);

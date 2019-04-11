@@ -29,6 +29,7 @@
         <set>
             update_time = now(),
             <if test="fee != null and fee != ''">`fee` = #{fee},</if>
+            <if test="diff_fee != null and diff_fee != ''">`diff_fee` = #{diff_fee},</if>
             <if test="type != null and type != ''">`type` = #{type},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="end_time != null and end_time != ''">end_time = #{end_time},</if>
