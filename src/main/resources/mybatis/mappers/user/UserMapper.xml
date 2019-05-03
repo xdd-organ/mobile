@@ -110,6 +110,7 @@
             <if test="is_disable != null and is_disable != ''">and a.is_disable = #{is_disable}</if>
             <if test="status != null and status != ''">and a.status = #{status}</if>
             <if test="gender != null and gender != ''">and a.gender = #{gender}</if>
+            <if test="money_lt_zero != null and money_lt_zero != ''">and a.money &lt; 0</if>
         </where>
     </select>
 
