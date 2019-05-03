@@ -39,16 +39,16 @@
     </update>
 
     <select id="listByLockOrder" parameterType="java.util.Map" resultMap="listByLockOrderMap">
-        select a.*, b.address, a.user_id ui from lock_order a left join lock_info b on a.lock_no = b.lock_no
+        select a.*, b.address, a.user_id ui,b.qr_code_no from lock_order a left join lock_info b on a.lock_no = b.lock_no
         <where>
             and a.status = 0
             <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
             <if test="type != null and type != ''">and a.`type` = #{type}</if>
             <if test="status != null and status != ''">and a.status = #{status}</if>
-            <if test="lock_no != null and lock_no != ''">and a.lock_no = #{lock_no}</if>
+            <if test="lock_no != null and lock_no != ''">and a.lock_no = like concat('%',#{lock_no},'%')</if>
             <if test="agency_user_id != null and agency_user_id != ''">and b.`user_id` = #{agency_user_id}</if>
-            <if test="hospital != null and hospital != ''">and b.`hospital` = #{hospital}</if>
-            <if test="qr_code_no != null and qr_code_no != ''">and b.`qr_code_no` = #{qr_code_no}</if>
+            <if test="hospital != null and hospital != ''">and b.`hospital` like concat('%',#{hospital},'%') </if>
+            <if test="qr_code_no != null and qr_code_no != ''">and b.`qr_code_no` like concat('%',#{qr_code_no},'%')</if>
             <if test="lock_mac != null and lock_mac != ''">and b.`lock_mac` = #{lock_mac}</if>
             <if test="start_time != null and start_time != ''">and a.`start_time` > #{start_time}</if>
             <if test="end_time != null and end_time != ''">and a.`start_time` &lt; #{end_time}</if>
@@ -100,5 +100,23 @@
 
     <select id="unPayLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
         select * from lock_order a where a.status = 0 and a.`user_id` = #{user_id} and a.end_time is not null and a.diff_fee &lt; 0;
+    </select>
+
+    <select id="sumByLockOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select sum(a.fee) total_fee, sum(a.diff_fee) diff_fee from lock_order a left join lock_info b on a.lock_no = b.lock_no
+        <where>
+            and a.status = 0
+            <if test="user_id != null and user_id != ''">and a.`user_id` = #{user_id}</if>
+            <if test="type != null and type != ''">and a.`type` = #{type}</if>
+            <if test="status != null and status != ''">and a.status = #{status}</if>
+            <if test="lock_no != null and lock_no != ''">and a.lock_no = like concat('%',#{lock_no},'%')</if>
+            <if test="agency_user_id != null and agency_user_id != ''">and b.`user_id` = #{agency_user_id}</if>
+            <if test="hospital != null and hospital != ''">and b.`hospital` like concat('%',#{hospital},'%') </if>
+            <if test="qr_code_no != null and qr_code_no != ''">and b.`qr_code_no` like concat('%',#{qr_code_no},'%')</if>
+            <if test="lock_mac != null and lock_mac != ''">and b.`lock_mac` = #{lock_mac}</if>
+            <if test="start_time != null and start_time != ''">and a.`start_time` > #{start_time}</if>
+            <if test="end_time != null and end_time != ''">and a.`start_time` &lt; #{end_time}</if>
+        </where>
+        order by a.insert_time desc
     </select>
 </mapper>

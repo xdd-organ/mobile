@@ -454,4 +454,9 @@ public class LockOrderServiceImpl implements LockOrderService {
         }
         return res;
     }
+
+    @Override
+    public Map<String, Object> sumByLockOrder(Map<String, Object> params) {
+        return lockOrderMapper.sumByLockOrder(params);
+    }
 }

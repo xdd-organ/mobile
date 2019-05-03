@@ -35,4 +35,6 @@ public interface LockOrderService {
     int update(Map<String, Object> params);
 
     void exportLockOrderData(Map<String,Object> params, OutputStream outputStream) throws Exception;
+
+    Map<String,Object> sumByLockOrder(Map<String, Object> params);
 }

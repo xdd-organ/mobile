@@ -59,6 +59,16 @@ public class LockOrderController {
         return new Result(100, pageInfo);
     }
 
+    @RequestMapping("sumByLockOrder")
+    public Result sumByLockOrder(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object userId = session.getAttribute("userId");
+        logger.info("统计订单数据参数：{},userId:{}", JSONObject.toJSONString(params), userId);
+        Map<String, Object> res = lockOrderService.sumByLockOrder(params);
+        logger.info("统计订单数据订单返回：{}", res);
+        return new Result(100, res);
+    }
+
     @RequestMapping("unLock")
     public DeferredResult unLock(@RequestBody final Map<String, Object> params, HttpServletRequest request) {
         HttpSession session = request.getSession();
