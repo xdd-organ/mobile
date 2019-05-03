@@ -12,6 +12,7 @@ alter table `lock_info` add `type` int(11) DEFAULT 0 COMMENT '0:蓝牙,1:GPS';
 alter table `lock_info` add `unit_price` int(11) DEFAULT 300 COMMENT '锁单位价格，单位：分/小时';
 alter table `lock_info` add `battery` int(11) DEFAULT 0 COMMENT '锁剩余电量';
 alter table `lock_info` add `wifi` int(11) DEFAULT 0 COMMENT '锁信号';
+alter table `lock_info` add `bind_user` varchar(128) DEFAULT null COMMENT '最多绑定8个用户';
 
 alter table `user` add `score` int(11) DEFAULT 0 COMMENT '分';
 alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员，2：经销商管理员';
