@@ -51,6 +51,7 @@
         insert_author,
         `type`,
         bind_user,
+        department,
         update_author
         )
         VALUES
@@ -67,6 +68,7 @@
         #{user_id},
         #{type},
         #{bind_user},
+        #{department},
         #{user_id}
         )
     </insert>
@@ -90,6 +92,7 @@
             <if test="hospital != null and hospital != ''">hospital = #{hospital},</if>
             <if test="user_id != null and user_id != ''">user_id = #{user_id},</if>
             <if test="bind_user != null and bind_user != ''">bind_user = #{bind_user},</if>
+            <if test="department != null and department != ''">department = #{department},</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -114,6 +117,7 @@
             <if test="battery != null and battery != ''">battery = #{battery},</if>
             <if test="wifi != null and wifi != ''">wifi = #{wifi},</if>
             <if test="bind_user != null and bind_user != ''">bind_user = #{bind_user},</if>
+            <if test="department != null and department != ''">department = #{department},</if>
         </set>
         WHERE lock_no = #{lock_no}
     </update>
@@ -125,11 +129,13 @@
             <if test="lock_no != null and lock_no != ''">and a.lock_no like concat('%',#{lock_no},'%')</if>
             <if test="device_no != null and device_no != ''">and a.device_no like concat('%',#{device_no},'%')</if>
             <if test="qr_code_no != null and qr_code_no != ''">and a.qr_code_no like concat('%',#{qr_code_no},'%')</if>
+            <if test="department != null and department != ''">and a.department like concat('%',#{department},'%')</if>
             <if test="lock_mac != null and lock_mac != ''">and a.lock_mac = #{lock_mac}</if>
             <if test="hospital != null and hospital != ''">and a.hospital like concat('%',#{hospital},'%') </if>
             <if test="user_id != null and user_id != ''">and a.user_id = #{user_id}</if>
             <if test="bind_user != null and bind_user != ''">and find_in_set(#{bind_user}, a.`bind_user`)</if>
         </trim>
+        ORDER BY ABS(a.battery) asc
     </select>
 
     <resultMap id="listByLockInfoMap" type="java.util.Map">
