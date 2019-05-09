@@ -109,7 +109,7 @@ public class LockController {
                 Map<String, Object> params = new HashMap<>();
                 if("lineStatus".equalsIgnoreCase(type)) {
                     deviceId = String.valueOf(data.get("deviceId"));
-                    params.put("line", data.get("line"));
+                    params.put("line", String.valueOf(data.get("line")));
                 }
                 params.put("lock_no", deviceId);
                 params.put("battery", data.get("battery"));
