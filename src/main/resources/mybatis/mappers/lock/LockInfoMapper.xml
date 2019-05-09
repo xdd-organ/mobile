@@ -52,6 +52,7 @@
         `type`,
         bind_user,
         department,
+        line,
         update_author
         )
         VALUES
@@ -69,6 +70,7 @@
         #{type},
         #{bind_user},
         #{department},
+        #{line},
         #{user_id}
         )
     </insert>
@@ -93,6 +95,7 @@
             <if test="user_id != null and user_id != ''">user_id = #{user_id},</if>
             <if test="bind_user != null and bind_user != ''">bind_user = #{bind_user},</if>
             <if test="department != null and department != ''">department = #{department},</if>
+            <if test="line != null and line != ''">line = #{line},</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -118,6 +121,7 @@
             <if test="wifi != null and wifi != ''">wifi = #{wifi},</if>
             <if test="bind_user != null and bind_user != ''">bind_user = #{bind_user},</if>
             <if test="department != null and department != ''">department = #{department},</if>
+            <if test="line != null and line != ''">line = #{line},</if>
         </set>
         WHERE lock_no = #{lock_no}
     </update>
@@ -126,6 +130,7 @@
         select a.*,a.user_id ui from lock_info a where a.status = 0
         <trim>
             <if test="state != null and state != ''">and a.`state` = #{state}</if>
+            <if test="line != null and line != ''">and a.`line` = #{line}</if>
             <if test="lock_no != null and lock_no != ''">and a.lock_no like concat('%',#{lock_no},'%')</if>
             <if test="device_no != null and device_no != ''">and a.device_no like concat('%',#{device_no},'%')</if>
             <if test="qr_code_no != null and qr_code_no != ''">and a.qr_code_no like concat('%',#{qr_code_no},'%')</if>
@@ -151,7 +156,7 @@
     </update>
 
     <select id="getLockInfo" resultType="java.util.Map" parameterType="java.lang.String">
-        select a.lock_pwd, a.lock_mac, a.state, a.lock_no, a.type, a.unit_price,a.battery from lock_info a where a.qr_code_no = #{qr_code_no}
+        select a.lock_pwd, a.lock_mac, a.state, a.lock_no, a.type, a.unit_price,a.battery,a.line from lock_info a where a.qr_code_no = #{qr_code_no}
     </select>
     <select id="getLockKey" resultType="java.lang.String">
         select a.lock_key from lock_info a where a.qr_code_no = #{qr_code_no}

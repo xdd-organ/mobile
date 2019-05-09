@@ -107,9 +107,14 @@ public class LockController {
                 Map<String, Object> data = (Map<String, Object>) body.get("data");
                 String deviceId = String.valueOf(data.get("terminalPhone"));
                 Map<String, Object> params = new HashMap<>();
+                if("lineStatus".equalsIgnoreCase(type)) {
+                    deviceId = String.valueOf(data.get("deviceId"));
+                    params.put("line", data.get("line"));
+                }
                 params.put("lock_no", deviceId);
                 params.put("battery", data.get("battery"));
                 params.put("wifi", data.get("wifi"));
+
                 lockInfoService.updateByLockNo(params);
             } catch (Exception e) {
                 logger.error("更新电量异常", e);
