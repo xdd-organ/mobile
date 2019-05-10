@@ -46,6 +46,7 @@
             <if test="fault_type != null and fault_type != ''">and a.fault_type = #{fault_type}</if>
             <if test="agency_user_id != null and agency_user_id != ''">and b.`user_id` = #{agency_user_id}</if>
         </where>
+        order by a.insert_time desc
     </select>
 
     <resultMap id="listByFaultFeedbackMap" type="java.util.Map">
