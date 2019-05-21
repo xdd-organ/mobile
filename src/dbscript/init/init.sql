@@ -265,5 +265,35 @@ CREATE TABLE `wx_refund_info` (
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='微信退款信息';
 
+CREATE TABLE `user_commission_flow` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `type` int(11) DEFAULT '0' COMMENT '0:分佣，1：提现',
+   `fee` int(11) DEFAULT '0' COMMENT '金额：单位：分',
+   `total_fee` int(11) DEFAULT '0' COMMENT '分佣总金额',
+   `rate` int(11) DEFAULT '0' COMMENT '分佣比例，17表示17%',
+   `desc` varchar(64) DEFAULT NULL COMMENT '描述',
+   `status` int(11) DEFAULT '0' COMMENT '0:有效，1：删除',
+   `state` int(11) DEFAULT '0' COMMENT '(仅在type=1，该字段有效)0:提交提现申请，1：申请通过，2：申请不通过',
+   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+   `lock_order_id` int(11) DEFAULT NULL COMMENT '分佣订单id',
+   `insert_author` int(11) DEFAULT NULL,
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='用户分佣流水';
 
+CREATE TABLE `user_commission_rate` (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `pid` int(11) DEFAULT '0' COMMENT '用户id',
+   `status` int(11) DEFAULT '0' COMMENT '0:有效，1：删除',
+   `commission` int(11) DEFAULT '0' COMMENT '金额：单位：分',
+   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+   `rate` int(11) DEFAULT '0' COMMENT '分佣比例，17表示17%',
+   `insert_author` int(11) DEFAULT NULL,
+   `insert_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `update_author` int(11) DEFAULT NULL,
+   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='用户分佣设置';
 

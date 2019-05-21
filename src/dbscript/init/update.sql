@@ -17,7 +17,10 @@ alter table `lock_info` add `department` varchar(32) DEFAULT null COMMENT '科�
 alter table `lock_info` add `line` varchar(32) DEFAULT null COMMENT '设备是否在线 1:在线，0:离线';
 
 alter table `user` add `score` int(11) DEFAULT 0 COMMENT '分';
-alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员，2：经销商管理员';
+alter table `user` add `type` int(11) DEFAULT 0 COMMENT '0:普通用户，1：后台管理员，2：经销商管理员，3：测试用户，4：公司，5：医院';
+alter table `user` add `permission` int(11) DEFAULT 0 COMMENT '权限，0:普通用户，1：后台管理员，2：经销商，3：测试用户';
+alter table `user` add `type_remark` varchar(64) DEFAULT NULL COMMENT '用户身份中文备注';
+alter table `user` add `commission` int(11) DEFAULT 0 COMMENT '用户佣金';
 
 alter table `lock_order` add `total_time` varchar(16) DEFAULT 0 COMMENT '使用总时间（秒）';
 alter table `lock_order` add `diff_fee` varchar(16) DEFAULT 0 COMMENT '需要补的钱';
